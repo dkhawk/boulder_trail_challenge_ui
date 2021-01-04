@@ -31,10 +31,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildBody(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('athletes').snapshots(),
+      stream: Firestore.instance.collection('athletes').document("dkhawk@gmail.com").collection("completed").snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
-
         return _buildList(context, snapshot.data.documents);
       },
     );
@@ -48,10 +47,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-    final record = Record.fromSnapshot(data);
+    // final record = Record.fromSnapshot(data);
+    final segment = CompletedSegment.fromSnapshot(data);
 
     return Padding(
-      key: ValueKey(record.name),
+      key: ValueKey(segment.segmentId),
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Container(
         decoration: BoxDecoration(
@@ -59,13 +59,40 @@ class _MyHomePageState extends State<MyHomePage> {
           borderRadius: BorderRadius.circular(5.0),
         ),
         child: ListTile(
-            title: Text(record.name),
-            trailing: Text(record.stravaId),
+            title: Text(segment.trailName),
+            trailing: Text(segment.activityId),
             // onTap: () => record.reference.updateData({'votes': FieldValue.increment(1)})
         ),
       ),
     );
   }
+}
+
+class CompletedSegment {
+  final String activityId;
+  final int length;
+  final String segmentId;
+  final String trailId;
+  final String trailName;
+  final DocumentReference reference;
+
+  CompletedSegment.fromMap(Map<String, dynamic> map, {this.reference})
+      : assert(map['activityId'] != null),
+        assert(map['length'] != null),
+        assert(map['segmentId'] != null),
+        assert(map['trailId'] != null),
+        assert(map['trailName'] != null),
+        activityId = map['activityId'],
+        length = map['length'],
+        segmentId = map['segmentId'],
+        trailId = map['trailId'],
+        trailName = map['trailName'];
+
+  CompletedSegment.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data, reference: snapshot.reference);
+
+  @override
+  String toString() => "Record<$trailName:$segmentId>";
 }
 
 class Record {
