@@ -25,33 +25,63 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(title: Text('Boulder Trail Challenge Status')),
-      body: _buildBody(context),
+      body: _mainScreen(context),
     );
   }
 
-  Widget _buildBody(BuildContext context) {
-    return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('athletes').document("dkhawk@gmail.com").collection("completed").snapshots(),
+  Widget _mainScreen(BuildContext context) {
+    return Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            _buildSummary(context),
+            Expanded(child: _buildTodo(context))
+          ],
+        ));
+  }
+
+  Widget _buildSummary(BuildContext context) {
+    return StreamBuilder<DocumentSnapshot>(
+      stream: Firestore.instance.collection('athletes').document("dkhawk@gmail.com").snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
-        return _buildList(context, snapshot.data.documents);
+        return _buildStatus(context, snapshot.data);
       },
     );
   }
 
-  Widget _buildList(BuildContext context, List<DocumentSnapshot> snapshot) {
-    return ListView(
-      padding: const EdgeInsets.only(top: 20.0),
-      children: snapshot.map((data) => _buildListItem(context, data)).toList(),
+  Widget _buildTodo(BuildContext context) {
+    return StreamBuilder<QuerySnapshot>(
+      stream: Firestore.instance.collection('athletes').document("dkhawk@gmail.com")
+          .collection("trailStats")
+          .where("percentDone", isLessThan: 0.98)
+          .orderBy("percentDone", descending: true)
+          // .orderBy("name")
+          .snapshots(),
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return LinearProgressIndicator();
+        return _buildTodoList(context, snapshot.data.documents);
+      },
     );
   }
 
-  Widget _buildListItem(BuildContext context, DocumentSnapshot data) {
-    // final record = Record.fromSnapshot(data);
-    final segment = CompletedSegment.fromSnapshot(data);
+  Widget _buildTodoList(BuildContext context, List<DocumentSnapshot> snapshot) {
+    return ListView(
+      padding: const EdgeInsets.only(top: 20.0),
+      children: snapshot.map((data) => _buildTodoListItem(context, data)).toList(),
+    );
+  }
+
+  Widget _buildStatus(BuildContext context, DocumentSnapshot data) {
+    print(data["overallStats"]["percentDone"] * 100);
+    return Text("Overall completion: " + (data["overallStats"]["percentDone"] * 100).toStringAsFixed(2) + "%");
+  }
+
+  Widget _buildTodoListItem(BuildContext context, DocumentSnapshot data) {
+    final trail = TrailSummary.fromSnapshot(data);
 
     return Padding(
-      key: ValueKey(segment.segmentId),
+      key: ValueKey(trail.trailId),
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Container(
         decoration: BoxDecoration(
@@ -59,13 +89,39 @@ class _MyHomePageState extends State<MyHomePage> {
           borderRadius: BorderRadius.circular(5.0),
         ),
         child: ListTile(
-            title: Text(segment.trailName),
-            trailing: Text(segment.activityId),
-            // onTap: () => record.reference.updateData({'votes': FieldValue.increment(1)})
+          title: Text(trail.name + " (" + trail.trailId + ")"),
+          trailing: Text((trail.percentDone * 100).toStringAsFixed(2) + "%"),
+          // onTap: () => record.reference.updateData({'votes': FieldValue.increment(1)})
         ),
       ),
     );
   }
+}
+
+class TrailSummary {
+  final String trailId;
+  final String name;
+  final int length;
+  final int completedDistance;
+  final double percentDone;
+  final DocumentReference reference;
+
+  // completed
+  // remaining
+
+  TrailSummary.fromMap(Map<String, dynamic> map, {this.reference})
+      : assert(map['name'] != null),
+        assert(map['length'] != null),
+        assert(map['completedDistance'] != null),
+        assert(map['percentDone'] != null),
+        trailId = reference.documentID,
+        name = map['name'],
+        length = map['length'],
+        completedDistance = map['completedDistance'],
+        percentDone = map['percentDone'];
+
+  TrailSummary.fromSnapshot(DocumentSnapshot snapshot)
+    : this.fromMap(snapshot.data, reference: snapshot.reference);
 }
 
 class CompletedSegment {
