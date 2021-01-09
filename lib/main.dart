@@ -8,19 +8,66 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Boulder Trail Challenge Status',
-      home: MyHomePage(),
+      home: TopLevelTabs(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
+final List<Tab> tabs = <Tab>[
+  Tab(text: 'Progress'),
+  Tab(text: 'Completed'),
+];
+
+enum TrailStatus { inProgress, completed }
+
+class TopLevelTabs extends StatelessWidget {
+  TopLevelTabs({Key key}) : super(key: key);
   @override
-  _MyHomePageState createState() {
-    return _MyHomePageState();
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: tabs.length,
+      // The Builder widget is used to have a different BuildContext to access
+      // closest DefaultTabController.
+      child: Builder(builder: (BuildContext context) {
+        final TabController tabController = DefaultTabController.of(context);
+        tabController.addListener(() {
+          if (!tabController.indexIsChanging) {
+            // Your code goes here.
+            // To get index of current tab use tabController.index
+          }
+        });
+        return Scaffold(
+          appBar: AppBar(
+            bottom: TabBar(
+              tabs: tabs,
+            ),
+          ),
+          body: TabBarView(
+            children: <Widget>[
+              Progress(TrailStatus.inProgress),
+              Progress(TrailStatus.completed),
+            ]
+          ),
+        );
+      }),
+    );
   }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class Progress extends StatefulWidget {
+  final TrailStatus trailStatus;
+  Progress(this.trailStatus);
+
+  @override
+  _ProgressState createState() {
+    return _ProgressState(trailStatus);
+  }
+}
+
+class _ProgressState extends State<Progress> {
+  final TrailStatus trailStatus;
+  _ProgressState(this.trailStatus);
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -51,13 +98,15 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildTodo(BuildContext context) {
+    CollectionReference collection = Firestore.instance.collection('athletes').document("dkhawk@gmail.com")
+        .collection("trailStats");
+
+    var byStatus = trailStatus == TrailStatus.inProgress
+        ? collection.where("percentDone", isLessThan: 0.98)
+        : collection.where("percentDone", isGreaterThanOrEqualTo: 0.98);
+
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance.collection('athletes').document("dkhawk@gmail.com")
-          .collection("trailStats")
-          .where("percentDone", isLessThan: 0.98)
-          .orderBy("percentDone", descending: true)
-          // .orderBy("name")
-          .snapshots(),
+      stream: byStatus.orderBy("percentDone", descending: true).snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
         return _buildTodoList(context, snapshot.data.documents);
@@ -73,12 +122,14 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Widget _buildStatus(BuildContext context, DocumentSnapshot data) {
-    print(data["overallStats"]["percentDone"] * 100);
-    return Text("Overall completion: " + (data["overallStats"]["percentDone"] * 100).toStringAsFixed(2) + "%");
+    var percent = data["overallStats"]["percentDone"];
+    percent = percent >= 0.98 ? 1.0 : percent;
+    return Text("Overall completion: " + (percent * 100).toStringAsFixed(2) + "%");
   }
 
   Widget _buildTodoListItem(BuildContext context, DocumentSnapshot data) {
     final trail = TrailSummary.fromSnapshot(data);
+    final percent = trail.percentDone >= 0.98 ? 1.0 : trail.percentDone;
 
     return Padding(
       key: ValueKey(trail.trailId),
@@ -90,7 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ),
         child: ListTile(
           title: Text(trail.name + " (" + trail.trailId + ")"),
-          trailing: Text((trail.percentDone * 100).toStringAsFixed(2) + "%"),
+          trailing: Text((percent * 100).toStringAsFixed(2) + "%"),
           // onTap: () => record.reference.updateData({'votes': FieldValue.increment(1)})
         ),
       ),
