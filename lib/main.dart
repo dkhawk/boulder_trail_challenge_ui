@@ -130,6 +130,8 @@ class _ProgressState extends State<Progress> {
   Widget _buildTodoListItem(BuildContext context, DocumentSnapshot data) {
     final trail = TrailSummary.fromSnapshot(data);
     final percent = trail.percentDone >= 0.98 ? 1.0 : trail.percentDone;
+    final completedMiles = (trail.completedDistance * 0.000621371).toStringAsFixed(2);
+    final total = (trail.length * 0.000621371).toStringAsFixed(2);
 
     return Padding(
       key: ValueKey(trail.trailId),
@@ -140,7 +142,7 @@ class _ProgressState extends State<Progress> {
           borderRadius: BorderRadius.circular(5.0),
         ),
         child: ListTile(
-          title: Text(trail.name + " (" + trail.trailId + ")"),
+          title: Text(trail.name + " (" + trail.trailId + ")" + " " + completedMiles + " of " + total + " miles"),
           trailing: Text((percent * 100).toStringAsFixed(2) + "%"),
           // onTap: () => record.reference.updateData({'votes': FieldValue.increment(1)})
         ),
