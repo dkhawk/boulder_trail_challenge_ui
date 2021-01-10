@@ -93,10 +93,45 @@ class TrailsProgressWidget extends StatelessWidget {
   }
 
   Widget _buildStatus(BuildContext context, DocumentSnapshot data) {
-    var percent = data["overallStats"]["percentDone"];
+    var stats = data["overallStats"];
+    var percent = stats["percentDone"];
+    var completed = (stats["completedDistance"] * 0.000621371).toStringAsFixed(2);
+    var total = (stats["totalDistance"] * 0.000621371).toStringAsFixed(2);
     percent = percent >= 0.98 ? 1.0 : percent;
-    return Text(
-        "Overall completion: " + (percent * 100).toStringAsFixed(2) + "%");
+
+    var progress = LinearProgressIndicator(
+      value: percent,
+    );
+
+    // return Text(
+    //     "Overall completion: " + (percent * 100).toStringAsFixed(2) + "%");
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
+      child: Container(
+          decoration: BoxDecoration(
+            border: Border.all(color: Colors.grey),
+            borderRadius: BorderRadius.circular(5.0),
+            // color: Colors.lightGreen,
+            // gradient: background,
+          ),
+          child: Column(
+            children: [
+              ListTile(
+                title: Text("Overall completion: " +
+                    " " +
+                    completed +
+                    " of " +
+                    total +
+                    " miles"),
+                trailing: Text((percent * 100).toStringAsFixed(2) + "%"),
+                // onTap: () => record.reference.updateData({'votes': FieldValue.increment(1)})
+              ),
+              progress,
+            ],
+          )
+      ),
+    );
+
   }
 
   Widget _buildTodo(BuildContext context) {
@@ -133,6 +168,10 @@ class TrailsProgressWidget extends StatelessWidget {
     (trail.completedDistance * 0.000621371).toStringAsFixed(2);
     final total = (trail.length * 0.000621371).toStringAsFixed(2);
 
+    var progress = LinearProgressIndicator(
+      value: percent,
+    );
+
     return Padding(
       key: ValueKey(trail.trailId),
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -140,20 +179,27 @@ class TrailsProgressWidget extends StatelessWidget {
         decoration: BoxDecoration(
           border: Border.all(color: Colors.grey),
           borderRadius: BorderRadius.circular(5.0),
+          // color: Colors.lightGreen,
+          // gradient: background,
         ),
-        child: ListTile(
-          title: Text(trail.name +
-              " (" +
-              trail.trailId +
-              ")" +
-              " " +
-              completedMiles +
-              " of " +
-              total +
-              " miles"),
-          trailing: Text((percent * 100).toStringAsFixed(2) + "%"),
-          // onTap: () => record.reference.updateData({'votes': FieldValue.increment(1)})
-        ),
+        child: Column(
+          children: [
+            ListTile(
+              title: Text(trail.name +
+                  // " (" +
+                  // trail.trailId +
+                  // ")" +
+                  " " +
+                  completedMiles +
+                  " of " +
+                  total +
+                  " miles"),
+              trailing: Text((percent * 100).toStringAsFixed(2) + "%"),
+              // onTap: () => record.reference.updateData({'votes': FieldValue.increment(1)})
+            ),
+            progress,
+          ],
+        )
       ),
     );
   }
