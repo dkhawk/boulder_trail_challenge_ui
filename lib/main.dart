@@ -29,7 +29,7 @@ class TopApp extends StatelessWidget {
                 context.read<AuthenticationService>().authStateChanges)
       ],
       child: MaterialApp(
-        title: 'Run ALL the Trails',
+        title: 'Boulder Trails Challenge',
         theme: ThemeData(
           buttonTheme: Theme.of(context).buttonTheme.copyWith(
                 highlightColor: Colors.deepPurple,
@@ -52,25 +52,9 @@ class AuthenticationWrapper extends StatelessWidget {
     final firebaseUser = context.watch<User>();
 
     if (firebaseUser != null) {
-      return HomePage();
+      return BottomNavWidget();
     } else {
       return SignInPage();
     }
-  }
-}
-
-class Loading extends StatelessWidget {
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("ಠ_ಠ"),
-    );
-  }
-}
-
-class SomethingWentWrong extends StatelessWidget {
-  Widget build(BuildContext context) {
-    return Center(
-      child: Text("¯\\_(ツ)_/¯"),
-    );
   }
 }
