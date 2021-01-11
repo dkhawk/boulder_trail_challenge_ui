@@ -1,5 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'OSMPSplash.dart';
+import 'MappingSupport.dart';
 
 void main() => runApp(MyApp());
 
@@ -8,7 +10,10 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Boulder Trail Challenge Status',
-      home: MyHomePage(),
+      // Display splash screen for a couple of seconds and
+      // then call MyHomePage,
+      home: OSMPSplash(),
+      //debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -89,12 +94,22 @@ class _MyHomePageState extends State<MyHomePage> {
           borderRadius: BorderRadius.circular(5.0),
         ),
         child: ListTile(
-          title: Text(trail.name + " (" + trail.trailId + ")"),
-          trailing: Text((trail.percentDone * 100).toStringAsFixed(2) + "%"),
-          // onTap: () => record.reference.updateData({'votes': FieldValue.increment(1)})
+          title: Text(
+            trail.name + " (" + trail.trailId + ")",
+          ),
+          subtitle: Text((trail.percentDone * 100).toStringAsFixed(2) + "%"),
+          trailing: IconButton(
+            icon: Icon(
+              Icons.directions_run_outlined,
+              color: Colors.blue,
+            ),
+            padding: EdgeInsets.all(0),
+            alignment: Alignment.centerRight,
+            onPressed: () => DisplayMap(context, trail),
+            //onPressed: () => _junk(context, trail),
+          ),
         ),
-      ),
-    );
+    ));
   }
 }
 
@@ -104,10 +119,9 @@ class TrailSummary {
   final int length;
   final int completedDistance;
   final double percentDone;
+  final List completedSegs;
+  final List remainingSegs;
   final DocumentReference reference;
-
-  // completed
-  // remaining
 
   TrailSummary.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['name'] != null),
@@ -118,7 +132,9 @@ class TrailSummary {
         name = map['name'],
         length = map['length'],
         completedDistance = map['completedDistance'],
-        percentDone = map['percentDone'];
+        percentDone = map['percentDone'],
+        completedSegs = map['completed'],
+        remainingSegs = map['remaining'];
 
   TrailSummary.fromSnapshot(DocumentSnapshot snapshot)
     : this.fromMap(snapshot.data, reference: snapshot.reference);

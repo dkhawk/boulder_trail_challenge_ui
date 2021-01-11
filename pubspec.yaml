@@ -24,6 +24,11 @@ dependencies:
   flutter:
     sdk: flutter
 
+  splashscreen: ^1.3.5
+
+  # map creation
+  flutter_map: #^0.10.1+1
+  latlong: #"^0.5.3"
 
   cloud_firestore: ^0.13.0+1
   # The following adds the Cupertino Icons font to your application.
@@ -50,6 +55,7 @@ flutter:
   # To add assets to your application, add an assets section, like this:
   assets:
     - assets/images/dummy_map.png
+    - assets/images/FlatIrons.jpg
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
