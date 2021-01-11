@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
+import 'package:osmp_project/import_activities_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -22,19 +23,30 @@ class SettingsPage extends StatelessWidget {
         ),
         Spacer(),
         RaisedButton(
+          child: Text('Import old activities'),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return ImportActivitiesScreen();
+              }),
+            );
+          },
+        ),
+        Spacer(),
+        RaisedButton(
           onPressed: () {
             context.read<AuthenticationService>().signOut();
           },
           child: Text("Sign out"),
         ),
+        Spacer(),
       ],
     );
   }
 
   void _launchURL() async {
-    var myUrlBase = Uri.base;
     var redirectUrl = 'http://localhost:5001/boulder-trail-challenge/us-central1/exchangeTokens?athleteId=dkhawk@gmail.com';
-    var rUrl = Uri.encodeFull(redirectUrl);
     var queryParameters = {
       'client_id': '43792',
       'response_type': 'code',
@@ -45,13 +57,6 @@ class SettingsPage extends StatelessWidget {
     var url = Uri.https('www.strava.com', '/oauth/authorize', queryParameters);
     print(url);
 
-    // var response = await http.get(uri, headers: {
-    //   HttpHeaders.authorizationHeader: 'Token $token',
-    //   HttpHeaders.contentTypeHeader: 'application/json',
-    // });
-    // print(rUrl);
-    // var url = 'https://www.strava.com/oauth/authorize?client_id=43792&response_type=code&approval_prompt=force&scope=read&approval_prompt=force&redirect_uri=${rUrl}';
-    // print(url);
     if (await canLaunch(url.toString())) {
       await launch(url.toString());
     } else {
