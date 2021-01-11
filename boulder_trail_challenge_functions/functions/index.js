@@ -61,15 +61,6 @@ exports.exchangeTokens = functions.https.onRequest(async (request, response) => 
     const code = request.query.code;
     const scope = request.query.scope;
 
-    let tokenExchange = {
-	client_id: '43792',
-	client_secret: 'b5cc7b11df2bf0390406f4bcc88592f7944880e9',
-	code: code,
-	grant_type: 'authorization_code',
-    };
-
-    console.log(JSON.stringify(tokenExchange));
-
     var options = {
 	method: 'POST',
 	uri: 'https://www.strava.com/api/v3/oauth/token',
@@ -99,3 +90,141 @@ exports.exchangeTokens = functions.https.onRequest(async (request, response) => 
 	    response.status(500).send(error);
 	});
 });
+
+exports.refreshToken = functions.https.onRequest(async (request, response) => {
+    const btcAthlete = request.query.athleteId;
+    const force = request.query.force;
+
+    console.log(`btcAthlete ${btcAthlete}`);
+    console.log(`force ${force}`);
+
+    admin.firestore().collection('athletes').doc('dkhawk@gmail.com').get().then(documentSnapshot => {
+	if (documentSnapshot.exists) {
+	    console.log('Document retrieved successfully.');
+	    var athlete = documentSnapshot.data();
+	    var tokenInfo = athlete.tokenInfo;
+	    console.log(`tokenInfo.expires_at ${tokenInfo.expires_at}`);
+	    var expirationTimeMillis = tokenInfo.expires_at * 1000;
+	    console.log(Date.now());
+	    if (Date.now() >= expirationTimeMillis) {
+		console.log('token has expired');
+		
+		var options = {
+		    method: 'POST',
+		    uri: 'https://www.strava.com/api/v3/oauth/token',
+		    headers: {
+			'User-Agent': 'Request-Promise'
+		    },
+		    form: {
+			client_id: '43792',
+			client_secret: 'b5cc7b11df2bf0390406f4bcc88592f7944880e9',
+			code: tokenInfo.refresh_token,
+			grant_type: 'refresh_token',
+		    },
+		};
+
+		rp(options)
+		    .then(tokenInfo => {
+			console.log('tokenInfo', tokenInfo);
+			const tokenObj = JSON.parse(tokenInfo);
+			const athleteRef = admin.firestore().collection('athletes').doc('dkhawk@gmail.com')
+			const res = athleteRef.set({ tokenInfo: tokenObj }, { merge: true });
+			return res;
+		    })
+		    .then(ref => {
+			response.send('Success\n');
+		    })
+		    .catch(error => {
+			response.status(500).send(error);
+		    });
+	    } else {
+		response.send('Token does not need refresh\n');
+	    }
+	} else {
+	    response.send('No such athlete');
+	}
+    });
+});
+
+exports.getActivities = functions.https.onRequest(async (request, response) => {
+    const btcAthlete = request.query.athleteId;
+    const after = 1609459200;  // 2021-01-01 0:00.  Need to pass this in as a parameter.
+
+    admin.firestore().collection('athletes').doc(btcAthlete).get().then(documentSnapshot => {
+	if (documentSnapshot.exists) {
+	    console.log('Document retrieved successfully.');
+	    var athlete = documentSnapshot.data();
+	    var tokenInfo = athlete.tokenInfo;
+	    var accessToken = tokenInfo.access_token;
+	    console.log(`tokenInfo.expires_at ${tokenInfo.expires_at}`);
+	    var expirationTimeMillis = tokenInfo.expires_at * 1000;
+
+	    // TODO: handle the expired token...
+	    
+	    //curl -X GET "https://www.strava.com/api/v3/athlete/activities?after=1609459200&per_page=30" -H "accept: application/json" -H "authorization: Bearer 0275e53d4c133d20f8fd628954b031faab7f9cfe"
+ 
+	    var options = {
+		method: 'GET',
+		uri: 'https://www.strava.com/api/v3/athlete/activities',
+		headers: {
+		    'User-Agent': 'Request-Promise',
+		    'accept': 'application/json',
+		    'authorization': `Bearer ${accessToken}`
+		},
+		qs: {
+		    after: after,
+		    per_page: 3  // <= This should be 30 when ready
+		},
+	    };
+
+	    rp(options)
+		.then(activitiesString => {
+		    // console.log('activities: ', activities);
+		    const activities = JSON.parse(activitiesString);
+		    // const athleteRef = admin.firestore().collection('athletes').doc('dkhawk@gmail.com')
+		    // const res = athleteRef.set({ tokenInfo: tokenObj }, { merge: true });
+		    // return res;
+
+		    // TODO: limit this to running, hiking, walking, etc
+		    // TODO: outdoor only?
+		    // Write this to a work queue
+		    // Filter activies that have already been processed!
+
+		    console.log('##################################################################');
+		    console.log(`activities ${activities}`);
+		    console.log(typeof activities);
+		    console.log('==================================================================');
+		    console.log(`activities[1] ${activities[1]}`);
+		    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+
+		    console.log('Just before');
+		    const activityIds = activities.map(x => x.id);
+		    console.log('Just after');
+
+		    console.log(`activityIds: ${activityIds}`);
+		    return activityIds;
+		})
+		.then(activityIds => {
+		    // Seriously, we should only be writing to the work queue here!!!!!
+		    const aid = activityIds[1];
+		    console.log(`activity to grab: ${aid}`);
+		    
+	     	    response.send('Success\n');
+		})
+		.catch(error => {
+		    response.status(500).send(error);
+		});
+	    
+	} else {
+	    response.status(500).send('No such athlete');
+	}
+    });
+});
+
+
+function processActivity(activityId) {
+    // grab the locations stream
+    
+    // process
+    // return result
+}
