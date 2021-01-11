@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 
-import 'main.dart';
+import 'home_page.dart';
 
 // ----
 Widget DisplayMap(BuildContext context, TrailSummary trail) {
@@ -220,5 +220,5 @@ class segmentSummary {
         encodedLocations = map['encodedLocations'];
 
   segmentSummary.fromSnapshot(DocumentSnapshot snapshot)
-      : this.fromMap(snapshot.data, reference: snapshot.reference);
+      : this.fromMap(snapshot.data(), reference: snapshot.reference);
 }

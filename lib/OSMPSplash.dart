@@ -9,7 +9,7 @@ class OSMPSplash extends StatelessWidget {
   Widget build(BuildContext context) {
     return new SplashScreen(
       seconds: 2,
-      navigateAfterSeconds: new MyHomePage(),
+      navigateAfterSeconds: new AuthenticationWrapper(),
 
       title: new Text(
         'Boulder OSMP Trails Challenge',
