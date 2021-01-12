@@ -8,9 +8,8 @@ import 'package:latlong/latlong.dart';
 import 'home_page.dart';
 
 // ----
-Widget DisplayMap(BuildContext context, TrailSummary trail) {
-
-  mapData inputMapData = new mapData();
+Widget displayMap(BuildContext context, TrailSummary trail) {
+  MapData inputMapData = new MapData();
   inputMapData.mapName = Text(trail.name);
   inputMapData.percentComplete = trail.percentDone;
 
@@ -23,7 +22,10 @@ Widget DisplayMap(BuildContext context, TrailSummary trail) {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Text(trail.name),
-              Text((trail.percentDone*100).toStringAsFixed(2) + '%',style: TextStyle(fontSize: 12.0,)),
+              Text((trail.percentDone * 100).toStringAsFixed(2) + '%',
+                  style: TextStyle(
+                    fontSize: 12.0,
+                  )),
               LinearProgressIndicator(
                 value: trail.percentDone,
                 backgroundColor: inputMapData.remainingSegColor,
@@ -37,47 +39,43 @@ Widget DisplayMap(BuildContext context, TrailSummary trail) {
       );
     },
   ));
+
+  return _NoDataScreen();
 }
 
 //----
 class _LoadDisplayMapData extends StatelessWidget {
   _LoadDisplayMapData(this.trail, this.inputMapData);
   final TrailSummary trail;
-  final mapData inputMapData;
+  final MapData inputMapData;
 
   @override
   Widget build(BuildContext context) {
     return StreamBuilder<QuerySnapshot>(
-      stream: Firestore.instance
-          .collection('segments')
-          .where('name', isEqualTo: trail.name)
-          .snapshots(),
+      stream: FirebaseFirestore.instance.collection('segments').where('name', isEqualTo: trail.name).snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
-        return _PopulateMapData(context, trail, inputMapData, snapshot.data.documents);
+        return _populateMapData(context, trail, inputMapData, snapshot.data.docs);
       },
     );
   }
 }
 
 // ----
-Widget _PopulateMapData(BuildContext context, TrailSummary trail, mapData inputMapData, List<DocumentSnapshot> snapshot) {
+Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputMapData, List<DocumentSnapshot> snapshot) {
   // build data for the trail map
   inputMapData.completedSegs = [];
   inputMapData.remainingSegs = [];
 
-  List<String> completedSegs = List.castFrom(trail.completedSegs);
-  List<String> remainingSegs = List.castFrom(trail.remainingSegs);
-
   // go through the list of segments for this trail pulled from firestore
   snapshot.forEach((DocumentSnapshot document) {
-    segmentSummary segment = segmentSummary.fromSnapshot(document);
+    SegmentSummary segment = SegmentSummary.fromSnapshot(document);
     String segmentNameId = segment.segmentNameId;
     String encodedLocations = segment.encodedLocations;
     segment.latLong = _buildPolyLineForMap(encodedLocations);
 
     // is this segment completed or remaining
-    if(List.castFrom(trail.completedSegs).contains(segmentNameId))
+    if (List.castFrom(trail.completedSegs).contains(segmentNameId))
       inputMapData.completedSegs.add(segment);
     else if (List.castFrom(trail.remainingSegs).contains(segmentNameId))
       inputMapData.remainingSegs.add(segment);
@@ -91,38 +89,31 @@ Widget _PopulateMapData(BuildContext context, TrailSummary trail, mapData inputM
 // ----
 class _CreateFlutterMap extends StatelessWidget {
   _CreateFlutterMap(this.theMapData);
-  final mapData theMapData;
+  final MapData theMapData;
 
   @override
   Widget build(BuildContext context) {
-
     // keep track of all LatLng's that will be displayed (granted not efficient)
     List<LatLng> mapBounds = [];
 
     // completed segments in one color
     List<Polyline> theSegmentPolylines = [];
-    theMapData.completedSegs.forEach((segmentSummary segment) {
-      Polyline polyline = new Polyline(
-          points: segment.latLong,
-          strokeWidth: 2.0,
-          color: theMapData.completedSegColor);
+    theMapData.completedSegs.forEach((SegmentSummary segment) {
+      Polyline polyline = new Polyline(points: segment.latLong, strokeWidth: 2.0, color: theMapData.completedSegColor);
       theSegmentPolylines.add(polyline);
       mapBounds += segment.latLong;
     });
 
     // remaining segments in another color
-    theMapData.remainingSegs.forEach((segmentSummary segment) {
-      Polyline polyline = new Polyline(
-          points: segment.latLong,
-          strokeWidth: 2.0,
-          color: theMapData.remainingSegColor);
+    theMapData.remainingSegs.forEach((SegmentSummary segment) {
+      Polyline polyline = new Polyline(points: segment.latLong, strokeWidth: 2.0, color: theMapData.remainingSegColor);
       theSegmentPolylines.add(polyline);
       mapBounds += segment.latLong;
     });
 
     // bail out if no data
-    if(mapBounds.isEmpty) {
-      return _noDataScreen();
+    if (mapBounds.isEmpty) {
+      return _NoDataScreen();
     }
 
     // pop up the map
@@ -133,26 +124,18 @@ class _CreateFlutterMap extends StatelessWidget {
             padding: EdgeInsets.all(15.0),
           )),
       layers: [
-        new TileLayerOptions(
-            urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
-            subdomains: ['a', 'b', 'c']),
-        new PolylineLayerOptions(
-          polylines: theSegmentPolylines
-        ),
+        new TileLayerOptions(urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", subdomains: ['a', 'b', 'c']),
+        new PolylineLayerOptions(polylines: theSegmentPolylines),
       ],
     );
   }
 }
 
 // ----
-class _noDataScreen extends StatelessWidget {
+class _NoDataScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-        body: Center(
-          child: Text('No data for this map!')
-        )
-    );
+    return Scaffold(body: Center(child: Text('No data for this map!')));
   }
 }
 
@@ -191,17 +174,17 @@ List<LatLng> _buildPolyLineForMap(String encoded) {
 }
 
 // ----
-class mapData {
+class MapData {
   Text mapName;
   double percentComplete;
-  List<segmentSummary> completedSegs = [];
-  List<segmentSummary> remainingSegs = [];
+  List<SegmentSummary> completedSegs = [];
+  List<SegmentSummary> remainingSegs = [];
   Color completedSegColor = Colors.orange;
   Color remainingSegColor = Colors.black45;
 }
 
 // ----
-class segmentSummary {
+class SegmentSummary {
   final String name;
   final String segmentNameId;
   final String encodedLocations;
@@ -209,16 +192,14 @@ class segmentSummary {
 
   final DocumentReference reference;
 
-  segmentSummary.fromMap(Map<String, dynamic> map, {this.reference})
+  SegmentSummary.fromMap(Map<String, dynamic> map, {this.reference})
       : assert(map['name'] != null),
         assert(map['segmentId'] != null),
         assert(map['encodedLocations'] != null),
-
         name = map['name'],
         segmentNameId = map['segmentId'],
         latLong = map['latLong'],
         encodedLocations = map['encodedLocations'];
 
-  segmentSummary.fromSnapshot(DocumentSnapshot snapshot)
-      : this.fromMap(snapshot.data(), reference: snapshot.reference);
+  SegmentSummary.fromSnapshot(DocumentSnapshot snapshot) : this.fromMap(snapshot.data(), reference: snapshot.reference);
 }

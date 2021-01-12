@@ -205,7 +205,7 @@ class TrailsProgressWidget extends StatelessWidget {
                 ),
                 padding: EdgeInsets.all(0),
                 alignment: Alignment.centerRight,
-                onPressed: () => DisplayMap(context, trail),
+                onPressed: () => displayMap(context, trail),
               ),
             ),
             progress,
