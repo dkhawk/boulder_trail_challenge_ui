@@ -10,6 +10,7 @@ const admin = require('firebase-admin');
 admin.initializeApp();
 
 const grid = require('./grid-data.json');
+const encodedSegments = require('./encoded-segments.json');
 
 var rp = require('request-promise');
 
@@ -235,7 +236,9 @@ function processActivity(activityId) {
     
     console.log(`${activityId}`);
 
-    console.log(`${grid.width}`);
+    console.log(`${encodedSegments['244-130-127'].name}`);
+    console.log(`${encodedSegments['244-130-127'].length}`);
+    console.log(`${encodedSegments['244-130-127'].encodedLocations}`);
 
     // process
     // return result
