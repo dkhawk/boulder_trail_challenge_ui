@@ -9,6 +9,8 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
 
+const grid = require('./grid-data.json');
+
 var rp = require('request-promise');
 
 // exports.helloWorld = functions.https.onRequest((request, response) => {
@@ -222,9 +224,19 @@ exports.getActivities = functions.https.onRequest(async (request, response) => {
 });
 
 
+exports.processActivity = functions.https.onRequest(async (request, response) => {
+    processActivity(12345);
+    response.send('Done\n');
+});
+
 function processActivity(activityId) {
-    // grab the locations stream
+    // Grab the locations stream
+    // For testing, just load the file
     
+    console.log(`${activityId}`);
+
+    console.log(`${grid.width}`);
+
     // process
     // return result
 }
