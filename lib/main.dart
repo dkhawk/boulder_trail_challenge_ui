@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
 
-// Import the firebase_core plugin
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:provider/provider.dart';
+
 import 'package:osmp_project/authentication_service.dart';
 import 'package:osmp_project/home_page.dart';
 import 'package:osmp_project/sign_in_page.dart';
-import 'package:provider/provider.dart';
-
-import 'package:google_fonts/google_fonts.dart';
+import 'package:osmp_project/strava_service.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +27,10 @@ class TopApp extends StatelessWidget {
         ),
         StreamProvider(
             create: (context) =>
-                context.read<AuthenticationService>().authStateChanges)
+                context.read<AuthenticationService>().authStateChanges),
+        Provider<StravaService>(
+          create: (_) => StravaService(FirebaseFirestore.instance),
+        ),
       ],
       child: MaterialApp(
         title: 'Boulder Trails Challenge',
