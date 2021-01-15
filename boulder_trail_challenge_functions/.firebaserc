@@ -1,5 +1,6 @@
 {
   "projects": {
-    "default": "boulder-trail-challenge"
+    "default": "boulder-trail-challenge",
+    "boulder_trails_project": "boulder-trail-challenge"
   }
 }
