@@ -4,6 +4,8 @@ import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:osmp_project/settings_page.dart';
 
+import 'MappingSupport.dart';
+
 /// This is the stateful widget that the main application instantiates.
 class BottomNavWidget extends StatefulWidget {
   BottomNavWidget({Key key}) : super(key: key);
@@ -194,8 +196,17 @@ class TrailsProgressWidget extends StatelessWidget {
                   " of " +
                   total +
                   " miles"),
-              trailing: Text((percent * 100).toStringAsFixed(2) + "%"),
-              // onTap: () => record.reference.updateData({'votes': FieldValue.increment(1)})
+              //trailing: Text((percent * 100).toStringAsFixed(2) + "%"),
+              subtitle: Text((percent * 100).toStringAsFixed(2) + "%"),
+              trailing: IconButton(
+                icon: Icon(
+                  Icons.directions_run_outlined,
+                  color: Colors.blue,
+                ),
+                padding: EdgeInsets.all(0),
+                alignment: Alignment.centerRight,
+                onPressed: () => displayMap(context, trail),
+              ),
             ),
             progress,
           ],
@@ -211,6 +222,8 @@ class TrailSummary {
   final int length;
   final int completedDistance;
   final double percentDone;
+  final List completedSegs;
+  final List remainingSegs;
   final DocumentReference reference;
   // completed
   // remaining
@@ -224,7 +237,9 @@ class TrailSummary {
         name = map['name'],
         length = map['length'],
         completedDistance = map['completedDistance'],
-        percentDone = map['percentDone'];
+        percentDone = map['percentDone'],
+        completedSegs = map['completed'],
+        remainingSegs = map['remaining'];
 
   TrailSummary.fromSnapshot(DocumentSnapshot snapshot)
       : this.fromMap(snapshot.data(), reference: snapshot.reference);
