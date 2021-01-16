@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
 import 'package:osmp_project/import_activities_screen.dart';
+import 'package:osmp_project/strava_service.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -20,6 +21,13 @@ class SettingsPage extends StatelessWidget {
             _launchURL();
           },
           child: Text("Connect with Strava"),
+        ),
+        Spacer(),
+        RaisedButton(
+          onPressed: () {
+            context.read<StravaService>().refreshToken();
+          },
+          child: Text("Refresh Strava token"),
         ),
         Spacer(),
         RaisedButton(
