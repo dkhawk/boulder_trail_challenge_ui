@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
@@ -99,14 +101,14 @@ class _CreateFlutterMap extends StatelessWidget {
     // completed segments in one color
     List<Polyline> theSegmentPolylines = [];
     theMapData.completedSegs.forEach((SegmentSummary segment) {
-      Polyline polyline = new Polyline(points: segment.latLong, strokeWidth: 2.0, color: theMapData.completedSegColor);
+      Polyline polyline = new Polyline(points: segment.latLong, strokeWidth: 4.0, color: theMapData.completedSegColor);
       theSegmentPolylines.add(polyline);
       mapBounds += segment.latLong;
     });
 
     // remaining segments in another color
     theMapData.remainingSegs.forEach((SegmentSummary segment) {
-      Polyline polyline = new Polyline(points: segment.latLong, strokeWidth: 2.0, color: theMapData.remainingSegColor);
+      Polyline polyline = new Polyline(points: segment.latLong, strokeWidth: 4.0, color: theMapData.remainingSegColor);
       theSegmentPolylines.add(polyline);
       mapBounds += segment.latLong;
     });
@@ -141,35 +143,53 @@ class _NoDataScreen extends StatelessWidget {
 
 // ----
 // Decode Google encodedLocations to a List of LatLng
-List<LatLng> _buildPolyLineForMap(String encoded) {
-  // The following code used to decode the polyline was
-  // written by Dammy Ololade
+List<LatLng> _buildPolyLineForMap(String encodedValue) {
   List<LatLng> poly = [];
-  int index = 0, len = encoded.length;
-  int lat = 0, lng = 0;
+  const mask = ~0x20;
 
-  while (index < len) {
-    int b, shift = 0, result = 0;
-    do {
-      b = encoded.codeUnitAt(index++) - 63;
-      result |= (b & 0x1f) << shift;
-      shift += 5;
-    } while (b >= 0x20);
-    int dlat = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-    lat += dlat;
-
-    shift = 0;
-    result = 0;
-    do {
-      b = encoded.codeUnitAt(index++) - 63;
-      result |= (b & 0x1f) << shift;
-      shift += 5;
-    } while (b >= 0x20);
-    int dlng = ((result & 1) != 0 ? ~(result >> 1) : (result >> 1));
-    lng += dlng;
-    LatLng p = new LatLng((lat / 1E5).toDouble(), (lng / 1E5).toDouble());
-    poly.add(p);
+  var iter = encodedValue.runes.iterator;
+  var parts = [];
+  var part = <int>[];
+  while (iter.moveNext()) {
+    var byte = iter.current - 63;
+    part.add(byte & mask);
+    // debugPrint(iter.current.toString());
+    if ((byte & 0x20) != 0x20) {
+      // debugPrint('break');
+      parts.add(part);
+      part = [];
+    }
   }
+  if (part.isNotEmpty) {
+    parts.add(part);
+  }
+
+  var lastLat = 0.0;
+  var lastLng = 0.0;
+  var count = 0;
+
+  for (var p in parts) {
+    var value = 0;
+    for (var byte in p.reversed) {
+      value = (value << 5) | byte;
+    }
+    var invert = (value & 1) == 1;
+    value = value >> 1;
+    if (invert) {
+      value = -value;
+    }
+    var result = value.toDouble() / 1E5;
+
+    if (count % 2 == 0) {
+      lastLat += result;
+    } else {
+      lastLng += result;
+      // debugPrint('($lastLat, $lastLng)');
+      poly.add(new LatLng(lastLat, lastLng));
+    }
+    count++;
+  }
+
   return poly;
 }
 
@@ -179,8 +199,8 @@ class MapData {
   double percentComplete;
   List<SegmentSummary> completedSegs = [];
   List<SegmentSummary> remainingSegs = [];
-  Color completedSegColor = Colors.orange;
-  Color remainingSegColor = Colors.black45;
+  Color completedSegColor = Colors.blue;
+  Color remainingSegColor = Colors.redAccent;
 }
 
 // ----
