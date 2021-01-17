@@ -1,5 +1,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.sphericalchickens.osmp_project">
+   <uses-permission android:name="android.permission.INTERNET" />
    <application
         android:label="osmp_project"
         android:icon="@mipmap/ic_launcher">
