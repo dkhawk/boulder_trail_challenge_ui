@@ -176,7 +176,10 @@ List<LatLng> _buildPolyLineForMap(String encodedValue) {
     var invert = (value & 1) == 1;
     value = value >> 1;
     if (invert) {
-      value = -value;
+      // value = -value;
+      // this should be the ~ operator (rather than negative) to invert the encoding of the int but unfortunately
+      // cannot get ~ to work correctly on Chrome w/o jumping through some hoops
+      value = (~BigInt.from(value)).toInt();
     }
     var result = value.toDouble() / 1E5;
 
