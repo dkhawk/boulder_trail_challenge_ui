@@ -9,6 +9,9 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
 
+const GeographicLib = require("geographiclib");
+var geod = GeographicLib.Geodesic.WGS84, r;
+
 // const Gpx = require('gpx-parser-builder');
 // import Gpx from "gpx-parser-builder";
 
@@ -28,14 +31,9 @@ const escapeHtml = require('escape-html');
 
 const testActivity = require('./testActivity.json');
 
-// const gpxParser = require('./GPXParser.js');
-
 var rp = require('request-promise');
 
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//     functions.logger.info("Hello logs!", {structuredData: true});
-//     response.send("Hello from Firebase!");
-// });
+var segmentData = {};
 
 const stravaApiCredentials = {
     client_id: '43792',
@@ -468,7 +466,7 @@ function candidateSegments(activity) {
 	}
     });
 
-    return segSet;
+    return [...segSet];
 }
 
 function locationToCoordinates(location) {
@@ -479,6 +477,20 @@ function locationToCoordinates(location) {
 }
 
 function processActivity(activity) {
+    var locs = decode('_p~iF~ps|U_ulLnnqC_mqNvxq`@');
+    console.log(locs);
+
+      //   new LatLng(38.5, -120.2),
+      //   new LatLng(40.7, -120.95),
+      //   new LatLng(43.252, -126.453)
+
+    return;
+
+    var locations = getSegmentLocations('231-104-101');
+    console.log(locations);
+
+    return;
+
     var segments = candidateSegments(activity);
 
     // console.log(segments);
@@ -486,6 +498,147 @@ function processActivity(activity) {
     var scores = scoreSegments(activity, segments);
 }
 
-function scoreSegments(activity, segments) {
+function getSegmentLocations(segmentId) {
+    var locations = segmentData[segmentId];
+    if (locations) {
+	return locations;
+    }
+
+    var encoded = encodedSegments[segmentId].encodedLocations;
+
+    console.log(`Have to decode segment: ${encoded}`);
+
+    locations = decode(encoded);
+}
+
+function decode(encoded) {
     
+}
+
+function scoreSegments(activity, segments) {
+    // Calculate the bounds of the activity
+    // console.log(activity);
+
+    var bounds = boundsForLocations(activity);
+
+    var llGrid = new LatLngGrid(bounds);
+    // console.log(llGrid);
+
+    var tiles = new Set(activity.map(location => llGrid.locationToTileCoordinates(location).toString()));
+    // console.log(tiles);
+    console.log(`tiles size: ${tiles.size}`);
+    var fatTiles = new Set();
+
+    for (let tile of tiles) {
+	var neighbors = getNeighbors(tile);
+	for (let neighbor of neighbors) {
+	    fatTiles.add(neighbor.toString());
+	}
+    }
+
+    console.log(`fatTiles size: ${fatTiles.size}`);
+
+    console.log(`segments: ${segments.size}`);
+    console.log(`segment 1: ${segments[0]}`);
+
+    console.log(`seg data:  ${encodedSegments[segments[0]].name}`);
+}
+
+
+class LatLngBounds {
+    constructor(minLat, minLng, maxLat, maxLng) {
+	this.minLat = minLat;
+	this.minLng = minLng;
+	this.maxLat = maxLat;
+	this.maxLng = maxLng;
+
+	// southwest to northwest
+	r = geod.Inverse(minLat, minLng, maxLat, minLng);
+	this.latSpanMeters = r.s12;
+
+	// southwest to southeast
+	r = geod.Inverse(minLat, minLng, minLat, maxLng);
+	this.lngSpanMeters = r.s12;
+    }
+
+    getLatitudeSpanMeters() {
+	return this.latSpanMeters;
+    }
+
+    getLongtitudeSpanMeters() {
+	return this.lngSpanMeters;
+    }
+}
+
+function boundsForLocations(locations) {
+    var lats = locations.map(l => l[0]);
+    var lngs = locations.map(l => l[1]);
+
+    return new LatLngBounds(Math.min(...lats), Math.min(...lngs), Math.max(...lats), Math.max(...lngs));
+}
+
+class LatLngGrid {
+    constructor(bounds) {
+	const cellSizeMeters = 15;
+
+	var latMeters = bounds.getLatitudeSpanMeters();
+	var lngMeters = bounds.getLongtitudeSpanMeters();
+
+	var northSouthDegrees = bounds.maxLat - bounds.minLat;
+	var eastWestDegrees = bounds.maxLng - bounds.minLng;
+	
+	this.nsNumCells = Math.ceil(latMeters / cellSizeMeters);
+	this.ewNumCells = Math.ceil(lngMeters / cellSizeMeters);
+
+	var latDegreesPerCell = northSouthDegrees / this.nsNumCells;
+	var lngDegreesPerCell = eastWestDegrees / this.ewNumCells;
+
+	// This is to make the grid one cell bigger in each dimension
+
+	this.minLat = bounds.minLat - latDegreesPerCell;
+	var maxLat = bounds.maxLat + latDegreesPerCell;
+	this.minLng = bounds.minLng - lngDegreesPerCell;
+	var maxLng = bounds.maxLng + lngDegreesPerCell;
+
+	this.latDegrees = maxLat - this.minLat;
+	this.lngDegrees = maxLng - this.minLng;
+    }
+
+    locationToTileCoordinates(location) {
+	var y = Math.round(((location[0] - this.minLat) / this.latDegrees) * this.nsNumCells);
+	var x = Math.round(((location[1] - this.minLng) / this.lngDegrees) * this.ewNumCells);
+	return new Coordinates(x, y);
+    }
+}
+
+class Coordinates {
+    constructor(x, y) {
+	this.x = x;
+	this.y = y;
+    }
+
+    toString() {
+	return `${this.x},${this.y}`;
+    }
+
+    getNeighbors() {
+	var y;
+	var x;
+	var result = [];
+	for (y = this.y - 1;  y <= this.y + 1; ++y) {
+	    for (x = this.x - 1;  x <= this.x + 1; ++x) {
+		result.push(new Coordinates(x, y));
+	    }
+	}
+	return result;
+    }
+}
+
+function getNeighbors(locString) {
+    var strs = locString.split(",");
+    var x = parseInt(strs[0]);
+    var y = parseInt(strs[1]);
+
+    var c = new Coordinates(x, y);
+    return c.getNeighbors();
 }
