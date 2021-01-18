@@ -2,7 +2,7 @@
     package="com.sphericalchickens.osmp_project">
    <uses-permission android:name="android.permission.INTERNET" />
    <application
-        android:label="osmp_project"
+        android:label="OSMP Challenge"
         android:icon="@mipmap/ic_launcher">
         <activity
             android:name=".MainActivity"
