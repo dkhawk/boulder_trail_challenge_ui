@@ -512,7 +512,56 @@ function getSegmentLocations(segmentId) {
 }
 
 function decode(encoded) {
-    
+    const mask = ~0x20;
+
+    var part = [];
+    var parts = [];
+    for (var c of encoded) {
+	var b = c.charCodeAt() - 63;
+	part.push(b & mask);
+	if ((b & 0x20) != 0x20) {
+	    parts.push(part);
+	    part = [];
+	}
+    }
+
+    if (part.length) {
+	parts.push(part);
+    }
+
+    var lastLat = 0.0;
+    var lastLng = 0.0;
+    var count = 0;
+
+    var polyline = [];
+
+    for (var p of parts) {
+	let value = 0;
+	let reversed = p.reverse();
+	for (let b of reversed) {
+	    value = (value << 5) | b;
+	}
+	var invert = (value & 1) == 1;
+	value = value >> 1;
+	if (invert) {
+	    // value = -value;
+	    // this should be the ~ operator (rather than negative) to invert the encoding of the int but unfortunately
+	    // cannot get ~ to work correctly on Chrome w/o jumping through some hoops
+	    value = Number(~BigInt(value));
+	}
+	var result = value / 1E5;
+
+	if (count % 2 == 0) {
+	    lastLat += result;
+	} else {
+	    lastLng += result;
+	    // debugPrint('($lastLat, $lastLng)');
+	    polyline.push({lat: lastLat, lng: lastLng});
+	}
+	count++;
+    }
+
+    return polyline;
 }
 
 function scoreSegments(activity, segments) {
