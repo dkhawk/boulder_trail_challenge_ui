@@ -33,12 +33,18 @@ const testActivity = require('./testActivity.json');
 
 var rp = require('request-promise');
 
+const MATCH_THRESHOLD = 0.90;
+
 var segmentData = {};
+
+var trailSegments = {};
 
 const stravaApiCredentials = {
     client_id: '43792',
     client_secret: 'b5cc7b11df2bf0390406f4bcc88592f7944880e9',
 };
+
+const db = admin.firestore();
 
 var btcApi = {
     getStravaInfo: async (athleteId) => {
@@ -65,6 +71,16 @@ var btcApi = {
 		throw new Error('Failed to get strava token for athlete');
 	    }
 	})},
+    getTrailStats: async (athleteId) => {
+	const trailStats = await db.collection('athletes').doc(athleteId).collection('trailStats').get();
+	
+	var results = {};
+	trailStats.forEach(stats => {
+	    results[stats.id] = stats.data();
+	});
+
+	return results;
+    },
 }
 
 var stravaApi = {
@@ -402,12 +418,13 @@ exports.getActivities = functions.https.onRequest(async (request, response) => {
 
 exports.processActivity = functions.https.onRequest(async (request, response) => {
     // Check the token expiration first?
-    const btcAthlete = request.query.athleteId;
+    const athleteId = request.query.athleteId;
     const activityId = request.query.activityId;
+    const timestamp = admin.firestore.Timestamp.fromDate(new Date('January 20, 2021'));
 
     // fetchActivity(btcAthlete, activityId);
 
-    processActivity(testActivity);
+    await processActivity(testActivity, athleteId, activityId, timestamp);
 
     response.send('Done\n');
 });
@@ -476,26 +493,138 @@ function locationToCoordinates(location) {
     return `${x},${y}`;
 }
 
-function processActivity(activity) {
-    var locs = decode('_p~iF~ps|U_ulLnnqC_mqNvxq`@');
-    console.log(locs);
-
-      //   new LatLng(38.5, -120.2),
-      //   new LatLng(40.7, -120.95),
-      //   new LatLng(43.252, -126.453)
-
-    return;
-
-    var locations = getSegmentLocations('231-104-101');
-    console.log(locations);
-
-    return;
+async function processActivity(activity, athleteId, activityId, timestamp) {
+    // Load trail data from database
+    let trailStats = await btcApi.getTrailStats(athleteId);
 
     var segments = candidateSegments(activity);
+    var finishedSegments = scoreSegments(activity, segments);
+    let completedSegments = [];
+    if (finishedSegments.length > 0) {
+	for (let segmentId of finishedSegments) {
+	    completedSegments.push(mapToCompletedSegment(segmentId, activityId, timestamp));
+	}
+    }
 
-    // console.log(segments);
+    for (let csId of completedSegments) {
+	console.log(JSON.stringify(csId));
+    }
 
-    var scores = scoreSegments(activity, segments);
+    calculateCompletedStats(completedSegments, trailStats);
+}
+
+async function calculateCompletedStats(completedSegments, trailStats) {
+
+    // =============================
+    // Save the completed segments to the database!!!
+    // =============================
+    
+    let updatedTrails = {};
+    completedSegments.forEach(segment => {
+	// Look up the trail 
+	var exisiting = trailStats[segment.trailId];
+	// "517":{"name":"KOA Lake","length":113,"percentDone":0,"remaining":["517-676-677"],"completed":[],"completedDistance":0}
+	if (!exisiting) {
+	    var trailSegments = getSegmentsForTrail(segment.trailId);
+	    let t = {
+		name: segment.trailName,
+		length: -1,  // TODO
+		percentDone: 0,
+		remaining: [...trailSegments],
+		completed: [segmentId],
+		completedDistance: 0,
+	    };
+	    trailStats[segment.trailId] = t;
+	}
+
+	// Update
+	const index = exisiting.remaining.indexOf(segment.segmentId);
+	if (index > -1) {
+	    exisiting.remaining.splice(index, 1);
+	}
+	const ci = exisiting.completed.indexOf(segment.segmentId);
+	if (ci < 0) {
+	    exisiting.completed.push(segment.segmentId);
+	}
+	trailStats[segment.trailId] = exisiting;
+	updatedTrails[segment.trailId] = exisiting;
+    });
+
+    console.log(JSON.stringify(updatedTrails));
+}
+
+function getSegmentsForTrail(trailId) {
+    let answer = trailSegments[trailId];
+    if (answer) {
+	return answer;
+    }
+
+    for (var segmentId in encodedSegments) {
+	// console.log('segmentId: ', JSON.stringify(segmentId));
+
+	let segment = encodedSegments[segmentId];
+
+	// console.log('segment: ', JSON.stringify(segment));
+	
+	let trail = trailSegments[segment.trailId] || [];
+	// console.log('trail: ', JSON.stringify(trail));
+	trail.push(segment.segmentId);
+	// console.log('trail: ', JSON.stringify(trail));
+	trailSegments[segment.trailId] = trail;
+	// console.log('trailSegments: ', JSON.stringify(trailSegments));
+	// break;
+    };
+
+    return trailSegments[trailId];
+}
+
+  // fun calculateCompletedStats(completedSegments: List<CompletedSegment>): TrailsSummary {
+  //   val completedIds = completedSegments.map { it.segmentId }.toSet()
+
+  //   var totalDistance = 0
+  //   var completedDistance = 0
+
+  //   val trailStats = trails.map { (trailId, trail) ->
+  //     val data = trail.segments.partition { completedIds.contains(it) }
+  //     val distDone = data.first.sumBy { segments[it]?.length ?: 0 }
+  //     val percentDone = distDone.toDouble() / trail.length
+
+  //     totalDistance += trail.length
+  //     completedDistance += distDone
+
+  //     trailId to TrailStats(
+  //       name = trail.name,
+  //       length = trail.length,
+  //       completedDistance = distDone,
+  //       percentDone = percentDone,
+  //       completed = data.first,
+  //       remaining = data.second
+  //     )
+  //   }.toMap()
+
+  //   val totalPercentDone = completedDistance.toDouble() / totalDistance
+
+  //   return TrailsSummary(trailStats = trailStats,
+  //                        totalDistance = totalDistance,
+  //                        completedDistance = completedDistance,
+  //                        percentDone = totalPercentDone
+  //   )
+  // }
+
+
+function mapToCompletedSegment(segmentId, activityId, timestamp) {
+    var s = JSON.stringify(segmentId);
+    let segment = encodedSegments[segmentId];
+    let completedSegment = {
+	activityId: activityId,
+	segmentId: segmentId,
+	trailId: segment.trailId,
+	trailName: segment.name,
+	timestamp: timestamp,
+	length: segment.length,
+    };
+
+    return completedSegment;
 }
 
 function getSegmentLocations(segmentId) {
@@ -505,10 +634,9 @@ function getSegmentLocations(segmentId) {
     }
 
     var encoded = encodedSegments[segmentId].encodedLocations;
-
-    console.log(`Have to decode segment: ${encoded}`);
-
     locations = decode(encoded);
+    segmentData[segmentId] = locations;
+    return locations;
 }
 
 function decode(encoded) {
@@ -556,7 +684,8 @@ function decode(encoded) {
 	} else {
 	    lastLng += result;
 	    // debugPrint('($lastLat, $lastLng)');
-	    polyline.push({lat: lastLat, lng: lastLng});
+	    // polyline.push({lat: lastLat, lng: lastLng});
+	    polyline.push([lastLat, lastLng]);
 	}
 	count++;
     }
@@ -566,16 +695,9 @@ function decode(encoded) {
 
 function scoreSegments(activity, segments) {
     // Calculate the bounds of the activity
-    // console.log(activity);
-
     var bounds = boundsForLocations(activity);
-
     var llGrid = new LatLngGrid(bounds);
-    // console.log(llGrid);
-
     var tiles = new Set(activity.map(location => llGrid.locationToTileCoordinates(location).toString()));
-    // console.log(tiles);
-    console.log(`tiles size: ${tiles.size}`);
     var fatTiles = new Set();
 
     for (let tile of tiles) {
@@ -585,12 +707,23 @@ function scoreSegments(activity, segments) {
 	}
     }
 
-    console.log(`fatTiles size: ${fatTiles.size}`);
+    var completedSegments = [];
+    for (let segmentId of segments) {
+	var locations = getSegmentLocations(segmentId);
+	var count = 0;
+	for (let location of locations) {
+	    let coords = llGrid.locationToTileCoordinates(location).toString();
+	    if (fatTiles.has(coords)) {
+		count++;
+	    }
+	}
 
-    console.log(`segments: ${segments.size}`);
-    console.log(`segment 1: ${segments[0]}`);
-
-    console.log(`seg data:  ${encodedSegments[segments[0]].name}`);
+	var score = (count * 1.0) / locations.length;
+	if (score >= MATCH_THRESHOLD) {
+	    completedSegments.push(segmentId);
+	}
+    }
+    return completedSegments;
 }
 
 
