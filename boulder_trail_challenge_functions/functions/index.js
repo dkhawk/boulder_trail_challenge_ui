@@ -48,7 +48,7 @@ const db = admin.firestore();
 
 var btcApi = {
     getStravaInfo: async (athleteId) => {
-    	return admin.firestore().collection('athletes').doc(athleteId).get().then(documentSnapshot => {
+    	return db.collection('athletes').doc(athleteId).get().then(documentSnapshot => {
     	    if (documentSnapshot.exists) {
     		var athlete = documentSnapshot.data();
     		var tokenInfo = athlete.tokenInfo;
@@ -80,6 +80,42 @@ var btcApi = {
 	});
 
 	return results;
+    },
+    updateStats: async (athleteId, updatedTrails, updatedStats) => {
+	// Get a new write batch
+	const batch = db.batch();
+
+	const athleteRef = db.collection('athletes').doc(athleteId);
+	const trailStatsRef =  athleteRef.collection('trailStats');
+
+	batch.update(athleteRef, {'overallStats': updatedStats});
+	for (let trailId in updatedTrails) {
+	    let trail = updatedTrails[trailId];
+	    let trailDoc = trailStatsRef.doc(trailId);
+	    batch.set(trailDoc, trail);
+	}
+
+	// Commit the batch
+	await batch.commit();
+    },
+    writeCompletedSegments: async (segments, athleteId, activityId, timestamp) => {
+	const batch = db.batch();
+	const athleteRef = db.collection('athletes').doc(athleteId);
+	const completedRef =  athleteRef.collection('completed');
+
+	segments.forEach(segment => {
+	    let completedSegment = {
+		activityId: activityId,
+		segmentId: segment.segmentId,
+		length: segment.length,
+		timestamp: timestamp,
+		trailId: segment.trailId,
+		trailName: segment.trailName,
+	    };
+	    let compDoc = completedRef.doc(segment.segmentId);
+	    batch.set(compDoc, completedSegment);
+	});
+	await batch.commit();
     },
 }
 
@@ -506,51 +542,64 @@ async function processActivity(activity, athleteId, activityId, timestamp) {
 	}
     }
 
-    for (let csId of completedSegments) {
-	console.log(JSON.stringify(csId));
-    }
+    var updatedTrails = await calculateCompletedStats(completedSegments, trailStats);
+    var updatedStats = calculateOverallStats(trailStats);
 
-    calculateCompletedStats(completedSegments, trailStats);
+    btcApi.updateStats(athleteId, updatedTrails, updatedStats);
+    btcApi.writeCompletedSegments(completedSegments, athleteId, activityId, timestamp);
+}
+
+function calculateOverallStats(trailStats) {
+    var totalDistance = 0;
+    var completedDistance = 0;
+    for (let trailId in trailStats) {
+	let trail = trailStats[trailId];
+	totalDistance += trail.length;
+	completedDistance += trail.completedDistance;
+    };
+    let percent = (completedDistance * 1.0) / totalDistance;
+
+    return {
+	completedDistance: completedDistance,
+	totalDistance: totalDistance,
+	percentDone: percent,
+    };
 }
 
 async function calculateCompletedStats(completedSegments, trailStats) {
-
-    // =============================
-    // Save the completed segments to the database!!!
-    // =============================
-    
     let updatedTrails = {};
     completedSegments.forEach(segment => {
 	// Look up the trail 
-	var exisiting = trailStats[segment.trailId];
-	// "517":{"name":"KOA Lake","length":113,"percentDone":0,"remaining":["517-676-677"],"completed":[],"completedDistance":0}
-	if (!exisiting) {
-	    var trailSegments = getSegmentsForTrail(segment.trailId);
-	    let t = {
+	var stats = trailStats[segment.trailId];
+	if (!stats) {
+	    var trail = getSegmentsForTrail(segment.trailId);
+	    stats = {
 		name: segment.trailName,
-		length: -1,  // TODO
-		percentDone: 0,
-		remaining: [...trailSegments],
+		length: trail.length,
+		remaining: [...trail.segments],
 		completed: [segmentId],
 		completedDistance: 0,
+		percentDone: 0,
 	    };
-	    trailStats[segment.trailId] = t;
+	    trailStats[segment.trailId] = stats;
 	}
 
 	// Update
-	const index = exisiting.remaining.indexOf(segment.segmentId);
+	const index = stats.remaining.indexOf(segment.segmentId);
 	if (index > -1) {
-	    exisiting.remaining.splice(index, 1);
+	    stats.remaining.splice(index, 1);
 	}
-	const ci = exisiting.completed.indexOf(segment.segmentId);
+	const ci = stats.completed.indexOf(segment.segmentId);
 	if (ci < 0) {
-	    exisiting.completed.push(segment.segmentId);
+	    stats.completed.push(segment.segmentId);
+	    stats.completedDistance += segment.length;
+	    stats.percentDone = (stats.completedDistance * 1.0) / stats.length;
 	}
-	trailStats[segment.trailId] = exisiting;
-	updatedTrails[segment.trailId] = exisiting;
+	trailStats[segment.trailId] = stats;
+	updatedTrails[segment.trailId] = stats;
     });
 
-    console.log(JSON.stringify(updatedTrails));
+    return updatedTrails;
 }
 
 function getSegmentsForTrail(trailId) {
@@ -559,61 +608,25 @@ function getSegmentsForTrail(trailId) {
 	return answer;
     }
 
+    var trails = [];
     for (var segmentId in encodedSegments) {
-	// console.log('segmentId: ', JSON.stringify(segmentId));
-
 	let segment = encodedSegments[segmentId];
+	let trail = trails[segment.trailId] || {
+	    trailId: segment.trailId,
+	    name: segment.trailName,
+	    segments: [],
+	    length: 0,
+	};
 
-	// console.log('segment: ', JSON.stringify(segment));
-	
-	let trail = trailSegments[segment.trailId] || [];
-	// console.log('trail: ', JSON.stringify(trail));
-	trail.push(segment.segmentId);
-	// console.log('trail: ', JSON.stringify(trail));
-	trailSegments[segment.trailId] = trail;
-	// console.log('trailSegments: ', JSON.stringify(trailSegments));
-	// break;
+	trail.segments.push(segment.segmentId);
+	trail.length += segment.length;
+	segments[segment.trailId] = trail;
     };
 
     return trailSegments[trailId];
 }
 
-  // fun calculateCompletedStats(completedSegments: List<CompletedSegment>): TrailsSummary {
-  //   val completedIds = completedSegments.map { it.segmentId }.toSet()
-
-  //   var totalDistance = 0
-  //   var completedDistance = 0
-
-  //   val trailStats = trails.map { (trailId, trail) ->
-  //     val data = trail.segments.partition { completedIds.contains(it) }
-  //     val distDone = data.first.sumBy { segments[it]?.length ?: 0 }
-  //     val percentDone = distDone.toDouble() / trail.length
-
-  //     totalDistance += trail.length
-  //     completedDistance += distDone
-
-  //     trailId to TrailStats(
-  //       name = trail.name,
-  //       length = trail.length,
-  //       completedDistance = distDone,
-  //       percentDone = percentDone,
-  //       completed = data.first,
-  //       remaining = data.second
-  //     )
-  //   }.toMap()
-
-  //   val totalPercentDone = completedDistance.toDouble() / totalDistance
-
-  //   return TrailsSummary(trailStats = trailStats,
-  //                        totalDistance = totalDistance,
-  //                        completedDistance = completedDistance,
-  //                        percentDone = totalPercentDone
-  //   )
-  // }
-
-
 function mapToCompletedSegment(segmentId, activityId, timestamp) {
-    var s = JSON.stringify(segmentId);
     let segment = encodedSegments[segmentId];
     let completedSegment = {
 	activityId: activityId,
@@ -683,8 +696,6 @@ function decode(encoded) {
 	    lastLat += result;
 	} else {
 	    lastLng += result;
-	    // debugPrint('($lastLat, $lastLng)');
-	    // polyline.push({lat: lastLat, lng: lastLng});
 	    polyline.push([lastLat, lastLng]);
 	}
 	count++;
