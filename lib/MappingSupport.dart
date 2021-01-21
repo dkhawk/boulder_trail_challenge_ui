@@ -45,6 +45,67 @@ Widget displayMap(BuildContext context, TrailSummary trail) {
   return _NoDataScreen();
 }
 
+// ----
+Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData) {
+  double percentDone = inputMapSummaryData.percentComplete;
+
+  Navigator.push(context, MaterialPageRoute<void>(
+    builder: (BuildContext context) {
+      return Scaffold(
+        appBar: AppBar(
+          title: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: <Widget>[
+              Text("Overall completion"),
+              Text((percentDone * 100).toStringAsFixed(2) + '%',
+                  style: TextStyle(
+                    fontSize: 12.0,
+                  )),
+              LinearProgressIndicator(
+                value: percentDone,
+                backgroundColor: inputMapSummaryData.remainingSegColor,
+                valueColor: new AlwaysStoppedAnimation<Color>(inputMapSummaryData.completedSegColor),
+                minHeight: 3,
+              )
+            ],
+          ),
+        ),
+        body: _LoadDisplayMapSummaryData(inputMapSummaryData),
+      );
+    },
+  ));
+
+  return _NoDataScreen();
+}
+
+//----
+class _LoadDisplayMapSummaryData extends StatelessWidget {
+  _LoadDisplayMapSummaryData(this.inputMapSummaryData);
+  final MapData inputMapSummaryData;
+
+  @override
+  Widget build(BuildContext context) {
+    Stream theStream = FirebaseFirestore.instance.collection('athletes').doc("dkhawk@gmail.com").collection("trailStats").snapshots();
+    return StreamBuilder<QuerySnapshot>(
+      stream: theStream,
+      builder: (context, snapshot) {
+        if (!snapshot.hasData) return LinearProgressIndicator();
+
+        // for each trail add all the completed and remaining segments to an overallTrailSummary
+        TrailSummary overallTrailSummary = new TrailSummary();
+        snapshot.data.docs.forEach((DocumentSnapshot document) {
+          TrailSummary theSummaryForTheTrail = TrailSummary.fromSnapshot(document);
+          overallTrailSummary.completedSegs.addAll(theSummaryForTheTrail.completedSegs);
+          overallTrailSummary.remainingSegs.addAll(theSummaryForTheTrail.remainingSegs);
+        });
+
+        return _LoadDisplayMapData(overallTrailSummary, inputMapSummaryData);
+      },
+    );
+  }
+}
+
 //----
 class _LoadDisplayMapData extends StatelessWidget {
   _LoadDisplayMapData(this.trail, this.inputMapData);
@@ -53,8 +114,16 @@ class _LoadDisplayMapData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Stream theStream;
+    if (inputMapData.isMapSummary) {
+      // get all the segments
+      theStream = FirebaseFirestore.instance.collection('segments').snapshots();
+    } else {
+      // get only the segments for the given trail name
+      theStream = FirebaseFirestore.instance.collection('segments').where('name', isEqualTo: trail.name).snapshots();
+    }
     return StreamBuilder<QuerySnapshot>(
-      stream: FirebaseFirestore.instance.collection('segments').where('name', isEqualTo: trail.name).snapshots(),
+      stream: theStream,
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
         return _populateMapData(context, trail, inputMapData, snapshot.data.docs);
@@ -204,6 +273,8 @@ class MapData {
   List<SegmentSummary> remainingSegs = [];
   Color completedSegColor = Colors.blue;
   Color remainingSegColor = Colors.redAccent;
+
+  bool isMapSummary = false;
 }
 
 // ----

@@ -105,6 +105,10 @@ class TrailsProgressWidget extends StatelessWidget {
       value: percent,
     );
 
+    MapData inputMapSummaryData = new MapData();
+    inputMapSummaryData.isMapSummary = true;
+    inputMapSummaryData.percentComplete = percent;
+
     // return Text(
     //     "Overall completion: " + (percent * 100).toStringAsFixed(2) + "%");
     return Padding(
@@ -125,8 +129,16 @@ class TrailsProgressWidget extends StatelessWidget {
                     " of " +
                     total +
                     " miles"),
-                trailing: Text((percent * 100).toStringAsFixed(2) + "%"),
-                // onTap: () => record.reference.updateData({'votes': FieldValue.increment(1)})
+                subtitle: Text((percent * 100).toStringAsFixed(2) + "%"),
+                trailing: IconButton(
+                  icon: Icon(
+                    Icons.done_all,
+                    color: Colors.blue,
+                  ),
+                  padding: EdgeInsets.all(0),
+                  alignment: Alignment.centerRight,
+                  onPressed: () => displayMapSummary(context, inputMapSummaryData),
+                ),
               ),
               progress,
             ],
@@ -217,14 +229,16 @@ class TrailsProgressWidget extends StatelessWidget {
 }
 
 class TrailSummary {
-  final String trailId;
-  final String name;
-  final int length;
-  final int completedDistance;
-  final double percentDone;
-  final List completedSegs;
-  final List remainingSegs;
-  final DocumentReference reference;
+  TrailSummary();
+
+  String trailId = '';
+  String name = '';
+  int length = -1;
+  int completedDistance = -1;
+  var percentDone = -1.0;
+  List completedSegs = [];
+  List remainingSegs = [];
+  DocumentReference reference;
   // completed
   // remaining
 
@@ -237,7 +251,7 @@ class TrailSummary {
         name = map['name'],
         length = map['length'],
         completedDistance = map['completedDistance'],
-        percentDone = map['percentDone'],
+        percentDone = map['percentDone'].toDouble(),
         completedSegs = map['completed'],
         remainingSegs = map['remaining'];
 
