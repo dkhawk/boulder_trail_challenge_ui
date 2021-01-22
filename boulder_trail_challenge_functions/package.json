@@ -2,6 +2,7 @@
   "dependencies": {
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.13.0",
+    "geographiclib": "^1.51.0",
     "request-promise": "^4.2.6"
   }
 }

@@ -9,6 +9,9 @@ const functions = require('firebase-functions');
 const admin = require('firebase-admin');
 admin.initializeApp();
 
+const GeographicLib = require("geographiclib");
+var geod = GeographicLib.Geodesic.WGS84, r;
+
 // const Gpx = require('gpx-parser-builder');
 // import Gpx from "gpx-parser-builder";
 
@@ -28,23 +31,24 @@ const escapeHtml = require('escape-html');
 
 const testActivity = require('./testActivity.json');
 
-// const gpxParser = require('./GPXParser.js');
-
 var rp = require('request-promise');
 
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//     functions.logger.info("Hello logs!", {structuredData: true});
-//     response.send("Hello from Firebase!");
-// });
+const MATCH_THRESHOLD = 0.90;
+
+var segmentData = {};
+
+var trailSegments = {};
 
 const stravaApiCredentials = {
     client_id: '43792',
     client_secret: 'b5cc7b11df2bf0390406f4bcc88592f7944880e9',
 };
 
+const db = admin.firestore();
+
 var btcApi = {
     getStravaInfo: async (athleteId) => {
-    	return admin.firestore().collection('athletes').doc(athleteId).get().then(documentSnapshot => {
+    	return db.collection('athletes').doc(athleteId).get().then(documentSnapshot => {
     	    if (documentSnapshot.exists) {
     		var athlete = documentSnapshot.data();
     		var tokenInfo = athlete.tokenInfo;
@@ -67,6 +71,52 @@ var btcApi = {
 		throw new Error('Failed to get strava token for athlete');
 	    }
 	})},
+    getTrailStats: async (athleteId) => {
+	const trailStats = await db.collection('athletes').doc(athleteId).collection('trailStats').get();
+	
+	var results = {};
+	trailStats.forEach(stats => {
+	    results[stats.id] = stats.data();
+	});
+
+	return results;
+    },
+    updateStats: async (athleteId, updatedTrails, updatedStats) => {
+	// Get a new write batch
+	const batch = db.batch();
+
+	const athleteRef = db.collection('athletes').doc(athleteId);
+	const trailStatsRef =  athleteRef.collection('trailStats');
+
+	batch.update(athleteRef, {'overallStats': updatedStats});
+	for (let trailId in updatedTrails) {
+	    let trail = updatedTrails[trailId];
+	    let trailDoc = trailStatsRef.doc(trailId);
+	    batch.set(trailDoc, trail);
+	}
+
+	// Commit the batch
+	await batch.commit();
+    },
+    writeCompletedSegments: async (segments, athleteId, activityId, timestamp) => {
+	const batch = db.batch();
+	const athleteRef = db.collection('athletes').doc(athleteId);
+	const completedRef =  athleteRef.collection('completed');
+
+	segments.forEach(segment => {
+	    let completedSegment = {
+		activityId: activityId,
+		segmentId: segment.segmentId,
+		length: segment.length,
+		timestamp: timestamp,
+		trailId: segment.trailId,
+		trailName: segment.trailName,
+	    };
+	    let compDoc = completedRef.doc(segment.segmentId);
+	    batch.set(compDoc, completedSegment);
+	});
+	await batch.commit();
+    },
 }
 
 var stravaApi = {
@@ -404,12 +454,13 @@ exports.getActivities = functions.https.onRequest(async (request, response) => {
 
 exports.processActivity = functions.https.onRequest(async (request, response) => {
     // Check the token expiration first?
-    const btcAthlete = request.query.athleteId;
+    const athleteId = request.query.athleteId;
     const activityId = request.query.activityId;
+    const timestamp = admin.firestore.Timestamp.fromDate(new Date('January 20, 2021'));
 
     // fetchActivity(btcAthlete, activityId);
 
-    processActivity(testActivity);
+    await processActivity(testActivity, athleteId, activityId, timestamp);
 
     response.send('Done\n');
 });
@@ -468,7 +519,7 @@ function candidateSegments(activity) {
 	}
     });
 
-    return segSet;
+    return [...segSet];
 }
 
 function locationToCoordinates(location) {
@@ -478,14 +529,309 @@ function locationToCoordinates(location) {
     return `${x},${y}`;
 }
 
-function processActivity(activity) {
+async function processActivity(activity, athleteId, activityId, timestamp) {
+    // Load trail data from database
+    let trailStats = await btcApi.getTrailStats(athleteId);
+
     var segments = candidateSegments(activity);
+    var finishedSegments = scoreSegments(activity, segments);
+    let completedSegments = [];
+    if (finishedSegments.length > 0) {
+	for (let segmentId of finishedSegments) {
+	    completedSegments.push(mapToCompletedSegment(segmentId, activityId, timestamp));
+	}
+    }
 
-    // console.log(segments);
+    var updatedTrails = await calculateCompletedStats(completedSegments, trailStats);
+    var updatedStats = calculateOverallStats(trailStats);
 
-    var scores = scoreSegments(activity, segments);
+    btcApi.updateStats(athleteId, updatedTrails, updatedStats);
+    btcApi.writeCompletedSegments(completedSegments, athleteId, activityId, timestamp);
+}
+
+function calculateOverallStats(trailStats) {
+    var totalDistance = 0;
+    var completedDistance = 0;
+    for (let trailId in trailStats) {
+	let trail = trailStats[trailId];
+	totalDistance += trail.length;
+	completedDistance += trail.completedDistance;
+    };
+    let percent = (completedDistance * 1.0) / totalDistance;
+
+    return {
+	completedDistance: completedDistance,
+	totalDistance: totalDistance,
+	percentDone: percent,
+    };
+}
+
+async function calculateCompletedStats(completedSegments, trailStats) {
+    let updatedTrails = {};
+    completedSegments.forEach(segment => {
+	// Look up the trail 
+	var stats = trailStats[segment.trailId];
+	if (!stats) {
+	    var trail = getSegmentsForTrail(segment.trailId);
+	    stats = {
+		name: segment.trailName,
+		length: trail.length,
+		remaining: [...trail.segments],
+		completed: [segmentId],
+		completedDistance: 0,
+		percentDone: 0,
+	    };
+	    trailStats[segment.trailId] = stats;
+	}
+
+	// Update
+	const index = stats.remaining.indexOf(segment.segmentId);
+	if (index > -1) {
+	    stats.remaining.splice(index, 1);
+	}
+	const ci = stats.completed.indexOf(segment.segmentId);
+	if (ci < 0) {
+	    stats.completed.push(segment.segmentId);
+	    stats.completedDistance += segment.length;
+	    stats.percentDone = (stats.completedDistance * 1.0) / stats.length;
+	}
+	trailStats[segment.trailId] = stats;
+	updatedTrails[segment.trailId] = stats;
+    });
+
+    return updatedTrails;
+}
+
+function getSegmentsForTrail(trailId) {
+    let answer = trailSegments[trailId];
+    if (answer) {
+	return answer;
+    }
+
+    var trails = [];
+    for (var segmentId in encodedSegments) {
+	let segment = encodedSegments[segmentId];
+	let trail = trails[segment.trailId] || {
+	    trailId: segment.trailId,
+	    name: segment.trailName,
+	    segments: [],
+	    length: 0,
+	};
+
+	trail.segments.push(segment.segmentId);
+	trail.length += segment.length;
+	segments[segment.trailId] = trail;
+    };
+
+    return trailSegments[trailId];
+}
+
+function mapToCompletedSegment(segmentId, activityId, timestamp) {
+    let segment = encodedSegments[segmentId];
+    let completedSegment = {
+	activityId: activityId,
+	segmentId: segmentId,
+	trailId: segment.trailId,
+	trailName: segment.name,
+	timestamp: timestamp,
+	length: segment.length,
+    };
+
+    return completedSegment;
+}
+
+function getSegmentLocations(segmentId) {
+    var locations = segmentData[segmentId];
+    if (locations) {
+	return locations;
+    }
+
+    var encoded = encodedSegments[segmentId].encodedLocations;
+    locations = decode(encoded);
+    segmentData[segmentId] = locations;
+    return locations;
+}
+
+function decode(encoded) {
+    const mask = ~0x20;
+
+    var part = [];
+    var parts = [];
+    for (var c of encoded) {
+	var b = c.charCodeAt() - 63;
+	part.push(b & mask);
+	if ((b & 0x20) != 0x20) {
+	    parts.push(part);
+	    part = [];
+	}
+    }
+
+    if (part.length) {
+	parts.push(part);
+    }
+
+    var lastLat = 0.0;
+    var lastLng = 0.0;
+    var count = 0;
+
+    var polyline = [];
+
+    for (var p of parts) {
+	let value = 0;
+	let reversed = p.reverse();
+	for (let b of reversed) {
+	    value = (value << 5) | b;
+	}
+	var invert = (value & 1) == 1;
+	value = value >> 1;
+	if (invert) {
+	    // value = -value;
+	    // this should be the ~ operator (rather than negative) to invert the encoding of the int but unfortunately
+	    // cannot get ~ to work correctly on Chrome w/o jumping through some hoops
+	    value = Number(~BigInt(value));
+	}
+	var result = value / 1E5;
+
+	if (count % 2 == 0) {
+	    lastLat += result;
+	} else {
+	    lastLng += result;
+	    polyline.push([lastLat, lastLng]);
+	}
+	count++;
+    }
+
+    return polyline;
 }
 
 function scoreSegments(activity, segments) {
-    
+    // Calculate the bounds of the activity
+    var bounds = boundsForLocations(activity);
+    var llGrid = new LatLngGrid(bounds);
+    var tiles = new Set(activity.map(location => llGrid.locationToTileCoordinates(location).toString()));
+    var fatTiles = new Set();
+
+    for (let tile of tiles) {
+	var neighbors = getNeighbors(tile);
+	for (let neighbor of neighbors) {
+	    fatTiles.add(neighbor.toString());
+	}
+    }
+
+    var completedSegments = [];
+    for (let segmentId of segments) {
+	var locations = getSegmentLocations(segmentId);
+	var count = 0;
+	for (let location of locations) {
+	    let coords = llGrid.locationToTileCoordinates(location).toString();
+	    if (fatTiles.has(coords)) {
+		count++;
+	    }
+	}
+
+	var score = (count * 1.0) / locations.length;
+	if (score >= MATCH_THRESHOLD) {
+	    completedSegments.push(segmentId);
+	}
+    }
+    return completedSegments;
+}
+
+
+class LatLngBounds {
+    constructor(minLat, minLng, maxLat, maxLng) {
+	this.minLat = minLat;
+	this.minLng = minLng;
+	this.maxLat = maxLat;
+	this.maxLng = maxLng;
+
+	// southwest to northwest
+	r = geod.Inverse(minLat, minLng, maxLat, minLng);
+	this.latSpanMeters = r.s12;
+
+	// southwest to southeast
+	r = geod.Inverse(minLat, minLng, minLat, maxLng);
+	this.lngSpanMeters = r.s12;
+    }
+
+    getLatitudeSpanMeters() {
+	return this.latSpanMeters;
+    }
+
+    getLongtitudeSpanMeters() {
+	return this.lngSpanMeters;
+    }
+}
+
+function boundsForLocations(locations) {
+    var lats = locations.map(l => l[0]);
+    var lngs = locations.map(l => l[1]);
+
+    return new LatLngBounds(Math.min(...lats), Math.min(...lngs), Math.max(...lats), Math.max(...lngs));
+}
+
+class LatLngGrid {
+    constructor(bounds) {
+	const cellSizeMeters = 15;
+
+	var latMeters = bounds.getLatitudeSpanMeters();
+	var lngMeters = bounds.getLongtitudeSpanMeters();
+
+	var northSouthDegrees = bounds.maxLat - bounds.minLat;
+	var eastWestDegrees = bounds.maxLng - bounds.minLng;
+	
+	this.nsNumCells = Math.ceil(latMeters / cellSizeMeters);
+	this.ewNumCells = Math.ceil(lngMeters / cellSizeMeters);
+
+	var latDegreesPerCell = northSouthDegrees / this.nsNumCells;
+	var lngDegreesPerCell = eastWestDegrees / this.ewNumCells;
+
+	// This is to make the grid one cell bigger in each dimension
+
+	this.minLat = bounds.minLat - latDegreesPerCell;
+	var maxLat = bounds.maxLat + latDegreesPerCell;
+	this.minLng = bounds.minLng - lngDegreesPerCell;
+	var maxLng = bounds.maxLng + lngDegreesPerCell;
+
+	this.latDegrees = maxLat - this.minLat;
+	this.lngDegrees = maxLng - this.minLng;
+    }
+
+    locationToTileCoordinates(location) {
+	var y = Math.round(((location[0] - this.minLat) / this.latDegrees) * this.nsNumCells);
+	var x = Math.round(((location[1] - this.minLng) / this.lngDegrees) * this.ewNumCells);
+	return new Coordinates(x, y);
+    }
+}
+
+class Coordinates {
+    constructor(x, y) {
+	this.x = x;
+	this.y = y;
+    }
+
+    toString() {
+	return `${this.x},${this.y}`;
+    }
+
+    getNeighbors() {
+	var y;
+	var x;
+	var result = [];
+	for (y = this.y - 1;  y <= this.y + 1; ++y) {
+	    for (x = this.x - 1;  x <= this.x + 1; ++x) {
+		result.push(new Coordinates(x, y));
+	    }
+	}
+	return result;
+    }
+}
+
+function getNeighbors(locString) {
+    var strs = locString.split(",");
+    var x = parseInt(strs[0]);
+    var y = parseInt(strs[1]);
+
+    var c = new Coordinates(x, y);
+    return c.getNeighbors();
 }
