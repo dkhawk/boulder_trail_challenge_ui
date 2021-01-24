@@ -27,7 +27,7 @@ const escapeHtml = require('escape-html');
 
 var rp = require('request-promise');
 
-const MATCH_THRESHOLD = 0.90;
+const MATCH_THRESHOLD = 0.80;
 
 var segmentData = {};
 
@@ -334,7 +334,7 @@ exports.exchangeTokens = functions.https.onRequest(async (request, response) => 
 	.then(tokenInfo => {
 	    console.log('tokenInfo', tokenInfo);
 	    const tokenObj = JSON.parse(tokenInfo);
-	    const athleteRef = admin.firestore().collection('athletes').doc('dkhawk@gmail.com')
+	    const athleteRef = admin.firestore().collection('athletes').doc(btcAthlete)
 	    const res = athleteRef.set({ tokenInfo: tokenObj }, { merge: true });
 	    return res;
 	})
@@ -353,7 +353,7 @@ exports.refreshToken = functions.https.onRequest(async (request, response) => {
     console.log(`btcAthlete ${btcAthlete}`);
     console.log(`force ${force}`);
 
-    admin.firestore().collection('athletes').doc('dkhawk@gmail.com').get().then(documentSnapshot => {
+    admin.firestore().collection('athletes').doc(btcAthlete).get().then(documentSnapshot => {
 	if (documentSnapshot.exists) {
 	    console.log('Document retrieved successfully.');
 	    var athlete = documentSnapshot.data();
@@ -382,7 +382,7 @@ exports.refreshToken = functions.https.onRequest(async (request, response) => {
 		    .then(tokenInfo => {
 			console.log('tokenInfo', tokenInfo);
 			const tokenObj = JSON.parse(tokenInfo);
-			const athleteRef = admin.firestore().collection('athletes').doc('dkhawk@gmail.com')
+			const athleteRef = admin.firestore().collection('athletes').doc(btcAthlete)
 			const res = athleteRef.set({ tokenInfo: tokenObj }, { merge: true });
 			return res;
 		    })
@@ -746,7 +746,7 @@ function boundsForLocations(locations) {
 
 class LatLngGrid {
     constructor(bounds) {
-	const cellSizeMeters = 15;
+	const cellSizeMeters = 30;
 
 	var latMeters = bounds.getLatitudeSpanMeters();
 	var lngMeters = bounds.getLongtitudeSpanMeters();

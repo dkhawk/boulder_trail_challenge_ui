@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:osmp_project/authentication_service.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 import 'package:osmp_project/settings_page.dart';
 import 'package:osmp_project/MappingSupport.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 /// This is the stateful widget that the main application instantiates.
 class BottomNavWidget extends StatefulWidget {
@@ -87,10 +87,12 @@ class TrailsProgressWidget extends StatelessWidget {
   }
 
   Widget _buildSummary(BuildContext context) {
+    final firebaseUser = context.watch<User>();
+
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
           .collection('athletes')
-          .doc("dkhawk@gmail.com")
+          .doc(firebaseUser.email)
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
@@ -154,9 +156,11 @@ class TrailsProgressWidget extends StatelessWidget {
   }
 
   Widget _buildTodo(BuildContext context) {
+    final firebaseUser = context.watch<User>();
+
     CollectionReference collection = FirebaseFirestore.instance
         .collection('athletes')
-        .doc("dkhawk@gmail.com")
+        .doc(firebaseUser.email)
         .collection("trailStats");
 
     var byStatus = trailStatus == TrailStatus.inProgress

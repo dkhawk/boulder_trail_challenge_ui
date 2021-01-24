@@ -9,6 +9,8 @@ import 'package:latlong/latlong.dart';
 
 import 'package:osmp_project/home_page.dart';
 import 'package:osmp_project/settings_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:provider/provider.dart';
 
 // ----
 Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions settingsOptions) {
@@ -88,7 +90,9 @@ class _LoadDisplayMapSummaryData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Stream theStream = FirebaseFirestore.instance.collection('athletes').doc("dkhawk@gmail.com").collection("trailStats").snapshots();
+    final firebaseUser = context.watch<User>();
+
+    Stream theStream = FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email).collection("trailStats").snapshots();
     return StreamBuilder<QuerySnapshot>(
       stream: theStream,
       builder: (context, snapshot) {
