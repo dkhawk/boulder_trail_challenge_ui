@@ -1,6 +1,5 @@
-// // Create and Deploy Your First Cloud Functions
+// // Cloud Functions for processing activities
 // // https://firebase.google.com/docs/functions/write-firebase-functions
-//
 
 // The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
 const functions = require('firebase-functions');
@@ -11,9 +10,6 @@ admin.initializeApp();
 
 const GeographicLib = require("geographiclib");
 var geod = GeographicLib.Geodesic.WGS84, r;
-
-// const Gpx = require('gpx-parser-builder');
-// import Gpx from "gpx-parser-builder";
 
 const grid = require('./grid-data.json');
 const encodedSegments = require('./encoded-segments.json');
@@ -29,15 +25,13 @@ const height = grid.height;
 
 const escapeHtml = require('escape-html');
 
-const testActivity = require('./testActivity.json');
-
 var rp = require('request-promise');
 
 const MATCH_THRESHOLD = 0.90;
 
 var segmentData = {};
 
-var trailSegments = {};
+var trailSegments = calculateAllTrailStats();
 
 const stravaApiCredentials = {
     client_id: '43792',
@@ -98,17 +92,15 @@ var btcApi = {
 	// Commit the batch
 	await batch.commit();
     },
-    writeCompletedSegments: async (segments, athleteId, activityId, timestamp) => {
+    writeCompletedSegments: async (segments, athleteId) => {
 	const batch = db.batch();
 	const athleteRef = db.collection('athletes').doc(athleteId);
 	const completedRef =  athleteRef.collection('completed');
 
 	segments.forEach(segment => {
 	    let completedSegment = {
-		activityId: activityId,
 		segmentId: segment.segmentId,
 		length: segment.length,
-		timestamp: timestamp,
 		trailId: segment.trailId,
 		trailName: segment.trailName,
 	    };
@@ -122,7 +114,7 @@ var btcApi = {
 var stravaApi = {
     credentials: stravaApiCredentials,
     getBearerToken: async (btcAthlete) => {
-    	return admin.firestore().collection('athletes').doc(btcAthlete).get().then(documentSnapshot => {
+    	return db.collection('athletes').doc(btcAthlete).get().then(documentSnapshot => {
     	    if (documentSnapshot.exists) {
     		var athlete = documentSnapshot.data();
     		var tokenInfo = athlete.tokenInfo;
@@ -132,7 +124,7 @@ var stravaApi = {
 
 		if (Date.now() >= expirationTimeMillis) {
 		    console.log('token has expired');
-		    return 'TODO: this.refreshToken();'; 
+		    return stravaApi.refreshToken(btcAthlete, athlete.refresh_token);
 		} else {
 		    return accessToken;
 		}
@@ -142,6 +134,7 @@ var stravaApi = {
 	})},
 
     refreshToken: async (athleteId, refresh_token) => {
+	console.log(`refreshing token for ${athleteId} using ${refresh_token}`);
 	var options = {
 	    method: 'POST',
 	    uri: 'https://www.strava.com/api/v3/oauth/token',
@@ -160,16 +153,14 @@ var stravaApi = {
 	    .then(tokenInfo => {
 		console.log('tokenInfo', tokenInfo);
 		const tokenObj = JSON.parse(tokenInfo);
-		const athleteRef = admin.firestore().collection('athletes').doc(athleteId)
+		const athleteRef = db.collection('athletes').doc(athleteId)
 		const res = athleteRef.set({ tokenInfo: tokenObj }, { merge: true });
 		res.get();
 		return tokenObj;
 	    });
     },
 
-    getStats: async (btcAthlete, activityId) => {
-	var accessToken = await stravaApi.getBearerToken(btcAthlete);
-	
+    getStats: async (activityId, accessToken) => {
 	var options = {
 	    method: 'GET',
 	    // TODO: sanitize the input!
@@ -186,14 +177,33 @@ var stravaApi = {
 	};
 	return await rp(options)
 	    .then(locationsString => {
-		const locations = JSON.parse(locationsString);
-		return locations;
+		return JSON.parse(locationsString);
+	    }); // TODO: handle exception
+    },
+
+    getActivityInfo: async (activityId, accessToken) => {
+	// https://www.strava.com/api/v3/activities/4651793605?include_all_efforts=false
+	var options = {
+	    method: 'GET',
+	    // TODO: sanitize the input!
+	    uri: `https://www.strava.com/api/v3/activities/${activityId}`,
+	    headers: {
+		'User-Agent': 'Request-Promise',
+		'accept': 'application/json',
+		'authorization': `Bearer ${accessToken}`
+	    },
+	    qs: {
+		include_all_efforts: false
+	    },
+	};
+
+	return await rp(options)
+	    .then(activityString => {
+		return JSON.parse(activityString);
 	    }); // TODO: handle exception
     },
     
-    getActivity: async (btcAthlete, activityId) => {
-	var accessToken = await stravaApi.getBearerToken(btcAthlete);
-	
+    getActivityLocations: async (activityId, accessToken) => {
 	var options = {
 	    method: 'GET',
 	    // TODO: sanitize the input!
@@ -210,17 +220,32 @@ var stravaApi = {
 	};
 	return await rp(options)
 	    .then(locationsString => {
-		const locations = JSON.parse(locationsString);
-		return locations;
+		return JSON.parse(locationsString);
 	    }); // TODO: handle exception
+    },
 
+    getActivities: async (athleteId, after, accessToken) => {
+	// https://www.strava.com/api/v3/athlete/activities?after=1609459200&per_page=30
+	var options = {
+	    method: 'GET',
+	    // TODO: sanitize the input!
+	    uri: 'https://www.strava.com/api/v3/athlete/activities',
+	    headers: {
+		'User-Agent': 'Request-Promise',
+		'accept': 'application/json',
+		'authorization': `Bearer ${accessToken}`
+	    },
+	    qs: {
+		after: after,
+		per_page: 30
+	    },
+	};
+	return await rp(options)
+	    .then(activitiesString => {
+		return JSON.parse(activitiesString);
+	    }); // TODO: handle exception
     },
 };
-
-exports.helloHttp = functions.https.onRequest(async (req, res) => {
-  res.send(`Hello ${escapeHtml(req.query.name || req.body.name || 'World')}!`);
-});
-
 
 // Take the text parameter passed to this HTTP endpoint and insert it into 
 // Firestore under the path /messages/:documentId/original
@@ -247,6 +272,7 @@ exports.getStravaInfo = functions.https.onRequest(async (request, response) => {
 // Firestore under the path /messages/:documentId/original
 exports.getStats = functions.https.onRequest(async (request, response) => {
     const athlete = request.query.athlete;
+    var accessToken = await stravaApi.getBearerToken(btcAthlete);
 
     response.send(`Hello ${escapeHtml(request.query.athleteId || request.body.athleteId || 'World')}!`);
 
@@ -376,133 +402,79 @@ exports.refreshToken = functions.https.onRequest(async (request, response) => {
 });
 
 exports.getActivities = functions.https.onRequest(async (request, response) => {
-    const btcAthlete = request.query.athleteId;
+    const athleteId = request.query.athleteId;
+    const after = request.query.after;
+    // http://localhost:5001/boulder-trail-challenge/us-central1/getActivities?athleteId=dkhawk@gmail.com&after=1609459200
     // const after = 1609459200;  // 2021-01-01 0:00.  Need to pass this in as a parameter.
-    const after = 1610348400;  // Tuesday, January 11, 2021 12:00:00 AM GMT-07:00
+    // const after = 1610348400;  // Tuesday, January 11, 2021 12:00:00 AM GMT-07:00
+    
+    // admin.firestore.Timestamp.fromDate(new Date(''));
+    var accessToken = await stravaApi.getBearerToken(athleteId);
 
-    admin.firestore().collection('athletes').doc(btcAthlete).get().then(documentSnapshot => {
-	if (documentSnapshot.exists) {
-	    console.log('Document retrieved successfully.');
-	    var athlete = documentSnapshot.data();
-	    var tokenInfo = athlete.tokenInfo;
-	    var accessToken = tokenInfo.access_token;
-	    console.log(`tokenInfo.expires_at ${tokenInfo.expires_at}`);
-	    var expirationTimeMillis = tokenInfo.expires_at * 1000;
+    var activities = await stravaApi.getActivities(athleteId, after, accessToken);
 
-	    // TODO: handle the expired token...
-	    
-	    //curl -X GET "https://www.strava.com/api/v3/athlete/activities?after=1609459200&per_page=30" -H "accept: application/json" -H "authorization: Bearer 0275e53d4c133d20f8fd628954b031faab7f9cfe"
- 
-	    var options = {
-		method: 'GET',
-		uri: 'https://www.strava.com/api/v3/athlete/activities',
-		headers: {
-		    'User-Agent': 'Request-Promise',
-		    'accept': 'application/json',
-		    'authorization': `Bearer ${accessToken}`
-		},
-		qs: {
-		    after: after,
-		    per_page: 3  // <= This should be 30 when ready
-		},
-	    };
+    var completedSegments = [];
+    for (let num in activities) {
+	let activity = activities[num];
+	console.log(activity.id);
+	// console.log(JSON.stringify(activities));
 
-	    rp(options)
-		.then(activitiesString => {
-		    // console.log('activities: ', activities);
-		    const activities = JSON.parse(activitiesString);
-		    // const athleteRef = admin.firestore().collection('athletes').doc('dkhawk@gmail.com')
-		    // const res = athleteRef.set({ tokenInfo: tokenObj }, { merge: true });
-		    // return res;
+	// var activity = activities[1];
+	// console.log(JSON.stringify(activity));
 
-		    // TODO: limit this to running, hiking, walking, etc
-		    // TODO: outdoor only?
-		    // Write this to a work queue
-		    // Filter activies that have already been processed!
+	// let activity = await fetchActivity(athleteId, activityInfo.id, timestamp);
 
-		    console.log('##################################################################');
-		    console.log(`activities ${activities}`);
-		    console.log(typeof activities);
-		    console.log('==================================================================');
-		    console.log(`activities[1] ${activities[1]}`);
-		    console.log('~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~');
+	var accessToken = await stravaApi.getBearerToken(athleteId);
 
-		    console.log('Just before');
-		    const activityIds = activities.map(x => x.id);
-		    console.log('Just after');
+	const locations = await stravaApi.getActivityLocations(activity.id, accessToken).then(activity => {
+	    return activity['latlng']['data'];
+	});
 
-		    console.log(`activityIds: ${activityIds}`);
-		    return activityIds;
-		})
-		.then(activityIds => {
-		    // Seriously, we should only be writing to the work queue here!!!!!
-		    const aid = activityIds[1];
-		    console.log(`activity to grab: ${aid}`);
-		    
-	     	    response.send('Success\n');
-		})
-		.catch(error => {
-		    response.status(500).send(error);
-		});
-	    
-	} else {
-	    response.status(500).send('No such athlete');
-	}
-    });
+	let timestamp = admin.firestore.Timestamp.fromDate(new Date(activity.start_date));
+
+	completedSegments.push(...(await processActivity(locations, athleteId, activity.id, timestamp)));
+    };
+
+    if (completedSegments.length > 0) {
+	// Load trail data from database
+	let trailStats = await btcApi.getTrailStats(athleteId);
+
+	var updatedTrails = await calculateCompletedStats(completedSegments, trailStats);
+	var updatedStats = calculateOverallStats(trailStats);
+	
+	console.log('===========================================');
+	console.log('updatedStats');
+	console.log(JSON.stringify(updatedStats));
+	console.log('===========================================');
+	// console.log('completedSegments');
+	// console.log(JSON.stringify(completedSegments));
+	// console.log('===========================================');
+
+	btcApi.updateStats(athleteId, updatedTrails, updatedStats);
+	btcApi.writeCompletedSegments(completedSegments, athleteId);
+    }
+
+    response.send('Done\n');
 });
-
 
 exports.processActivity = functions.https.onRequest(async (request, response) => {
     // Check the token expiration first?
     const athleteId = request.query.athleteId;
     const activityId = request.query.activityId;
-    const timestamp = admin.firestore.Timestamp.fromDate(new Date('January 20, 2021'));
-
-    // fetchActivity(btcAthlete, activityId);
-
-    await processActivity(testActivity, athleteId, activityId, timestamp);
-
+    let activity = await fetchActivity(athleteId, activityId);
+    const timestamp = admin.firestore.Timestamp.fromDate(new Date(activity.start_date));
+    await processActivity(activity.locations, athleteId, activityId, timestamp);
     response.send('Done\n');
 });
 
-async function fetchActivity(btcAthlete, activityId) {
-    // Grab the locations stream
-    // For testing, just load the file
-    
-    console.log(`Fetching ${activityId} from Strava`);
-
-    const locations = await stravaApi.getActivity(btcAthlete, activityId).then(activity => {
+async function fetchActivity(athleteId, activityId) {
+    var accessToken = await stravaApi.getBearerToken(athleteId);
+    var activity = await stravaApi.getActivityInfo(activityId, accessToken);
+    const locations = await stravaApi.getActivityLocations(activityId, accessToken).then(activity => {
 	return activity['latlng']['data'];
     });
-
-    var str = JSON.stringify(locations, null, 2); // spacing level = 2
-    
-    console.log(`Got activity: ${str}`);
-
-    // curl -X GET "https://www.strava.com/api/v3/activities/4614101013/streams?keys=latlng&key_by_type=true" -H "accept: application/json" -H "authorization: Bearer fdc42bd57a499c4b4f5db4f0fd43eaede0677323"
-    
-
-    // console.log(`${encodedSegments['244-130-127'].name}`);
-    // console.log(`${encodedSegments['244-130-127'].length}`);
-    // console.log(`${encodedSegments['244-130-127'].encodedLocations}`);
-
-    // "file:///User/Danny/Desktop/javascriptWork/testing.txt"
-//    const gpxTrack = readTextFile(
-//	'file:///Users/dkhawk/IdeaProjects/boulder_trail_challenge_ui/boulder_trail_challenge_functions/functions/Wonderland_to_Eagle.gpx'
-//    );
-//
-//    const ss = gpxTrack.substring(0,100);
-//
-//    console.log(`${ss}`);
-//    const getTrackPoints = gpxTrack => {
- //     const parsedGpx = Gpx.parse(gpxTrack);
-  //    return parsedGpx.trk[0].trkseg[0].trkpt;
-   // };
-
-    //console.log(`getTrackPoints: ${getTrackPoints['$'].creator}`);
-
-    // process
-    // return result
+    activity.locations = locations;
+    return activity;
 }
 
 
@@ -530,9 +502,6 @@ function locationToCoordinates(location) {
 }
 
 async function processActivity(activity, athleteId, activityId, timestamp) {
-    // Load trail data from database
-    let trailStats = await btcApi.getTrailStats(athleteId);
-
     var segments = candidateSegments(activity);
     var finishedSegments = scoreSegments(activity, segments);
     let completedSegments = [];
@@ -542,11 +511,7 @@ async function processActivity(activity, athleteId, activityId, timestamp) {
 	}
     }
 
-    var updatedTrails = await calculateCompletedStats(completedSegments, trailStats);
-    var updatedStats = calculateOverallStats(trailStats);
-
-    btcApi.updateStats(athleteId, updatedTrails, updatedStats);
-    btcApi.writeCompletedSegments(completedSegments, athleteId, activityId, timestamp);
+    return completedSegments;
 }
 
 function calculateOverallStats(trailStats) {
@@ -568,23 +533,32 @@ function calculateOverallStats(trailStats) {
 
 async function calculateCompletedStats(completedSegments, trailStats) {
     let updatedTrails = {};
+
+    // Create a map of all the trails
+    let unfinishedTrails = {};
+    for (const [key, trail] of Object.entries(trailSegments)) {
+	stats = {
+	    name: trail.name,
+	    length: trail.length,
+	    remaining: [...trail.segments],
+	    completed: [],
+	    completedDistance: 0,
+	    percentDone: 0,
+	};
+	unfinishedTrails[trail.trailId] = stats;
+    }
+
+    // Create a map of total progress using the old stats if they exist, otherwise the unfinished stats
+    let trailProgress = {};
+    for (const [key, trail] of Object.entries(unfinishedTrails)) {
+	trailProgress[key] = trailStats[key] || trail;
+    }
+
     completedSegments.forEach(segment => {
 	// Look up the trail 
-	var stats = trailStats[segment.trailId];
-	if (!stats) {
-	    var trail = getSegmentsForTrail(segment.trailId);
-	    stats = {
-		name: segment.trailName,
-		length: trail.length,
-		remaining: [...trail.segments],
-		completed: [segmentId],
-		completedDistance: 0,
-		percentDone: 0,
-	    };
-	    trailStats[segment.trailId] = stats;
-	}
+	var stats = trailProgress[segment.trailId];
 
-	// Update
+	// Update with the newly completed segments
 	const index = stats.remaining.indexOf(segment.segmentId);
 	if (index > -1) {
 	    stats.remaining.splice(index, 1);
@@ -595,34 +569,34 @@ async function calculateCompletedStats(completedSegments, trailStats) {
 	    stats.completedDistance += segment.length;
 	    stats.percentDone = (stats.completedDistance * 1.0) / stats.length;
 	}
-	trailStats[segment.trailId] = stats;
-	updatedTrails[segment.trailId] = stats;
+	trailProgress[segment.trailId] = stats;
     });
 
-    return updatedTrails;
+    return trailProgress;
 }
 
-function getSegmentsForTrail(trailId) {
-    let answer = trailSegments[trailId];
-    if (answer) {
-	return answer;
-    }
+function calculateAllTrailStats() {
+    var tsegments = {};
 
     var trails = [];
     for (var segmentId in encodedSegments) {
 	let segment = encodedSegments[segmentId];
-	let trail = trails[segment.trailId] || {
+	let trail = tsegments[segment.trailId] || {
 	    trailId: segment.trailId,
-	    name: segment.trailName,
+	    name: segment.name,
 	    segments: [],
 	    length: 0,
 	};
 
 	trail.segments.push(segment.segmentId);
 	trail.length += segment.length;
-	segments[segment.trailId] = trail;
+	tsegments[segment.trailId] = trail;
     };
 
+    return tsegments;
+}
+
+function getSegmentsForTrail(trailId) {
     return trailSegments[trailId];
 }
 
