@@ -260,21 +260,59 @@ class _CreateFlutterMap extends StatelessWidget {
         subdomains: ['a', 'b', 'c'],
       );
 
-    // pop up the map
-    return new FlutterMap(
-      options: new MapOptions(
-        bounds: LatLngBounds.fromPoints(mapBounds),
-        boundsOptions: FitBoundsOptions(
-          padding: EdgeInsets.all(15.0),
+    // zoom out and in
+    MapController mapController = new MapController();
+    void _zoomOut() {
+      if(mapController.ready)
+        mapController.move(mapController.center, mapController.zoom - 1);
+    }
+    void _zoomIn() {
+      if(mapController.ready) {
+        double newZoom = mapController.zoom + 1;
+        if (newZoom > 18) newZoom = 18;
+        mapController.move(mapController.center, newZoom);
+      }
+    }
+
+    return Scaffold(
+        body: new FlutterMap(
+          mapController: mapController,
+          options: MapOptions(
+            bounds: LatLngBounds.fromPoints(mapBounds),
+            boundsOptions: FitBoundsOptions(
+              padding: EdgeInsets.all(15.0),
+            ),
+            maxZoom: 18,
+          ),
+          layers: [
+            tileLayerOpts,
+            new PolylineLayerOptions(polylines: theSegmentPolylines),
+            new MarkerLayerOptions(markers: theTrailNameMarkers),
+          ],
         ),
-        maxZoom: 18,
-      ),
-      layers: [
-        tileLayerOpts,
-        new PolylineLayerOptions(polylines: theSegmentPolylines),
-        new MarkerLayerOptions(markers: theTrailNameMarkers),
-      ],
-    );
+
+        // zoom in and out buttons
+        floatingActionButton: Column(
+          mainAxisAlignment: MainAxisAlignment.end,
+          //crossAxisAlignment: CrossAxisAlignment.end,
+          children: [
+            FloatingActionButton(
+              heroTag: "zoomIn",
+              onPressed: _zoomIn,
+              tooltip: 'Zoom In',
+              child: Icon(Icons.add_circle_outline_rounded),
+            ),
+            SizedBox(
+              height: 5,
+            ),
+            FloatingActionButton(
+              heroTag: "zoomOut",
+              onPressed: _zoomOut,
+              tooltip: 'Zoom Out',
+              child: Icon(Icons.remove_circle_outline_rounded),
+            ),
+          ],
+        ));
   }
 }
 
@@ -373,5 +411,3 @@ class SegmentSummary {
 
   SegmentSummary.fromSnapshot(DocumentSnapshot snapshot) : this.fromMap(snapshot.data(), reference: snapshot.reference);
 }
-
-
