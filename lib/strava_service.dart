@@ -6,8 +6,8 @@ class StravaService {
 
   StravaService(this._firestore);
 
-  Future<void> refreshToken() async {
-    var redirectUrl = 'http://localhost:5001/boulder-trail-challenge/us-central1/exchangeTokens?athleteId=dkhawk@gmail.com';
+  Future<void> refreshToken(String user) async {
+    var redirectUrl = 'http://localhost:5001/boulder-trail-challenge/us-central1/exchangeTokens?athleteId=' + user;
     var queryParameters = {
       'client_id': '43792',
       'response_type': 'code',

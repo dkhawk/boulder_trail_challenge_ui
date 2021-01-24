@@ -5,6 +5,7 @@ import 'package:osmp_project/import_activities_screen.dart';
 import 'package:osmp_project/strava_service.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage(this.settingsOptions);
@@ -23,20 +24,22 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final firebaseUser = context.watch<User>();
+
     return Column(
       children: [
         Text("Settings", style: SettingsPage.optionStyle,),
         Spacer(),
         RaisedButton(
           onPressed: () {
-            _launchURL();
+            _launchURL(firebaseUser.email);
           },
           child: Text("Connect with Strava"),
         ),
         Spacer(),
         RaisedButton(
           onPressed: () {
-            context.read<StravaService>().refreshToken();
+            context.read<StravaService>().refreshToken(firebaseUser.email);
           },
           child: Text("Refresh Strava token"),
         ),
@@ -78,8 +81,8 @@ class _SettingsPageState extends State<SettingsPage> {
     );
   }
 
-  void _launchURL() async {
-    var redirectUrl = 'http://localhost:5001/boulder-trail-challenge/us-central1/exchangeTokens?athleteId=dkhawk@gmail.com';
+  void _launchURL(String user) async {
+    var redirectUrl = 'http://localhost:5001/boulder-trail-challenge/us-central1/exchangeTokens?athleteId=' + user;
     var queryParameters = {
       'client_id': '43792',
       'response_type': 'code',
