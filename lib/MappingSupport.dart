@@ -92,7 +92,8 @@ class _LoadDisplayMapSummaryData extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
 
-    Stream theStream = FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email).collection("trailStats").snapshots();
+    Stream theStream =
+        FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email).collection("trailStats").snapshots();
     return StreamBuilder<QuerySnapshot>(
       stream: theStream,
       builder: (context, snapshot) {
@@ -140,7 +141,8 @@ class _LoadDisplayMapData extends StatelessWidget {
 }
 
 // ----
-Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputMapData, SettingsOptions settingsOptions, List<DocumentSnapshot> snapshot) {
+Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputMapData, SettingsOptions settingsOptions,
+    List<DocumentSnapshot> snapshot) {
   // build data for the trail map
   inputMapData.completedSegs = [];
   inputMapData.remainingSegs = [];
@@ -165,14 +167,22 @@ Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputM
 }
 
 // ----
-class _CreateFlutterMap extends StatelessWidget {
+class _CreateFlutterMap extends StatefulWidget {
   _CreateFlutterMap(this.theMapData, this.settingsOptions);
   final MapData theMapData;
   final SettingsOptions settingsOptions;
 
   @override
+  __CreateFlutterMapState createState() => __CreateFlutterMapState();
+}
+
+// ----
+class __CreateFlutterMapState extends State<_CreateFlutterMap> {
+  MapController mapController = MapController();
+
+  @override
   Widget build(BuildContext context) {
-    // keep track of all LatLng's that will be displayed (granted not efficient)
+    // keep track of all LatLng's that will be displayed
     List<LatLng> mapBounds = [];
 
     // trail or trail segment names
@@ -180,13 +190,17 @@ class _CreateFlutterMap extends StatelessWidget {
 
     // completed segments in one color
     List<Polyline> theSegmentPolylines = [];
-    theMapData.completedSegs.forEach((SegmentSummary segment) {
-      Polyline polyline = new Polyline(points: segment.latLong, strokeWidth: 4.0, color: theMapData.completedSegColor);
+    widget.theMapData.completedSegs.forEach((SegmentSummary segment) {
+      Polyline polyline = Polyline(points: segment.latLong, strokeWidth: 4.0, color: widget.theMapData.completedSegColor);
       theSegmentPolylines.add(polyline);
-      mapBounds += segment.latLong;
+
+      LatLng maxLatLong = LatLng(segment.boundsMap['maxLatitude'], segment.boundsMap['maxLongitude']);
+      LatLng minLatLong = LatLng(segment.boundsMap['minLatitude'], segment.boundsMap['minLongitude']);
+      mapBounds.add(maxLatLong);
+      mapBounds.add(minLatLong);
 
       // trail or trail segment names on the map (optionally)
-      if (settingsOptions.displayTrailNames || settingsOptions.displaySegmentNames) {
+      if (widget.settingsOptions.displayTrailNames || widget.settingsOptions.displaySegmentNames) {
         if (polyline.points.isNotEmpty) {
           // approx center of polyline
           // int pntID = ((polyline.points.length) / 2).toInt();
@@ -194,14 +208,13 @@ class _CreateFlutterMap extends StatelessWidget {
 
           // the marker with the trail or segment name
           String markerString = segment.name;
-          if(settingsOptions.displaySegmentNames)
-            markerString = segment.segmentNameId;
+          if (widget.settingsOptions.displaySegmentNames) markerString = segment.segmentNameId;
 
-          Marker segNameMarker = new Marker(
+          Marker segNameMarker = Marker(
             width: 80.0,
             point: polyline.points[pntID],
-            builder: (ctx) => new Container(
-              child: new Text(markerString, style: new TextStyle(fontSize: 12.0)),
+            builder: (ctx) => Container(
+              child: Text(markerString, style: TextStyle(fontSize: 12.0)),
             ),
           );
 
@@ -211,13 +224,17 @@ class _CreateFlutterMap extends StatelessWidget {
     });
 
     // remaining segments in another color
-    theMapData.remainingSegs.forEach((SegmentSummary segment) {
-      Polyline polyline = new Polyline(points: segment.latLong, strokeWidth: 4.0, color: theMapData.remainingSegColor);
+    widget.theMapData.remainingSegs.forEach((SegmentSummary segment) {
+      Polyline polyline = Polyline(points: segment.latLong, strokeWidth: 4.0, color: widget.theMapData.remainingSegColor);
       theSegmentPolylines.add(polyline);
-      mapBounds += segment.latLong;
+
+      LatLng maxLatLong = LatLng(segment.boundsMap['maxLatitude'], segment.boundsMap['maxLongitude']);
+      LatLng minLatLong = LatLng(segment.boundsMap['minLatitude'], segment.boundsMap['minLongitude']);
+      mapBounds.add(maxLatLong);
+      mapBounds.add(minLatLong);
 
       // trail or trail segment names on the map (optionally)
-      if (settingsOptions.displayTrailNames || settingsOptions.displaySegmentNames) {
+      if (widget.settingsOptions.displayTrailNames || widget.settingsOptions.displaySegmentNames) {
         if (polyline.points.isNotEmpty) {
           // approx center of polyline
           // int pntID = ((polyline.points.length) / 2).toInt();
@@ -225,14 +242,13 @@ class _CreateFlutterMap extends StatelessWidget {
 
           // the marker with the trail or segment name
           String markerString = segment.name;
-          if(settingsOptions.displaySegmentNames)
-            markerString = segment.segmentNameId;
+          if (widget.settingsOptions.displaySegmentNames) markerString = segment.segmentNameId;
 
-          Marker segNameMarker = new Marker(
+          Marker segNameMarker = Marker(
             width: 80.0,
             point: polyline.points[pntID],
-            builder: (ctx) => new Container(
-              child: new Text(markerString, style: new TextStyle(fontSize: 12.0)),
+            builder: (ctx) => Container(
+              child: Text(markerString, style: TextStyle(fontSize: 12.0)),
             ),
           );
 
@@ -248,26 +264,25 @@ class _CreateFlutterMap extends StatelessWidget {
 
     // regular or topo maps
     TileLayerOptions tileLayerOpts;
-    if (settingsOptions.useTopoMaps == true)
-      tileLayerOpts = new TileLayerOptions(
+    if (widget.settingsOptions.useTopoMaps == true)
+      tileLayerOpts = TileLayerOptions(
         urlTemplate: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
         subdomains: ['a', 'b', 'c'],
         opacity: 0.85,
       );
     else
-      tileLayerOpts = new TileLayerOptions(
+      tileLayerOpts = TileLayerOptions(
         urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         subdomains: ['a', 'b', 'c'],
       );
 
     // zoom out and in
-    MapController mapController = new MapController();
     void _zoomOut() {
-      if(mapController.ready)
-        mapController.move(mapController.center, mapController.zoom - 1);
+      if (mapController.ready) mapController.move(mapController.center, mapController.zoom - 1);
     }
+
     void _zoomIn() {
-      if(mapController.ready) {
+      if (mapController.ready) {
         double newZoom = mapController.zoom + 1;
         if (newZoom > 18) newZoom = 18;
         mapController.move(mapController.center, newZoom);
@@ -275,26 +290,27 @@ class _CreateFlutterMap extends StatelessWidget {
     }
 
     return Scaffold(
-        body: new FlutterMap(
+        body: FlutterMap(
           mapController: mapController,
           options: MapOptions(
             bounds: LatLngBounds.fromPoints(mapBounds),
             boundsOptions: FitBoundsOptions(
               padding: EdgeInsets.all(15.0),
             ),
-            maxZoom: 18,
           ),
           layers: [
             tileLayerOpts,
-            new PolylineLayerOptions(polylines: theSegmentPolylines),
-            new MarkerLayerOptions(markers: theTrailNameMarkers),
+            PolylineLayerOptions(
+              polylines: theSegmentPolylines,
+              polylineCulling: true,
+            ),
+            MarkerLayerOptions(markers: theTrailNameMarkers),
           ],
         ),
 
         // zoom in and out buttons
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
-          //crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             FloatingActionButton(
               heroTag: "zoomIn",
@@ -396,7 +412,10 @@ class SegmentSummary {
   final String name;
   final String segmentNameId;
   final String encodedLocations;
+  // latLong list after decoding
   List<LatLng> latLong;
+  // bounds
+  Map<String, dynamic> boundsMap;
 
   final DocumentReference reference;
 
@@ -407,7 +426,8 @@ class SegmentSummary {
         name = map['name'],
         segmentNameId = map['segmentId'],
         latLong = map['latLong'],
-        encodedLocations = map['encodedLocations'];
+        encodedLocations = map['encodedLocations'],
+        boundsMap = map['bounds'];
 
   SegmentSummary.fromSnapshot(DocumentSnapshot snapshot) : this.fromMap(snapshot.data(), reference: snapshot.reference);
 }
