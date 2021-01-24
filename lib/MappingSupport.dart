@@ -7,10 +7,11 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 
-import 'home_page.dart';
+import 'package:osmp_project/home_page.dart';
+import 'package:osmp_project/settings_page.dart';
 
 // ----
-Widget displayMap(BuildContext context, TrailSummary trail) {
+Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions settingsOptions) {
   MapData inputMapData = new MapData();
   inputMapData.mapName = Text(trail.name);
   inputMapData.percentComplete = trail.percentDone;
@@ -37,7 +38,7 @@ Widget displayMap(BuildContext context, TrailSummary trail) {
             ],
           ),
         ),
-        body: _LoadDisplayMapData(trail, inputMapData),
+        body: _LoadDisplayMapData(trail, inputMapData, settingsOptions),
       );
     },
   ));
@@ -46,7 +47,7 @@ Widget displayMap(BuildContext context, TrailSummary trail) {
 }
 
 // ----
-Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData) {
+Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData, SettingsOptions settingsOptions) {
   double percentDone = inputMapSummaryData.percentComplete;
 
   Navigator.push(context, MaterialPageRoute<void>(
@@ -71,7 +72,7 @@ Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData) {
             ],
           ),
         ),
-        body: _LoadDisplayMapSummaryData(inputMapSummaryData),
+        body: _LoadDisplayMapSummaryData(inputMapSummaryData, settingsOptions),
       );
     },
   ));
@@ -81,8 +82,9 @@ Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData) {
 
 //----
 class _LoadDisplayMapSummaryData extends StatelessWidget {
-  _LoadDisplayMapSummaryData(this.inputMapSummaryData);
+  _LoadDisplayMapSummaryData(this.inputMapSummaryData, this.settingsOptions);
   final MapData inputMapSummaryData;
+  final SettingsOptions settingsOptions;
 
   @override
   Widget build(BuildContext context) {
@@ -100,7 +102,7 @@ class _LoadDisplayMapSummaryData extends StatelessWidget {
           overallTrailSummary.remainingSegs.addAll(theSummaryForTheTrail.remainingSegs);
         });
 
-        return _LoadDisplayMapData(overallTrailSummary, inputMapSummaryData);
+        return _LoadDisplayMapData(overallTrailSummary, inputMapSummaryData, settingsOptions);
       },
     );
   }
@@ -108,9 +110,10 @@ class _LoadDisplayMapSummaryData extends StatelessWidget {
 
 //----
 class _LoadDisplayMapData extends StatelessWidget {
-  _LoadDisplayMapData(this.trail, this.inputMapData);
+  _LoadDisplayMapData(this.trail, this.inputMapData, this.settingsOptions);
   final TrailSummary trail;
   final MapData inputMapData;
+  final SettingsOptions settingsOptions;
 
   @override
   Widget build(BuildContext context) {
@@ -126,14 +129,14 @@ class _LoadDisplayMapData extends StatelessWidget {
       stream: theStream,
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
-        return _populateMapData(context, trail, inputMapData, snapshot.data.docs);
+        return _populateMapData(context, trail, inputMapData, settingsOptions, snapshot.data.docs);
       },
     );
   }
 }
 
 // ----
-Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputMapData, List<DocumentSnapshot> snapshot) {
+Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputMapData, SettingsOptions settingsOptions, List<DocumentSnapshot> snapshot) {
   // build data for the trail map
   inputMapData.completedSegs = [];
   inputMapData.remainingSegs = [];
@@ -154,18 +157,22 @@ Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputM
       assert("No segment data" != null);
   });
 
-  return _CreateFlutterMap(inputMapData);
+  return _CreateFlutterMap(inputMapData, settingsOptions);
 }
 
 // ----
 class _CreateFlutterMap extends StatelessWidget {
-  _CreateFlutterMap(this.theMapData);
+  _CreateFlutterMap(this.theMapData, this.settingsOptions);
   final MapData theMapData;
+  final SettingsOptions settingsOptions;
 
   @override
   Widget build(BuildContext context) {
     // keep track of all LatLng's that will be displayed (granted not efficient)
     List<LatLng> mapBounds = [];
+
+    // trail or trail segment names
+    List<Marker> theTrailNameMarkers = [];
 
     // completed segments in one color
     List<Polyline> theSegmentPolylines = [];
@@ -173,6 +180,30 @@ class _CreateFlutterMap extends StatelessWidget {
       Polyline polyline = new Polyline(points: segment.latLong, strokeWidth: 4.0, color: theMapData.completedSegColor);
       theSegmentPolylines.add(polyline);
       mapBounds += segment.latLong;
+
+      // trail or trail segment names on the map (optionally)
+      if (settingsOptions.displayTrailNames || settingsOptions.displaySegmentNames) {
+        if (polyline.points.isNotEmpty) {
+          // approx center of polyline
+          // int pntID = ((polyline.points.length) / 2).toInt();
+          int pntID = polyline.points.length ~/ 2;
+
+          // the marker with the trail or segment name
+          String markerString = segment.name;
+          if(settingsOptions.displaySegmentNames)
+            markerString = segment.segmentNameId;
+
+          Marker segNameMarker = new Marker(
+            width: 80.0,
+            point: polyline.points[pntID],
+            builder: (ctx) => new Container(
+              child: new Text(markerString, style: new TextStyle(fontSize: 12.0)),
+            ),
+          );
+
+          theTrailNameMarkers.add(segNameMarker);
+        }
+      }
     });
 
     // remaining segments in another color
@@ -180,6 +211,30 @@ class _CreateFlutterMap extends StatelessWidget {
       Polyline polyline = new Polyline(points: segment.latLong, strokeWidth: 4.0, color: theMapData.remainingSegColor);
       theSegmentPolylines.add(polyline);
       mapBounds += segment.latLong;
+
+      // trail or trail segment names on the map (optionally)
+      if (settingsOptions.displayTrailNames || settingsOptions.displaySegmentNames) {
+        if (polyline.points.isNotEmpty) {
+          // approx center of polyline
+          // int pntID = ((polyline.points.length) / 2).toInt();
+          int pntID = polyline.points.length ~/ 2;
+
+          // the marker with the trail or segment name
+          String markerString = segment.name;
+          if(settingsOptions.displaySegmentNames)
+            markerString = segment.segmentNameId;
+
+          Marker segNameMarker = new Marker(
+            width: 80.0,
+            point: polyline.points[pntID],
+            builder: (ctx) => new Container(
+              child: new Text(markerString, style: new TextStyle(fontSize: 12.0)),
+            ),
+          );
+
+          theTrailNameMarkers.add(segNameMarker);
+        }
+      }
     });
 
     // bail out if no data
@@ -187,16 +242,33 @@ class _CreateFlutterMap extends StatelessWidget {
       return _NoDataScreen();
     }
 
+    // regular or topo maps
+    TileLayerOptions tileLayerOpts;
+    if (settingsOptions.useTopoMaps == true)
+      tileLayerOpts = new TileLayerOptions(
+        urlTemplate: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
+        subdomains: ['a', 'b', 'c'],
+        opacity: 0.85,
+      );
+    else
+      tileLayerOpts = new TileLayerOptions(
+        urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
+        subdomains: ['a', 'b', 'c'],
+      );
+
     // pop up the map
     return new FlutterMap(
       options: new MapOptions(
-          bounds: LatLngBounds.fromPoints(mapBounds),
-          boundsOptions: FitBoundsOptions(
-            padding: EdgeInsets.all(15.0),
-          )),
+        bounds: LatLngBounds.fromPoints(mapBounds),
+        boundsOptions: FitBoundsOptions(
+          padding: EdgeInsets.all(15.0),
+        ),
+        maxZoom: 18,
+      ),
       layers: [
-        new TileLayerOptions(urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", subdomains: ['a', 'b', 'c']),
+        tileLayerOpts,
         new PolylineLayerOptions(polylines: theSegmentPolylines),
+        new MarkerLayerOptions(markers: theTrailNameMarkers),
       ],
     );
   }
@@ -297,3 +369,5 @@ class SegmentSummary {
 
   SegmentSummary.fromSnapshot(DocumentSnapshot snapshot) : this.fromMap(snapshot.data(), reference: snapshot.reference);
 }
+
+

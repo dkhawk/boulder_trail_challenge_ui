@@ -6,15 +6,26 @@ import 'package:osmp_project/strava_service.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class SettingsPage extends StatelessWidget {
+class SettingsPage extends StatefulWidget {
+  SettingsPage(this.settingsOptions);
+  final SettingsOptions settingsOptions;
+
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+
+  @override
+  _SettingsPageState createState() => _SettingsPageState(settingsOptions);
+}
+
+class _SettingsPageState extends State<SettingsPage> {
+  _SettingsPageState(this.settingsOptions);
+  final SettingsOptions settingsOptions;
 
   @override
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text("Settings", style: optionStyle,),
+        Text("Settings", style: SettingsPage.optionStyle,),
         Spacer(),
         RaisedButton(
           onPressed: () {
@@ -39,6 +50,20 @@ class SettingsPage extends StatelessWidget {
                 return ImportActivitiesScreen();
               }),
             );
+          },
+        ),
+        Spacer(),
+        RaisedButton(
+          child: settingsOptions.displayTrailNames ? Text('Disable Trail Name Display') : Text('Enable Trail Name Display'),
+          onPressed: () {
+            setState(() => settingsOptions.displayTrailNames = !settingsOptions.displayTrailNames);
+          },
+        ),
+        Spacer(),
+        RaisedButton(
+          child: settingsOptions.useTopoMaps ? Text('Disable Topo Map Display') : Text('Enable Topo Map Display'),
+          onPressed: () {
+            setState(() => settingsOptions.useTopoMaps = !settingsOptions.useTopoMaps);
           },
         ),
         Spacer(),
@@ -71,4 +96,11 @@ class SettingsPage extends StatelessWidget {
       throw 'Could not launch $url';
     }
   }
+}
+
+//----
+class SettingsOptions {
+  bool useTopoMaps = false;
+  bool displayTrailNames = false;
+  bool displaySegmentNames = false;
 }

@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
 import 'package:provider/provider.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:osmp_project/settings_page.dart';
 
-import 'MappingSupport.dart';
+import 'package:osmp_project/settings_page.dart';
+import 'package:osmp_project/MappingSupport.dart';
 
 /// This is the stateful widget that the main application instantiates.
 class BottomNavWidget extends StatefulWidget {
@@ -19,10 +19,13 @@ class _BottomNavWidgetState extends State<BottomNavWidget> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
   TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
-  static List<Widget> _widgetOptions = <Widget>[
-    TrailsProgressWidget(TrailStatus.inProgress),
-    TrailsProgressWidget(TrailStatus.completed),
-    SettingsPage(),
+
+  SettingsOptions settingsOptions = new SettingsOptions();
+
+  List<Widget> _widgetOptions() => <Widget>[
+    TrailsProgressWidget(TrailStatus.inProgress, settingsOptions),
+    TrailsProgressWidget(TrailStatus.completed, settingsOptions),
+    SettingsPage(settingsOptions),
   ];
 
   void _onItemTapped(int index) {
@@ -33,12 +36,14 @@ class _BottomNavWidgetState extends State<BottomNavWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final List<Widget> theBottomWidget = _widgetOptions();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Boulder Trails Challenge'),
       ),
       body: Center(
-        child: _widgetOptions.elementAt(_selectedIndex),
+        child: theBottomWidget[_selectedIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -66,9 +71,9 @@ class _BottomNavWidgetState extends State<BottomNavWidget> {
 enum TrailStatus { inProgress, completed }
 
 class TrailsProgressWidget extends StatelessWidget {
-  TrailsProgressWidget(this.trailStatus);
-
+  TrailsProgressWidget(this.trailStatus, this.settingsOptions);
   final TrailStatus trailStatus;
+  final SettingsOptions settingsOptions;
 
   @override
   Widget build(BuildContext context) {
@@ -89,12 +94,12 @@ class TrailsProgressWidget extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
-        return _buildStatus(context, snapshot.data);
+        return _buildStatus(context, snapshot.data, settingsOptions);
       },
     );
   }
 
-  Widget _buildStatus(BuildContext context, DocumentSnapshot data) {
+  Widget _buildStatus(BuildContext context, DocumentSnapshot data, SettingsOptions settingsOptions) {
     var stats = data["overallStats"];
     var percent = stats["percentDone"];
     var completed = (stats["completedDistance"] * 0.000621371).toStringAsFixed(2);
@@ -137,7 +142,7 @@ class TrailsProgressWidget extends StatelessWidget {
                   ),
                   padding: EdgeInsets.all(0),
                   alignment: Alignment.centerRight,
-                  onPressed: () => displayMapSummary(context, inputMapSummaryData),
+                  onPressed: () => displayMapSummary(context, inputMapSummaryData, settingsOptions),
                 ),
               ),
               progress,
@@ -217,7 +222,7 @@ class TrailsProgressWidget extends StatelessWidget {
                 ),
                 padding: EdgeInsets.all(0),
                 alignment: Alignment.centerRight,
-                onPressed: () => displayMap(context, trail),
+                onPressed: () => displayMap(context, trail, settingsOptions),
               ),
             ),
             progress,
