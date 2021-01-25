@@ -12,8 +12,7 @@ class SignInPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Boulder Trails Challenge'),
       ),
-      body:
-      Padding(
+      body: Padding(
           padding: EdgeInsets.all(16.0),
           child: Column(
             children: [
@@ -25,23 +24,38 @@ class SignInPage extends StatelessWidget {
               ),
               TextField(
                 controller: passwordController,
+                enableSuggestions: false,
+                autocorrect: false,
+                obscureText: true,
                 decoration: InputDecoration(
                   labelText: "Password",
                 ),
               ),
-              Spacer(),
-              RaisedButton(
-                onPressed: () {
-                  context.read<AuthenticationService>().signIn(
-                      email: emailController.text.trim(),
-                      password: passwordController.text.trim()
-                  );
-                },
-                child: Text("Sign in"),
-              )
+              Padding(
+                padding: EdgeInsets.only(top: 16.0),
+                child: Row(children: [
+                  RaisedButton(
+                    onPressed: () {
+                      context.read<AuthenticationService>().signIn(
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim());
+                    },
+                    child: Text("Sign in"),
+                  ),
+                  Spacer(),
+                  RaisedButton(
+                    onPressed: () {
+                      context.read<AuthenticationService>().signUp(
+                          email: emailController.text.trim(),
+                          password: passwordController.text.trim()
+                      );
+                    },
+                    child: Text("New account"),
+                  ),
+                ]),
+              ),
             ],
-          )
-      ),
+          )),
     );
   }
 }

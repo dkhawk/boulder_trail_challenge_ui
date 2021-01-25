@@ -18,7 +18,7 @@ class BottomNavWidget extends StatefulWidget {
 class _BottomNavWidgetState extends State<BottomNavWidget> {
   int _selectedIndex = 0;
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+    TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   SettingsOptions settingsOptions = new SettingsOptions();
 
