@@ -364,6 +364,7 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
               polylineCulling: true,
               pointerDistanceTolerance: 15,
               onTap: (TaggedPolyline polyline) => _MapInfoAlert(context, polyline.tag, theTrailNamesMap),
+              onMiss: () => debugPrint("No polyline tapped"),
             ),
             MarkerLayerOptions(markers: theTrailNameMarkers),
           ],
