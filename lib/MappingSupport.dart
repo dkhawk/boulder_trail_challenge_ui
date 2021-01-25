@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
+import 'package:flutter_map_tappable_polyline/flutter_map_tappable_polyline.dart';
 
 import 'package:osmp_project/trail_progress_list_widget.dart';
 import 'package:osmp_project/settings_page.dart';
@@ -167,6 +168,40 @@ Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputM
 }
 
 // ----
+Future<void> _MapInfoAlert(BuildContext context, String segmentNameID, Map<String, String> theTrailNamesMap) async {
+  return showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(bottom: 450.0),
+        child: Dialog(
+          child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              theTrailNamesMap[segmentNameID],
+              style: TextStyle(fontSize: 15),
+            ),
+            SizedBox(
+              height: 2,
+            ),
+            Text(
+              "SegmentID: " + segmentNameID,
+              style: TextStyle(fontSize: 14),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+          ]),
+        ),
+      );
+    },
+  );
+}
+
+// ----
 class _CreateFlutterMap extends StatefulWidget {
   _CreateFlutterMap(this.theMapData, this.settingsOptions);
   final MapData theMapData;
@@ -182,7 +217,6 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
 
   @override
   Widget build(BuildContext context) {
-
     // keep track of max/min lat long for all segments
     double maxLat = -double.maxFinite;
     double minLat = double.maxFinite;
@@ -192,21 +226,24 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
     // trail or trail segment names
     List<Marker> theTrailNameMarkers = [];
 
+    // map from segmentNameID to trail name
+    Map theTrailNamesMap = Map<String, String>();
+
     // completed segments in one color
-    List<Polyline> theSegmentPolylines = [];
+    List<TaggedPolyline> theSegmentPolylines = [];
     widget.theMapData.completedSegs.forEach((SegmentSummary segment) {
-      Polyline polyline = Polyline(points: segment.latLong, strokeWidth: 4.0, color: widget.theMapData.completedSegColor);
+      TaggedPolyline polyline = TaggedPolyline(
+          points: segment.latLong, strokeWidth: 4.0, color: widget.theMapData.completedSegColor, tag: segment.segmentNameId);
       theSegmentPolylines.add(polyline);
 
+      // segmentNameID to trail name
+      theTrailNamesMap[segment.segmentNameId] = segment.name;
+
       // keep track of max/min lat long for all segments
-      if(segment.boundsMap['maxLatitude'] > maxLat)
-        maxLat = segment.boundsMap['maxLatitude'];
-      if(segment.boundsMap['maxLongitude'] > maxLong)
-        maxLong = segment.boundsMap['maxLongitude'];
-      if(segment.boundsMap['minLatitude'] < minLat)
-        minLat = segment.boundsMap['minLatitude'];
-      if(segment.boundsMap['minLongitude'] < minLong)
-        minLong = segment.boundsMap['minLongitude'];
+      if (segment.boundsMap['maxLatitude'] > maxLat) maxLat = segment.boundsMap['maxLatitude'];
+      if (segment.boundsMap['maxLongitude'] > maxLong) maxLong = segment.boundsMap['maxLongitude'];
+      if (segment.boundsMap['minLatitude'] < minLat) minLat = segment.boundsMap['minLatitude'];
+      if (segment.boundsMap['minLongitude'] < minLong) minLong = segment.boundsMap['minLongitude'];
 
       // trail or trail segment names on the map (optionally)
       if (widget.settingsOptions.displayTrailNames || widget.settingsOptions.displaySegmentNames) {
@@ -234,18 +271,18 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
 
     // remaining segments in another color
     widget.theMapData.remainingSegs.forEach((SegmentSummary segment) {
-      Polyline polyline = Polyline(points: segment.latLong, strokeWidth: 4.0, color: widget.theMapData.remainingSegColor);
+      TaggedPolyline polyline = TaggedPolyline(
+          points: segment.latLong, strokeWidth: 4.0, color: widget.theMapData.remainingSegColor, tag: segment.segmentNameId);
       theSegmentPolylines.add(polyline);
 
+      // segmentNameID to trail name
+      theTrailNamesMap[segment.segmentNameId] = segment.name;
+
       // keep track of max/min lat long for all segments
-      if(segment.boundsMap['maxLatitude'] > maxLat)
-        maxLat = segment.boundsMap['maxLatitude'];
-      if(segment.boundsMap['maxLongitude'] > maxLong)
-        maxLong = segment.boundsMap['maxLongitude'];
-      if(segment.boundsMap['minLatitude'] < minLat)
-        minLat = segment.boundsMap['minLatitude'];
-      if(segment.boundsMap['minLongitude'] < minLong)
-        minLong = segment.boundsMap['minLongitude'];
+      if (segment.boundsMap['maxLatitude'] > maxLat) maxLat = segment.boundsMap['maxLatitude'];
+      if (segment.boundsMap['maxLongitude'] > maxLong) maxLong = segment.boundsMap['maxLongitude'];
+      if (segment.boundsMap['minLatitude'] < minLat) minLat = segment.boundsMap['minLatitude'];
+      if (segment.boundsMap['minLongitude'] < minLong) minLong = segment.boundsMap['minLongitude'];
 
       // trail or trail segment names on the map (optionally)
       if (widget.settingsOptions.displayTrailNames || widget.settingsOptions.displaySegmentNames) {
@@ -316,10 +353,18 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
             boundsOptions: FitBoundsOptions(
               padding: EdgeInsets.all(15.0),
             ),
+            plugins: [
+              TappablePolylineMapPlugin(),
+            ],
           ),
           layers: [
             tileLayerOpts,
-            PolylineLayerOptions(polylines: theSegmentPolylines, polylineCulling: true),
+            TappablePolylineLayerOptions(
+              polylines: theSegmentPolylines,
+              polylineCulling: true,
+              pointerDistanceTolerance: 15,
+              onTap: (TaggedPolyline polyline) => _MapInfoAlert(context, polyline.tag, theTrailNamesMap),
+            ),
             MarkerLayerOptions(markers: theTrailNameMarkers),
           ],
         ),
