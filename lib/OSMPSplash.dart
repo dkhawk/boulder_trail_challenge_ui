@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:splashscreen/splashscreen.dart';
+
 import 'main.dart';
 
 // Display a pretty splash screen for a few seconds

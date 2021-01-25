@@ -1,19 +1,18 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
-
-import 'package:osmp_project/home_page.dart';
 import 'package:osmp_project/settings_page.dart';
-import 'package:firebase_auth/firebase_auth.dart';
+import 'package:osmp_project/trail_progress_list_widget.dart';
 import 'package:provider/provider.dart';
 
 // ----
-Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions settingsOptions) {
+Widget displayMap(
+    BuildContext context, TrailSummary trail, SettingsOptions settingsOptions) {
   MapData inputMapData = new MapData();
   inputMapData.mapName = Text(trail.name);
   inputMapData.percentComplete = trail.percentDone;
@@ -34,7 +33,8 @@ Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions sett
               LinearProgressIndicator(
                 value: trail.percentDone,
                 backgroundColor: inputMapData.remainingSegColor,
-                valueColor: new AlwaysStoppedAnimation<Color>(inputMapData.completedSegColor),
+                valueColor: new AlwaysStoppedAnimation<Color>(
+                    inputMapData.completedSegColor),
                 minHeight: 3,
               )
             ],
@@ -49,7 +49,8 @@ Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions sett
 }
 
 // ----
-Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData, SettingsOptions settingsOptions) {
+Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData,
+    SettingsOptions settingsOptions) {
   double percentDone = inputMapSummaryData.percentComplete;
 
   Navigator.push(context, MaterialPageRoute<void>(
@@ -68,7 +69,8 @@ Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData, Sett
               LinearProgressIndicator(
                 value: percentDone,
                 backgroundColor: inputMapSummaryData.remainingSegColor,
-                valueColor: new AlwaysStoppedAnimation<Color>(inputMapSummaryData.completedSegColor),
+                valueColor: new AlwaysStoppedAnimation<Color>(
+                    inputMapSummaryData.completedSegColor),
                 minHeight: 3,
               )
             ],
@@ -92,7 +94,11 @@ class _LoadDisplayMapSummaryData extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
 
-    Stream theStream = FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email).collection("trailStats").snapshots();
+    Stream theStream = FirebaseFirestore.instance
+        .collection('athletes')
+        .doc(firebaseUser.email)
+        .collection("trailStats")
+        .snapshots();
     return StreamBuilder<QuerySnapshot>(
       stream: theStream,
       builder: (context, snapshot) {
@@ -101,12 +107,16 @@ class _LoadDisplayMapSummaryData extends StatelessWidget {
         // for each trail add all the completed and remaining segments to an overallTrailSummary
         TrailSummary overallTrailSummary = new TrailSummary();
         snapshot.data.docs.forEach((DocumentSnapshot document) {
-          TrailSummary theSummaryForTheTrail = TrailSummary.fromSnapshot(document);
-          overallTrailSummary.completedSegs.addAll(theSummaryForTheTrail.completedSegs);
-          overallTrailSummary.remainingSegs.addAll(theSummaryForTheTrail.remainingSegs);
+          TrailSummary theSummaryForTheTrail =
+              TrailSummary.fromSnapshot(document);
+          overallTrailSummary.completedSegs
+              .addAll(theSummaryForTheTrail.completedSegs);
+          overallTrailSummary.remainingSegs
+              .addAll(theSummaryForTheTrail.remainingSegs);
         });
 
-        return _LoadDisplayMapData(overallTrailSummary, inputMapSummaryData, settingsOptions);
+        return _LoadDisplayMapData(
+            overallTrailSummary, inputMapSummaryData, settingsOptions);
       },
     );
   }
@@ -127,20 +137,29 @@ class _LoadDisplayMapData extends StatelessWidget {
       theStream = FirebaseFirestore.instance.collection('segments').snapshots();
     } else {
       // get only the segments for the given trail name
-      theStream = FirebaseFirestore.instance.collection('segments').where('name', isEqualTo: trail.name).snapshots();
+      theStream = FirebaseFirestore.instance
+          .collection('segments')
+          .where('name', isEqualTo: trail.name)
+          .snapshots();
     }
     return StreamBuilder<QuerySnapshot>(
       stream: theStream,
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
-        return _populateMapData(context, trail, inputMapData, settingsOptions, snapshot.data.docs);
+        return _populateMapData(
+            context, trail, inputMapData, settingsOptions, snapshot.data.docs);
       },
     );
   }
 }
 
 // ----
-Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputMapData, SettingsOptions settingsOptions, List<DocumentSnapshot> snapshot) {
+Widget _populateMapData(
+    BuildContext context,
+    TrailSummary trail,
+    MapData inputMapData,
+    SettingsOptions settingsOptions,
+    List<DocumentSnapshot> snapshot) {
   // build data for the trail map
   inputMapData.completedSegs = [];
   inputMapData.remainingSegs = [];
@@ -181,12 +200,16 @@ class _CreateFlutterMap extends StatelessWidget {
     // completed segments in one color
     List<Polyline> theSegmentPolylines = [];
     theMapData.completedSegs.forEach((SegmentSummary segment) {
-      Polyline polyline = new Polyline(points: segment.latLong, strokeWidth: 4.0, color: theMapData.completedSegColor);
+      Polyline polyline = new Polyline(
+          points: segment.latLong,
+          strokeWidth: 4.0,
+          color: theMapData.completedSegColor);
       theSegmentPolylines.add(polyline);
       mapBounds += segment.latLong;
 
       // trail or trail segment names on the map (optionally)
-      if (settingsOptions.displayTrailNames || settingsOptions.displaySegmentNames) {
+      if (settingsOptions.displayTrailNames ||
+          settingsOptions.displaySegmentNames) {
         if (polyline.points.isNotEmpty) {
           // approx center of polyline
           // int pntID = ((polyline.points.length) / 2).toInt();
@@ -194,14 +217,15 @@ class _CreateFlutterMap extends StatelessWidget {
 
           // the marker with the trail or segment name
           String markerString = segment.name;
-          if(settingsOptions.displaySegmentNames)
+          if (settingsOptions.displaySegmentNames)
             markerString = segment.segmentNameId;
 
           Marker segNameMarker = new Marker(
             width: 80.0,
             point: polyline.points[pntID],
             builder: (ctx) => new Container(
-              child: new Text(markerString, style: new TextStyle(fontSize: 12.0)),
+              child:
+                  new Text(markerString, style: new TextStyle(fontSize: 12.0)),
             ),
           );
 
@@ -212,12 +236,16 @@ class _CreateFlutterMap extends StatelessWidget {
 
     // remaining segments in another color
     theMapData.remainingSegs.forEach((SegmentSummary segment) {
-      Polyline polyline = new Polyline(points: segment.latLong, strokeWidth: 4.0, color: theMapData.remainingSegColor);
+      Polyline polyline = new Polyline(
+          points: segment.latLong,
+          strokeWidth: 4.0,
+          color: theMapData.remainingSegColor);
       theSegmentPolylines.add(polyline);
       mapBounds += segment.latLong;
 
       // trail or trail segment names on the map (optionally)
-      if (settingsOptions.displayTrailNames || settingsOptions.displaySegmentNames) {
+      if (settingsOptions.displayTrailNames ||
+          settingsOptions.displaySegmentNames) {
         if (polyline.points.isNotEmpty) {
           // approx center of polyline
           // int pntID = ((polyline.points.length) / 2).toInt();
@@ -225,14 +253,15 @@ class _CreateFlutterMap extends StatelessWidget {
 
           // the marker with the trail or segment name
           String markerString = segment.name;
-          if(settingsOptions.displaySegmentNames)
+          if (settingsOptions.displaySegmentNames)
             markerString = segment.segmentNameId;
 
           Marker segNameMarker = new Marker(
             width: 80.0,
             point: polyline.points[pntID],
             builder: (ctx) => new Container(
-              child: new Text(markerString, style: new TextStyle(fontSize: 12.0)),
+              child:
+                  new Text(markerString, style: new TextStyle(fontSize: 12.0)),
             ),
           );
 
@@ -263,11 +292,12 @@ class _CreateFlutterMap extends StatelessWidget {
     // zoom out and in
     MapController mapController = new MapController();
     void _zoomOut() {
-      if(mapController.ready)
+      if (mapController.ready)
         mapController.move(mapController.center, mapController.zoom - 1);
     }
+
     void _zoomIn() {
-      if(mapController.ready) {
+      if (mapController.ready) {
         double newZoom = mapController.zoom + 1;
         if (newZoom > 18) newZoom = 18;
         mapController.move(mapController.center, newZoom);
@@ -409,5 +439,6 @@ class SegmentSummary {
         latLong = map['latLong'],
         encodedLocations = map['encodedLocations'];
 
-  SegmentSummary.fromSnapshot(DocumentSnapshot snapshot) : this.fromMap(snapshot.data(), reference: snapshot.reference);
+  SegmentSummary.fromSnapshot(DocumentSnapshot snapshot)
+      : this.fromMap(snapshot.data(), reference: snapshot.reference);
 }
