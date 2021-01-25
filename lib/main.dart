@@ -1,16 +1,14 @@
-import 'package:flutter/material.dart';
-
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:osmp_project/OSMPSplash.dart';
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:provider/provider.dart';
-
+import 'package:osmp_project/OSMPSplash.dart';
 import 'package:osmp_project/authentication_service.dart';
 import 'package:osmp_project/home_page.dart';
 import 'package:osmp_project/sign_in_page.dart';
 import 'package:osmp_project/strava_service.dart';
+import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();

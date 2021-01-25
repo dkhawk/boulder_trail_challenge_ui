@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
@@ -5,7 +6,6 @@ import 'package:osmp_project/import_activities_screen.dart';
 import 'package:osmp_project/strava_service.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage(this.settingsOptions);

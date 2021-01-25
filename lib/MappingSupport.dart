@@ -7,14 +7,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
 
-import 'package:osmp_project/home_page.dart';
+import 'package:osmp_project/trail_progress_list_widget.dart';
 import 'package:osmp_project/settings_page.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 // ----
 Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions settingsOptions) {
-  MapData inputMapData = new MapData();
+  MapData inputMapData = MapData();
   inputMapData.mapName = Text(trail.name);
   inputMapData.percentComplete = trail.percentDone;
 
@@ -34,7 +34,7 @@ Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions sett
               LinearProgressIndicator(
                 value: trail.percentDone,
                 backgroundColor: inputMapData.remainingSegColor,
-                valueColor: new AlwaysStoppedAnimation<Color>(inputMapData.completedSegColor),
+                valueColor: AlwaysStoppedAnimation<Color>(inputMapData.completedSegColor),
                 minHeight: 3,
               )
             ],
@@ -68,7 +68,7 @@ Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData, Sett
               LinearProgressIndicator(
                 value: percentDone,
                 backgroundColor: inputMapSummaryData.remainingSegColor,
-                valueColor: new AlwaysStoppedAnimation<Color>(inputMapSummaryData.completedSegColor),
+                valueColor: AlwaysStoppedAnimation<Color>(inputMapSummaryData.completedSegColor),
                 minHeight: 3,
               )
             ],
@@ -100,7 +100,7 @@ class _LoadDisplayMapSummaryData extends StatelessWidget {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
         // for each trail add all the completed and remaining segments to an overallTrailSummary
-        TrailSummary overallTrailSummary = new TrailSummary();
+        TrailSummary overallTrailSummary = TrailSummary();
         snapshot.data.docs.forEach((DocumentSnapshot document) {
           TrailSummary theSummaryForTheTrail = TrailSummary.fromSnapshot(document);
           overallTrailSummary.completedSegs.addAll(theSummaryForTheTrail.completedSegs);
@@ -182,8 +182,12 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
 
   @override
   Widget build(BuildContext context) {
-    // keep track of all LatLng's that will be displayed
-    List<LatLng> mapBounds = [];
+
+    // keep track of max/min lat long for all segments
+    double maxLat = -double.maxFinite;
+    double minLat = double.maxFinite;
+    double maxLong = -double.maxFinite;
+    double minLong = double.maxFinite;
 
     // trail or trail segment names
     List<Marker> theTrailNameMarkers = [];
@@ -194,10 +198,15 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
       Polyline polyline = Polyline(points: segment.latLong, strokeWidth: 4.0, color: widget.theMapData.completedSegColor);
       theSegmentPolylines.add(polyline);
 
-      LatLng maxLatLong = LatLng(segment.boundsMap['maxLatitude'], segment.boundsMap['maxLongitude']);
-      LatLng minLatLong = LatLng(segment.boundsMap['minLatitude'], segment.boundsMap['minLongitude']);
-      mapBounds.add(maxLatLong);
-      mapBounds.add(minLatLong);
+      // keep track of max/min lat long for all segments
+      if(segment.boundsMap['maxLatitude'] > maxLat)
+        maxLat = segment.boundsMap['maxLatitude'];
+      if(segment.boundsMap['maxLongitude'] > maxLong)
+        maxLong = segment.boundsMap['maxLongitude'];
+      if(segment.boundsMap['minLatitude'] < minLat)
+        minLat = segment.boundsMap['minLatitude'];
+      if(segment.boundsMap['minLongitude'] < minLong)
+        minLong = segment.boundsMap['minLongitude'];
 
       // trail or trail segment names on the map (optionally)
       if (widget.settingsOptions.displayTrailNames || widget.settingsOptions.displaySegmentNames) {
@@ -228,10 +237,15 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
       Polyline polyline = Polyline(points: segment.latLong, strokeWidth: 4.0, color: widget.theMapData.remainingSegColor);
       theSegmentPolylines.add(polyline);
 
-      LatLng maxLatLong = LatLng(segment.boundsMap['maxLatitude'], segment.boundsMap['maxLongitude']);
-      LatLng minLatLong = LatLng(segment.boundsMap['minLatitude'], segment.boundsMap['minLongitude']);
-      mapBounds.add(maxLatLong);
-      mapBounds.add(minLatLong);
+      // keep track of max/min lat long for all segments
+      if(segment.boundsMap['maxLatitude'] > maxLat)
+        maxLat = segment.boundsMap['maxLatitude'];
+      if(segment.boundsMap['maxLongitude'] > maxLong)
+        maxLong = segment.boundsMap['maxLongitude'];
+      if(segment.boundsMap['minLatitude'] < minLat)
+        minLat = segment.boundsMap['minLatitude'];
+      if(segment.boundsMap['minLongitude'] < minLong)
+        minLong = segment.boundsMap['minLongitude'];
 
       // trail or trail segment names on the map (optionally)
       if (widget.settingsOptions.displayTrailNames || widget.settingsOptions.displaySegmentNames) {
@@ -256,6 +270,11 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
         }
       }
     });
+
+    // set up map boundaries
+    List<LatLng> mapBounds = [];
+    mapBounds.add(LatLng(maxLat, maxLong));
+    mapBounds.add(LatLng(minLat, minLong));
 
     // bail out if no data
     if (mapBounds.isEmpty) {
@@ -300,10 +319,7 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
           ),
           layers: [
             tileLayerOpts,
-            PolylineLayerOptions(
-              polylines: theSegmentPolylines,
-              polylineCulling: true,
-            ),
+            PolylineLayerOptions(polylines: theSegmentPolylines, polylineCulling: true),
             MarkerLayerOptions(markers: theTrailNameMarkers),
           ],
         ),
@@ -387,7 +403,7 @@ List<LatLng> _buildPolyLineForMap(String encodedValue) {
     } else {
       lastLng += result;
       // debugPrint('($lastLat, $lastLng)');
-      poly.add(new LatLng(lastLat, lastLng));
+      poly.add(LatLng(lastLat, lastLng));
     }
     count++;
   }
