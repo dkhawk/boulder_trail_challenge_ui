@@ -7,12 +7,18 @@ const functions = require('firebase-functions');
 // The Firebase Admin SDK to access Firestore.
 const admin = require('firebase-admin');
 admin.initializeApp();
+const spawn = require('child-process-promise').spawn;
+const path = require('path');
+const os = require('os');
+const fs = require('fs');
 
 const GeographicLib = require("geographiclib");
 var geod = GeographicLib.Geodesic.WGS84, r;
 
 const grid = require('./grid-data.json');
 const encodedSegments = require('./encoded-segments.json');
+
+let gpxParser = require('gpxparser');
 
 const minLat = grid.bounds.minLatitude;
 const minLng = grid.bounds.minLongitude;
@@ -257,6 +263,78 @@ exports.addMessage = functions.https.onRequest(async (req, res) => {
     // Send back a message that we've successfully written the message
     res.json({result: `Message with ID: ${writeResult.id} added.`});
 });
+
+exports.processGpxFileInFirestore = functions.https.onRequest(async (request, response) => {
+    const athleteId = request.query.athleteId;
+    const filePath = request.query.filePath;
+
+    const fileName = path.join(athleteId, filePath);
+
+    // // Download file from bucket.
+    const bucket = admin.storage().bucket('gs://boulder-trail-challenge.appspot.com/');
+
+    const remoteFile = bucket.file(fileName);
+
+    var gpx = "";
+    remoteFile.createReadStream()
+	.on('error', function(err) { response.status(500).send(error) })
+	.on('response', function(res) {
+	})
+	.on('close', async () => {
+	    let activity = await parseGpx(gpx);
+	    // console.log(JSON.stringify(activity));
+
+	    var completedSegments = [];
+	    completedSegments.push(...(await processActivity(activity.locations, athleteId, 0, activity.timestamp)));
+
+	    // Load trail data from database
+	    let trailStats = await btcApi.getTrailStats(athleteId);
+
+	    var updatedTrails = await calculateCompletedStats(completedSegments, trailStats);
+	    var updatedStats = calculateOverallStats(trailStats);
+	    
+	    console.log('===========================================');
+	    console.log('updatedStats');
+	    console.log(JSON.stringify(updatedStats));
+	    console.log('===========================================');
+	    // console.log('completedSegments');
+	    // console.log(JSON.stringify(completedSegments));
+	    // console.log('===========================================');
+
+	    btcApi.updateStats(athleteId, updatedTrails, updatedStats);
+	    btcApi.writeCompletedSegments(completedSegments, athleteId);
+
+	    response.send(`Done processing ${athleteId}/${filePath}\n`);
+	})
+	.on('data', function(chunk) {
+	    // console.log(chunk.toString());
+	    gpx = gpx + chunk.toString();
+	});
+});
+
+async function parseGpx(gpx) {
+    let parser = new gpxParser();
+    parser.parse(gpx);
+
+    let tracksAndRoutes = parser.tracks.concat(parser.routes);
+    var locations = [];
+    var timestamp = tracksAndRoutes[0].points[0].time;
+    for(let track in tracksAndRoutes) {
+	// console.log(tracksAndRoutes[track].points);
+	for (let point in tracksAndRoutes[track].points) {
+	    let loc = tracksAndRoutes[track].points[point];
+	    locations.push([loc.lat, loc.lon]);
+	}
+	// console.log(JSON.stringify(locations));
+
+	break;
+    }
+
+    return {
+	'timestamp': timestamp,
+	'locations': locations,
+    };
+}
 
 exports.getStravaInfo = functions.https.onRequest(async (request, response) => {
     const athleteId = request.query.athleteId;

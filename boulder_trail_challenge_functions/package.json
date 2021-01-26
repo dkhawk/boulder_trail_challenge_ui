@@ -1,8 +1,12 @@
 {
   "dependencies": {
+    "@google-cloud/storage": "^5.7.2",
+    "child-process-promise": "^2.2.1",
+    "fast-crc32c": "^2.0.0",
     "firebase-admin": "^9.4.2",
     "firebase-functions": "^3.13.0",
     "geographiclib": "^1.51.0",
+    "gpxparser": "^3.0.6",
     "request-promise": "^4.2.6"
   }
 }
