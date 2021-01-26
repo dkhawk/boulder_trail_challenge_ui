@@ -39,6 +39,7 @@ dependencies:
   # map creation
   flutter_map: #^0.10.1+1
   latlong: #"^0.5.3"
+  flutter_map_tappable_polyline: #^1.2.0
 
 dev_dependencies:
   flutter_test:

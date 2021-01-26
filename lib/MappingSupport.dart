@@ -1,19 +1,21 @@
 import 'dart:ui';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
-import 'package:osmp_project/settings_page.dart';
+import 'package:flutter_map_tappable_polyline/flutter_map_tappable_polyline.dart';
+
 import 'package:osmp_project/trail_progress_list_widget.dart';
+import 'package:osmp_project/settings_page.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
 // ----
-Widget displayMap(
-    BuildContext context, TrailSummary trail, SettingsOptions settingsOptions) {
-  MapData inputMapData = new MapData();
+Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions settingsOptions) {
+  MapData inputMapData = MapData();
   inputMapData.mapName = Text(trail.name);
   inputMapData.percentComplete = trail.percentDone;
 
@@ -33,8 +35,7 @@ Widget displayMap(
               LinearProgressIndicator(
                 value: trail.percentDone,
                 backgroundColor: inputMapData.remainingSegColor,
-                valueColor: new AlwaysStoppedAnimation<Color>(
-                    inputMapData.completedSegColor),
+                valueColor: AlwaysStoppedAnimation<Color>(inputMapData.completedSegColor),
                 minHeight: 3,
               )
             ],
@@ -49,8 +50,7 @@ Widget displayMap(
 }
 
 // ----
-Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData,
-    SettingsOptions settingsOptions) {
+Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData, SettingsOptions settingsOptions) {
   double percentDone = inputMapSummaryData.percentComplete;
 
   Navigator.push(context, MaterialPageRoute<void>(
@@ -69,8 +69,7 @@ Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData,
               LinearProgressIndicator(
                 value: percentDone,
                 backgroundColor: inputMapSummaryData.remainingSegColor,
-                valueColor: new AlwaysStoppedAnimation<Color>(
-                    inputMapSummaryData.completedSegColor),
+                valueColor: AlwaysStoppedAnimation<Color>(inputMapSummaryData.completedSegColor),
                 minHeight: 3,
               )
             ],
@@ -94,29 +93,22 @@ class _LoadDisplayMapSummaryData extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
 
-    Stream theStream = FirebaseFirestore.instance
-        .collection('athletes')
-        .doc(firebaseUser.email)
-        .collection("trailStats")
-        .snapshots();
+    Stream theStream =
+        FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email).collection("trailStats").snapshots();
     return StreamBuilder<QuerySnapshot>(
       stream: theStream,
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
 
         // for each trail add all the completed and remaining segments to an overallTrailSummary
-        TrailSummary overallTrailSummary = new TrailSummary();
+        TrailSummary overallTrailSummary = TrailSummary();
         snapshot.data.docs.forEach((DocumentSnapshot document) {
-          TrailSummary theSummaryForTheTrail =
-              TrailSummary.fromSnapshot(document);
-          overallTrailSummary.completedSegs
-              .addAll(theSummaryForTheTrail.completedSegs);
-          overallTrailSummary.remainingSegs
-              .addAll(theSummaryForTheTrail.remainingSegs);
+          TrailSummary theSummaryForTheTrail = TrailSummary.fromSnapshot(document);
+          overallTrailSummary.completedSegs.addAll(theSummaryForTheTrail.completedSegs);
+          overallTrailSummary.remainingSegs.addAll(theSummaryForTheTrail.remainingSegs);
         });
 
-        return _LoadDisplayMapData(
-            overallTrailSummary, inputMapSummaryData, settingsOptions);
+        return _LoadDisplayMapData(overallTrailSummary, inputMapSummaryData, settingsOptions);
       },
     );
   }
@@ -137,28 +129,20 @@ class _LoadDisplayMapData extends StatelessWidget {
       theStream = FirebaseFirestore.instance.collection('segments').snapshots();
     } else {
       // get only the segments for the given trail name
-      theStream = FirebaseFirestore.instance
-          .collection('segments')
-          .where('name', isEqualTo: trail.name)
-          .snapshots();
+      theStream = FirebaseFirestore.instance.collection('segments').where('name', isEqualTo: trail.name).snapshots();
     }
     return StreamBuilder<QuerySnapshot>(
       stream: theStream,
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
-        return _populateMapData(
-            context, trail, inputMapData, settingsOptions, snapshot.data.docs);
+        return _populateMapData(context, trail, inputMapData, settingsOptions, snapshot.data.docs);
       },
     );
   }
 }
 
 // ----
-Widget _populateMapData(
-    BuildContext context,
-    TrailSummary trail,
-    MapData inputMapData,
-    SettingsOptions settingsOptions,
+Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputMapData, SettingsOptions settingsOptions,
     List<DocumentSnapshot> snapshot) {
   // build data for the trail map
   inputMapData.completedSegs = [];
@@ -184,32 +168,85 @@ Widget _populateMapData(
 }
 
 // ----
-class _CreateFlutterMap extends StatelessWidget {
+Future<void> _MapInfoAlert(BuildContext context, String segmentNameID, Map<String, String> theTrailNamesMap) async {
+  return showDialog(
+    context: context,
+    barrierDismissible: true,
+    builder: (BuildContext context) {
+      return Padding(
+        padding: EdgeInsets.only(bottom: 450.0),
+        child: Dialog(
+          child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+            SizedBox(
+              height: 15,
+            ),
+            Text(
+              theTrailNamesMap[segmentNameID],
+              style: TextStyle(fontSize: 15),
+            ),
+            SizedBox(
+              height: 2,
+            ),
+            Text(
+              "SegmentID: " + segmentNameID,
+              style: TextStyle(fontSize: 14),
+            ),
+            SizedBox(
+              height: 15,
+            ),
+          ]),
+        ),
+      );
+    },
+  );
+}
+
+// ----
+class _CreateFlutterMap extends StatefulWidget {
   _CreateFlutterMap(this.theMapData, this.settingsOptions);
   final MapData theMapData;
   final SettingsOptions settingsOptions;
 
   @override
+  __CreateFlutterMapState createState() => __CreateFlutterMapState();
+}
+
+// ----
+class __CreateFlutterMapState extends State<_CreateFlutterMap> {
+  MapController mapController = MapController();
+
+  @override
   Widget build(BuildContext context) {
-    // keep track of all LatLng's that will be displayed (granted not efficient)
-    List<LatLng> mapBounds = [];
+    // keep track of max/min lat long for all segments
+    double maxLat = -double.maxFinite;
+    double minLat = double.maxFinite;
+    double maxLong = -double.maxFinite;
+    double minLong = double.maxFinite;
 
     // trail or trail segment names
     List<Marker> theTrailNameMarkers = [];
 
+    // map from segmentNameID to trail name
+    Map theTrailNamesMap = Map<String, String>();
+
     // completed segments in one color
-    List<Polyline> theSegmentPolylines = [];
-    theMapData.completedSegs.forEach((SegmentSummary segment) {
-      Polyline polyline = new Polyline(
-          points: segment.latLong,
-          strokeWidth: 4.0,
-          color: theMapData.completedSegColor);
+    List<TaggedPolyline> theSegmentPolylines = [];
+    widget.theMapData.completedSegs.forEach((SegmentSummary segment) {
+      TaggedPolyline polyline = TaggedPolyline(
+          points: segment.latLong, strokeWidth: 4.0, color: widget.theMapData.completedSegColor, tag: segment.segmentNameId);
       theSegmentPolylines.add(polyline);
-      mapBounds += segment.latLong;
+
+      // segmentNameID to trail name
+      theTrailNamesMap[segment.segmentNameId] = segment.name;
+
+      // keep track of max/min lat long for all segments
+      if (segment.boundsMap['maxLatitude'] > maxLat) maxLat = segment.boundsMap['maxLatitude'];
+      if (segment.boundsMap['maxLongitude'] > maxLong) maxLong = segment.boundsMap['maxLongitude'];
+      if (segment.boundsMap['minLatitude'] < minLat) minLat = segment.boundsMap['minLatitude'];
+      if (segment.boundsMap['minLongitude'] < minLong) minLong = segment.boundsMap['minLongitude'];
 
       // trail or trail segment names on the map (optionally)
-      if (settingsOptions.displayTrailNames ||
-          settingsOptions.displaySegmentNames) {
+      if (widget.settingsOptions.displayTrailNames || widget.settingsOptions.displaySegmentNames) {
         if (polyline.points.isNotEmpty) {
           // approx center of polyline
           // int pntID = ((polyline.points.length) / 2).toInt();
@@ -217,15 +254,13 @@ class _CreateFlutterMap extends StatelessWidget {
 
           // the marker with the trail or segment name
           String markerString = segment.name;
-          if (settingsOptions.displaySegmentNames)
-            markerString = segment.segmentNameId;
+          if (widget.settingsOptions.displaySegmentNames) markerString = segment.segmentNameId;
 
-          Marker segNameMarker = new Marker(
+          Marker segNameMarker = Marker(
             width: 80.0,
             point: polyline.points[pntID],
-            builder: (ctx) => new Container(
-              child:
-                  new Text(markerString, style: new TextStyle(fontSize: 12.0)),
+            builder: (ctx) => Container(
+              child: Text(markerString, style: TextStyle(fontSize: 12.0)),
             ),
           );
 
@@ -235,17 +270,22 @@ class _CreateFlutterMap extends StatelessWidget {
     });
 
     // remaining segments in another color
-    theMapData.remainingSegs.forEach((SegmentSummary segment) {
-      Polyline polyline = new Polyline(
-          points: segment.latLong,
-          strokeWidth: 4.0,
-          color: theMapData.remainingSegColor);
+    widget.theMapData.remainingSegs.forEach((SegmentSummary segment) {
+      TaggedPolyline polyline = TaggedPolyline(
+          points: segment.latLong, strokeWidth: 4.0, color: widget.theMapData.remainingSegColor, tag: segment.segmentNameId);
       theSegmentPolylines.add(polyline);
-      mapBounds += segment.latLong;
+
+      // segmentNameID to trail name
+      theTrailNamesMap[segment.segmentNameId] = segment.name;
+
+      // keep track of max/min lat long for all segments
+      if (segment.boundsMap['maxLatitude'] > maxLat) maxLat = segment.boundsMap['maxLatitude'];
+      if (segment.boundsMap['maxLongitude'] > maxLong) maxLong = segment.boundsMap['maxLongitude'];
+      if (segment.boundsMap['minLatitude'] < minLat) minLat = segment.boundsMap['minLatitude'];
+      if (segment.boundsMap['minLongitude'] < minLong) minLong = segment.boundsMap['minLongitude'];
 
       // trail or trail segment names on the map (optionally)
-      if (settingsOptions.displayTrailNames ||
-          settingsOptions.displaySegmentNames) {
+      if (widget.settingsOptions.displayTrailNames || widget.settingsOptions.displaySegmentNames) {
         if (polyline.points.isNotEmpty) {
           // approx center of polyline
           // int pntID = ((polyline.points.length) / 2).toInt();
@@ -253,15 +293,13 @@ class _CreateFlutterMap extends StatelessWidget {
 
           // the marker with the trail or segment name
           String markerString = segment.name;
-          if (settingsOptions.displaySegmentNames)
-            markerString = segment.segmentNameId;
+          if (widget.settingsOptions.displaySegmentNames) markerString = segment.segmentNameId;
 
-          Marker segNameMarker = new Marker(
+          Marker segNameMarker = Marker(
             width: 80.0,
             point: polyline.points[pntID],
-            builder: (ctx) => new Container(
-              child:
-                  new Text(markerString, style: new TextStyle(fontSize: 12.0)),
+            builder: (ctx) => Container(
+              child: Text(markerString, style: TextStyle(fontSize: 12.0)),
             ),
           );
 
@@ -270,6 +308,11 @@ class _CreateFlutterMap extends StatelessWidget {
       }
     });
 
+    // set up map boundaries
+    List<LatLng> mapBounds = [];
+    mapBounds.add(LatLng(maxLat, maxLong));
+    mapBounds.add(LatLng(minLat, minLong));
+
     // bail out if no data
     if (mapBounds.isEmpty) {
       return _NoDataScreen();
@@ -277,23 +320,21 @@ class _CreateFlutterMap extends StatelessWidget {
 
     // regular or topo maps
     TileLayerOptions tileLayerOpts;
-    if (settingsOptions.useTopoMaps == true)
-      tileLayerOpts = new TileLayerOptions(
+    if (widget.settingsOptions.useTopoMaps == true)
+      tileLayerOpts = TileLayerOptions(
         urlTemplate: "https://{s}.tile.opentopomap.org/{z}/{x}/{y}.png",
         subdomains: ['a', 'b', 'c'],
         opacity: 0.85,
       );
     else
-      tileLayerOpts = new TileLayerOptions(
+      tileLayerOpts = TileLayerOptions(
         urlTemplate: "https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",
         subdomains: ['a', 'b', 'c'],
       );
 
     // zoom out and in
-    MapController mapController = new MapController();
     void _zoomOut() {
-      if (mapController.ready)
-        mapController.move(mapController.center, mapController.zoom - 1);
+      if (mapController.ready) mapController.move(mapController.center, mapController.zoom - 1);
     }
 
     void _zoomIn() {
@@ -305,26 +346,33 @@ class _CreateFlutterMap extends StatelessWidget {
     }
 
     return Scaffold(
-        body: new FlutterMap(
+        body: FlutterMap(
           mapController: mapController,
           options: MapOptions(
             bounds: LatLngBounds.fromPoints(mapBounds),
             boundsOptions: FitBoundsOptions(
               padding: EdgeInsets.all(15.0),
             ),
-            maxZoom: 18,
+            plugins: [
+              TappablePolylineMapPlugin(),
+            ],
           ),
           layers: [
             tileLayerOpts,
-            new PolylineLayerOptions(polylines: theSegmentPolylines),
-            new MarkerLayerOptions(markers: theTrailNameMarkers),
+            TappablePolylineLayerOptions(
+              polylines: theSegmentPolylines,
+              polylineCulling: true,
+              pointerDistanceTolerance: 15,
+              onTap: (TaggedPolyline polyline) => _MapInfoAlert(context, polyline.tag, theTrailNamesMap),
+              onMiss: () => debugPrint("No polyline tapped"),
+            ),
+            MarkerLayerOptions(markers: theTrailNameMarkers),
           ],
         ),
 
         // zoom in and out buttons
         floatingActionButton: Column(
           mainAxisAlignment: MainAxisAlignment.end,
-          //crossAxisAlignment: CrossAxisAlignment.end,
           children: [
             FloatingActionButton(
               heroTag: "zoomIn",
@@ -401,7 +449,7 @@ List<LatLng> _buildPolyLineForMap(String encodedValue) {
     } else {
       lastLng += result;
       // debugPrint('($lastLat, $lastLng)');
-      poly.add(new LatLng(lastLat, lastLng));
+      poly.add(LatLng(lastLat, lastLng));
     }
     count++;
   }
@@ -426,7 +474,10 @@ class SegmentSummary {
   final String name;
   final String segmentNameId;
   final String encodedLocations;
+  // latLong list after decoding
   List<LatLng> latLong;
+  // bounds
+  Map<String, dynamic> boundsMap;
 
   final DocumentReference reference;
 
@@ -437,8 +488,8 @@ class SegmentSummary {
         name = map['name'],
         segmentNameId = map['segmentId'],
         latLong = map['latLong'],
-        encodedLocations = map['encodedLocations'];
+        encodedLocations = map['encodedLocations'],
+        boundsMap = map['bounds'];
 
-  SegmentSummary.fromSnapshot(DocumentSnapshot snapshot)
-      : this.fromMap(snapshot.data(), reference: snapshot.reference);
+  SegmentSummary.fromSnapshot(DocumentSnapshot snapshot) : this.fromMap(snapshot.data(), reference: snapshot.reference);
 }
