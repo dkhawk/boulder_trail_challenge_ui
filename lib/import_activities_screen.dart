@@ -1,5 +1,13 @@
+import 'dart:io';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
+import 'package:path_provider/path_provider.dart';
+
 
 //
 // View an encoded preview map:
@@ -13,16 +21,70 @@ import 'package:flutter/material.dart';
 class ImportActivitiesScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    firebase_storage.FirebaseStorage storage =
+        firebase_storage.FirebaseStorage.instance;
+
+    // firebase_storage.StorageReference ref = firebase_storage.FirebaseStorage.instance.ref('/notes.txt');
+
     return Scaffold(
       appBar: AppBar(),
       body: Center(
         child: FlatButton(
-          child: Text('Pop!'),
+          child: Text('Select files'),
           onPressed: () {
-            Navigator.pop(context);
+            pickFiles();
           },
         ),
       ),
     );
+  }
+
+  Future<void> pickFiles() async {
+    // TODO: support other formats when we can (tcx, fit?)
+    FilePickerResult result = await FilePicker.platform.pickFiles(type: FileType.custom, allowedExtensions: ['gpx'], withData: true);
+
+    if(result != null) {
+      print(result.names.toString());
+      print(result.files.first.name.toString());
+      // var url = await uploadFile(result.files.first.bytes, "test.gpx");
+      // print('uploaded to $url');
+      // File file = File(result.files.first.path);
+      // print(file);
+      // if (file != null) {
+      //   await uploadFile(file);
+      // }
+      // Directory appDocDir = await getApplicationDocumentsDirectory();
+    }
+  }
+
+  Future<String> uploadFile(Uint8List bytes, String filename) async {
+    // String url;
+    // // var bytes = await new_image.readAsBytes();
+    // StorageReference storageReference = FirebaseStorage.instance
+    //     .ref()
+    //     .child('testupload/${filename}'); // ${Path.basename(file.path)}');
+    // try {
+    //   // StorageReference _storage = storage().ref('002test');
+    //   UploadTaskSnapshot uploadTaskSnapshot = await storageReference.putFile(bytes, fb.UploadMetadata(contentType: 'image/png')).future;
+    //   var imageUri = await uploadTaskSnapshot.ref.getDownloadURL();
+    //   url = imageUri.toString();
+    // } catch (e) {
+    //   print(e);
+    // }
+
+
+
+    // StorageReference storageReference = FirebaseStorage.instance
+    //     .ref()
+    //     .child('testupload/${filename}'); // ${Path.basename(file.path)}');
+    // // StorageUploadTask uploadTask = storageReference.putFile(file);
+    // StorageUploadTask uploadTask = storageReference.putData(data);
+    // await uploadTask.onComplete;
+    // print('File Uploaded');
+    // String returnURL;
+    // await storageReference.getDownloadURL().then((fileURL) {
+    //   returnURL =  fileURL;
+    // });
+    // return returnURL;
   }
 }
