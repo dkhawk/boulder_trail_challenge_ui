@@ -35,6 +35,7 @@ dependencies:
   url_launcher: 5.7.10
   firebase_storage: ^4.0.1
   file_picker: ^2.1.5+1
+  image_picker: ^0.6.0+17
 
   splashscreen: ^1.3.5
 

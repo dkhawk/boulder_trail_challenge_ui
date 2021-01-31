@@ -7,7 +7,11 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:path_provider/path_provider.dart';
-
+import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart'; // For File Upload To Firestore
+import 'package:flutter/material.dart';
+import 'package:image_picker/image_picker.dart'; // For Image Picker
+import 'package:path/path.dart' as Path;
 
 //
 // View an encoded preview map:
@@ -46,8 +50,8 @@ class ImportActivitiesScreen extends StatelessWidget {
     if(result != null) {
       print(result.names.toString());
       print(result.files.first.name.toString());
-      // var url = await uploadFile(result.files.first.bytes, "test.gpx");
-      // print('uploaded to $url');
+      var url = await uploadFile(result.files.first.bytes, "test.gpx");
+      print('uploaded to $url');
       // File file = File(result.files.first.path);
       // print(file);
       // if (file != null) {
@@ -57,15 +61,29 @@ class ImportActivitiesScreen extends StatelessWidget {
     }
   }
 
-  Future<String> uploadFile(Uint8List bytes, String filename) async {
-    // String url;
-    // // var bytes = await new_image.readAsBytes();
+  Future<String> uploadFile(Uint8List data, String filename) async {
+    StorageReference ref = FirebaseStorage.instance
+        .ref()
+        .child('testupload/${filename}'); // ${Path.basename(file.path)}');
+
+    var uploadTask = ref.putData(data);
+    StorageTaskSnapshot taskSnapshot = await uploadTask.onComplete;
+
+    return 'bogus!';
+
+    // String downloadUrl = await taskSnapshot.ref.getDownloadURL();
+    // return downloadUrl;
+
+
     // StorageReference storageReference = FirebaseStorage.instance
     //     .ref()
     //     .child('testupload/${filename}'); // ${Path.basename(file.path)}');
     // try {
     //   // StorageReference _storage = storage().ref('002test');
-    //   UploadTaskSnapshot uploadTaskSnapshot = await storageReference.putFile(bytes, fb.UploadMetadata(contentType: 'image/png')).future;
+
+    // StorageMetadata.UploadMetadata(contentType: 'image/png')
+    // StorageUploadTask uploadTask = storageReference.putData(bytes);
+    // uploadTask.onComplete
     //   var imageUri = await uploadTaskSnapshot.ref.getDownloadURL();
     //   url = imageUri.toString();
     // } catch (e) {
