@@ -64,6 +64,7 @@ flutter:
   assets:
     - assets/images/dummy_map.png
     - assets/images/FlatIrons.jpg
+    - assets/mapData/encoded-segments.json
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

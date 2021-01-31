@@ -1,8 +1,10 @@
 import 'dart:ui';
+import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 
 import 'package:flutter_map/flutter_map.dart';
 import 'package:latlong/latlong.dart';
@@ -114,6 +116,17 @@ class _LoadDisplayMapSummaryData extends StatelessWidget {
   }
 }
 
+// ----
+Future<String> _readSegmentsStringFromJson() async {
+  String jsonString;
+  try {
+    jsonString = await rootBundle.loadString('assets/mapData/encoded-segments.json');
+  } catch (e) {
+    debugPrint("Couldn't read encoded segments asset file");
+  }
+  return jsonString;
+}
+
 //----
 class _LoadDisplayMapData extends StatelessWidget {
   _LoadDisplayMapData(this.trail, this.inputMapData, this.settingsOptions);
@@ -123,34 +136,89 @@ class _LoadDisplayMapData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Stream theStream;
-    if (inputMapData.isMapSummary) {
-      // get all the segments
-      theStream = FirebaseFirestore.instance.collection('segments').snapshots();
+    if (inputMapData.useJsonForSegments) {
+      // --
+      // Pull the trail segment data out of assets/MapData/encoded-segments.json
+      List<SegmentSummary> segmentList = [];
+      return FutureBuilder<String>(
+        future: _readSegmentsStringFromJson(),
+        builder: (BuildContext context, AsyncSnapshot<String> jsonString) {
+          if (jsonString.hasData) {
+            Map<String, dynamic> jsonMapObject = jsonDecode(jsonString.data);
+            jsonMapObject.forEach(
+              (key, trailSeg) {
+                SegmentSummary segment = SegmentSummary.fromMap(trailSeg);
+
+                if (inputMapData.isMapSummary) {
+                  // get all segments
+                  segmentList.add(segment);
+                } else if (segment.name == trail.name) {
+                  // get only the segments for the given trail name
+                  segmentList.add(segment);
+                }
+              },
+            );
+            return _populateMapData(context, trail, inputMapData, settingsOptions, segmentList);
+          } else {
+            Center(
+              child: SizedBox(
+                child: CircularProgressIndicator(),
+                width: 40,
+                height: 40,
+              ),
+            );
+          }
+
+          return Center(
+            child: SizedBox(
+              child: CircularProgressIndicator(),
+              width: 40,
+              height: 40,
+            ),
+          );
+        },
+      );
     } else {
-      // get only the segments for the given trail name
-      theStream = FirebaseFirestore.instance.collection('segments').where('name', isEqualTo: trail.name).snapshots();
+      // --
+      // Pull the trail segment data out of Firestore
+      Stream theStream;
+      if (inputMapData.isMapSummary) {
+        // get all the segments
+        theStream = FirebaseFirestore.instance.collection('segments').snapshots();
+      } else {
+        // get only the segments for the given trail name
+        theStream = FirebaseFirestore.instance.collection('segments').where('name', isEqualTo: trail.name).snapshots();
+      }
+      return StreamBuilder<QuerySnapshot>(
+        stream: theStream,
+        builder: (context, snapshot) {
+          if (!snapshot.hasData) return LinearProgressIndicator();
+          {
+            // pull the list of segments out of the QuerySnapshot
+            List<SegmentSummary> segmentList = [];
+            snapshot.data.docs.forEach(
+              (DocumentSnapshot document) {
+                SegmentSummary segment = SegmentSummary.fromSnapshot(document);
+                segmentList.add(segment);
+              },
+            );
+            return _populateMapData(context, trail, inputMapData, settingsOptions, segmentList);
+          }
+        },
+      );
     }
-    return StreamBuilder<QuerySnapshot>(
-      stream: theStream,
-      builder: (context, snapshot) {
-        if (!snapshot.hasData) return LinearProgressIndicator();
-        return _populateMapData(context, trail, inputMapData, settingsOptions, snapshot.data.docs);
-      },
-    );
   }
 }
 
 // ----
 Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputMapData, SettingsOptions settingsOptions,
-    List<DocumentSnapshot> snapshot) {
+    List<SegmentSummary> segmentList) {
   // build data for the trail map
   inputMapData.completedSegs = [];
   inputMapData.remainingSegs = [];
 
-  // go through the list of segments for this trail pulled from firestore
-  snapshot.forEach((DocumentSnapshot document) {
-    SegmentSummary segment = SegmentSummary.fromSnapshot(document);
+  // go through the list of segments for this trail or set of trails
+  segmentList.forEach((SegmentSummary segment) {
     String segmentNameId = segment.segmentNameId;
     String encodedLocations = segment.encodedLocations;
     segment.latLong = _buildPolyLineForMap(encodedLocations);
@@ -168,7 +236,7 @@ Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputM
 }
 
 // ----
-Future<void> _MapInfoAlert(BuildContext context, String segmentNameID, Map<String, String> theTrailNamesMap) async {
+Future<void> _mapInfoAlert(BuildContext context, String segmentNameID, Map<String, String> theTrailNamesMap) async {
   return showDialog(
     context: context,
     barrierDismissible: true,
@@ -363,7 +431,7 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
               polylines: theSegmentPolylines,
               polylineCulling: true,
               pointerDistanceTolerance: 15,
-              onTap: (TaggedPolyline polyline) => _MapInfoAlert(context, polyline.tag, theTrailNamesMap),
+              onTap: (TaggedPolyline polyline) => _mapInfoAlert(context, polyline.tag, theTrailNamesMap),
               onMiss: () => debugPrint("No polyline tapped"),
             ),
             MarkerLayerOptions(markers: theTrailNameMarkers),
@@ -467,6 +535,10 @@ class MapData {
   Color remainingSegColor = Colors.redAccent;
 
   bool isMapSummary = false;
+
+  // by default code will use Json file in the assets for the trail segment data
+  // - change the following to false to pull the trail segment data out of Firestore
+  bool useJsonForSegments = true;
 }
 
 // ----
