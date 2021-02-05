@@ -36,11 +36,20 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
         ),
       ),
       body: Center(
-        child: RaisedButton(
-          child: Text('Press here to select the GPX files that you want to import'),
-          onPressed: () {
-            _pickFiles().whenComplete(() => _numFilesAlert(context));
-          },
+        child: Column(
+          children: [
+            Spacer(),
+            Image(image: AssetImage('images/UploadFile.jpg')),
+            Spacer(),
+            RaisedButton(
+              child: Text(
+                  'Press here to select the GPX files that you want to import'),
+              onPressed: () {
+                _pickFiles().whenComplete(() => _numFilesAlert(context));
+              },
+            ),
+            Spacer(),
+          ],
         ),
       ),
     );
