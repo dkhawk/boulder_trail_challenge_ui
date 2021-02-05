@@ -45,7 +45,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         Spacer(),
         RaisedButton(
-          child: Text('Import old activities'),
+          child: Text('Import old activities using GPX files'),
           onPressed: () {
             Navigator.push(
               context,
