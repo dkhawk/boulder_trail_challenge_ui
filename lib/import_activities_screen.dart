@@ -39,9 +39,9 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
         child: Column(
           children: [
             Spacer(),
-            Image(image: AssetImage('images/UploadFile.jpg')),
+            Image(image: AssetImage('images/UploadFile.png')),
             Spacer(),
-            RaisedButton(
+            ElevatedButton(
               child: Text(
                   'Press here to select the GPX files that you want to import'),
               onPressed: () {
