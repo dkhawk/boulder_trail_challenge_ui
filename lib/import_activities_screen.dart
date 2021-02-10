@@ -2,7 +2,13 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
-//import 'dart:convert';
+import 'package:gpx/gpx.dart';
+
+import 'package:path/path.dart' as path;
+import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
+//import 'dart:math' as math show pow;
+
+import 'dart:convert';
 //
 // View an encoded preview map:
 // https://maps.googleapis.com/maps/api/staticmap?size=300x300&maptype=roadmap&path=enc:u_fsFnjtaSKdGs@~BgB_@eBmDsEvAcBfAeANkBoAoA`@uCHgAYiFdCuAm@c@ViAkAqBKeB_BuAUuB|@}Hx@aIbDeEFuBv@s@a@aK\\{Fw@qJz@sHi@iDd@yC`Ca@xAb@tGfHjAqB~AdADl@r@wARbA\\Pn@iAbA`@ROrAVzA_@d@J|@Xp@S`AmA\\}@~AbC]Fx@j@l@ObAOLpAlA|HwFpHgBn@uAxBWd@mArG{DdIqJtFwAtC}BxAGhBmAhDGfCyA~BK~@uA}@}Dt@wAvD]lArAjEVzC{BdBPfBi@z@f@nA[zA`BzCi@DiAxBNPm@hBTnBtCtBA@_Kw@s@h@oBj@q@rDEbBu@XxCdGmOVh@gB|J`@fAjEWhAoB?`Fh@d@\\oBvA]tBmBjBkEtAr@lBO`ChGvAz@g@xAPrAfCr@vAgA?pBr@}@z@kDz@]|Ar@p@rFp@@t@eBWd@Nz@w@xBVVq@fA`@|@yAj@v@v@kABf@^UL_CFhAnACrAxAjCjDA~ClDr@zBKlAg@xCl@PyAVqEjDkD`@_@`ADpAwAbD[O|AdEk@bBtAlEQxGtAnDbDNpD{Aa@`@b@NSp@dKbAjBaBjBYd@_ArBB|BhAdC}DbG_BlAf@xBYjA_Cz@IdAeCvAy@`@{AdCqCxBUrCn@AdAoBbC~@bB`Bt@xEa@fBsAn@{BIw@h@KEk@l@I?g@v@FAe@lCiA\\y@dGwA?iA|AFJ_@]q@NqBjAxB`BP`CxB?{AhCqBQcA`Aq@FwBs@a@z@p@YbAPZ_Ap@PjAkC~AEfBiBsByBQgAiCDhDA\\yAGO`@XX_Et@aGnD[lAu@FDf@{@BA|A[Cb@Pk@nAsBlAsEn@gCuAc@}@v@G`AmDuC_AkAN}AbA}@x@c@bCcAXwBhC?t@c@Uo@~AgDn@eIh@oCfEoCgAmBVKo@mCUiCkBe@DHd@gAjAwDwK{BsCsF}A{CjB^mAwAmC?}@^J^uBf@U^sDxFqArCmCrADu@k@l@eEq@mCyCmDwDLqAiCMaBw@eAnCK_@{@fAHe@kArASg@y@`@sAYSx@gA^eCe@AsA~A[y@j@qJgGt@u@jBB`AgAnB}@F_BuA@{CeDgEc@aBiEm@yB`EmBlBkAVm@pBe@wBRiC_BjBuDZc@q@bBsKUc@kGnOQ}C}G`Ao@p@D~@&key=AIzaSyAhdVJIK052gJzuSxvUuhKZPNgXdyaA9ig
@@ -74,23 +80,44 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
           String fileNameString = '';
           try {
             // the gpx string:
-            // TODO : eventually want to strip out extraneous data before upload
-            // String dataString = Utf8Decoder().convert(file.bytes);
+            String gpxDataString = Utf8Decoder().convert(file.bytes);
 
-            String uploadLocation = 'testupload/' + file.name;
-            firebase_storage.Reference ref =
-                firebase_storage.FirebaseStorage.instance.ref().child(uploadLocation);
-            firebase_storage.UploadTask uploadTask = ref.putData(file.bytes);
+            // convert to google encoded track (only the track: all other data discarded)
+            List<String> encodedTrackStrings = [];
+            encodedTrackStrings = _gpxToGoogleEncodedTrack(gpxDataString);
 
-            print(uploadTask.storage.toString());
+            // location for file uploads
+            // TODO: update location for uploaded data
+            String baseTrackName =
+                'testupload/' + path.basenameWithoutExtension(file.name);
 
-            fileNameString = file.name;
+            // upload the google encoded tracks
+            for (int iTrack = 0;
+                iTrack < encodedTrackStrings.length;
+                iTrack++) {
+
+              // change the gpx file extension
+              // - the new file extension '.gencoded' approximates 'Google encoded'
+              String encodedTrackUploadLocation =
+                  baseTrackName + '_' + iTrack.toString() + '.gencoded';
+
+              // do the actual upload
+              firebase_storage.Reference ref = firebase_storage
+                  .FirebaseStorage.instance
+                  .ref()
+                  .child(encodedTrackUploadLocation);
+              firebase_storage.UploadTask uploadTask = ref
+                  .putData(Utf8Encoder().convert(encodedTrackStrings[iTrack]));
+              print(uploadTask.storage.toString());
+            }
+
+            fileNameString = path.basenameWithoutExtension(file.name);
           } catch (e) {
             print(e);
           }
 
           if (fileNameString.isNotEmpty) {
-            print('pickFiles: $fileNameString was uploaded');
+            print('pickFiles: $fileNameString was uploaded as a google encoded string');
             numFilesUploaded++;
           }
         },
@@ -144,3 +171,106 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
     );
   }
 }
+
+// ----
+List<String> _gpxToGoogleEncodedTrack(String gpxDataString) {
+  // create gpx from the string
+  var xmlGpx = GpxReader().fromString(gpxDataString);
+
+  // pull out the tracks
+  List<String> encodedTracks = [];
+  String numtrks = 'number of trks = ' + xmlGpx.trks.length.toString();
+  print(numtrks);
+
+  // loop over all separate track and track segments
+  for(int iTrack = 0; iTrack < xmlGpx.trks.length; iTrack++) {
+    Trk theTrack = xmlGpx.trks[iTrack];
+    String numtrksegs = 'number of trksegs = ' + theTrack.trksegs.length.toString();
+    print(numtrksegs) ;
+
+    for (int iSeg = 0; iSeg < theTrack.trksegs.length; iSeg++) {
+      Trkseg trackSeg = theTrack.trksegs[iSeg];
+
+      List<List<num>> trackPoints = [];
+      trackSeg.trkpts.forEach((waypoint) {
+        trackPoints.add([waypoint.lat, waypoint.lon]);
+      });
+
+      // Test:
+      // trackPoints.add([38.5, -120.2]);
+      // trackPoints.add([40.7, -120.95]);
+      // trackPoints.add([43.252, -126.453]);
+      // encoded track for these three points is `_p~iF~ps|U_ulLnnqC_mqNvxq`@'
+
+      String encodedTrack = encodePolyline(trackPoints);
+      encodedTracks.add(encodedTrack);
+
+      // dcodePolyline if desired for test:
+      // print('encoded track: ');
+      // print(encodedTrack);
+      //
+      // List<List<num>> testReturn = decodePolyline_local(encodedTrack);
+      // print(testReturn.toString());
+    }
+  }
+
+  return encodedTracks;
+}
+
+// ----
+// Note that the decodePolyline algorithm in the library uses the ~ operator that does not work on Chrome
+// -- the following is a hacked version
+// ----
+//
+// /// Decodes [polyline] `String` via inverted
+// /// [Encoded Polyline Algorithm](https://developers.google.com/maps/documentation/utilities/polylinealgorithm?hl=en)
+// List<List<num>> decodePolyline_local(String polyline, {int accuracyExponent = 5}) {
+//   final accuracyMultiplier = math.pow(10, accuracyExponent);
+//   final List<List<num>> coordinates = [];
+//
+//   int index = 0;
+//   int lat = 0;
+//   int lng = 0;
+//
+//   while (index < polyline.length) {
+//     int char;
+//     int shift = 0;
+//     int result = 0;
+//
+//     /// Method for getting **only** `1` coorditane `latitude` or `longitude` at a time
+//     int getCoordinate() {
+//       /// Iterating while value is grater or equal of `32-bits` size
+//       do {
+//         /// Substract `63` from `codeUnit`.
+//         char = polyline.codeUnitAt(index++) - 63;
+//
+//         /// `AND` each `char` with `0x1f` to get 5-bit chunks.
+//         /// Then `OR` each `char` with `result`.
+//         /// Then left-shift for `shift` bits
+//         result |= (char & 0x1f) << shift;
+//         shift += 5;
+//       } while (char >= 0x20);
+//
+//       /// Inversion of both:
+//       ///
+//       ///  * Left-shift the `value` for one bit
+//       ///  * Inversion `value` if it is negative
+//       final value = result >> 1;
+//       final coordinateChange =
+//       //(result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+//       (result & 1) != 0 ? (~BigInt.from(value)).toInt() : value;
+//
+//       /// It is needed to clear `shift` and `result` for next coordinate.
+//       shift = result = 0;
+//
+//       return coordinateChange;
+//     }
+//
+//     lat += getCoordinate();
+//     lng += getCoordinate();
+//
+//     coordinates.add([lat / accuracyMultiplier, lng / accuracyMultiplier]);
+//   }
+//
+//   return coordinates;
+// }
