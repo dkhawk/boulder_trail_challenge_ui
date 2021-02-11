@@ -30,21 +30,21 @@ class _SettingsPageState extends State<SettingsPage> {
       children: [
         Text("Settings", style: SettingsPage.optionStyle,),
         Spacer(),
-        RaisedButton(
+        ElevatedButton(
           onPressed: () {
             _launchURL(firebaseUser.email);
           },
           child: Text("Connect with Strava"),
         ),
         Spacer(),
-        RaisedButton(
+        ElevatedButton(
           onPressed: () {
             context.read<StravaService>().refreshToken(firebaseUser.email);
           },
           child: Text("Refresh Strava token"),
         ),
         Spacer(),
-        RaisedButton(
+        ElevatedButton(
           child: Text('Import old activities using GPX files'),
           onPressed: () {
             Navigator.push(
@@ -56,21 +56,21 @@ class _SettingsPageState extends State<SettingsPage> {
           },
         ),
         Spacer(),
-        RaisedButton(
+        ElevatedButton(
           child: settingsOptions.displayTrailNames ? Text('Disable Trail Name Display') : Text('Enable Trail Name Display'),
           onPressed: () {
             setState(() => settingsOptions.displayTrailNames = !settingsOptions.displayTrailNames);
           },
         ),
         Spacer(),
-        RaisedButton(
+        ElevatedButton(
           child: settingsOptions.useTopoMaps ? Text('Disable Topo Map Display') : Text('Enable Topo Map Display'),
           onPressed: () {
             setState(() => settingsOptions.useTopoMaps = !settingsOptions.useTopoMaps);
           },
         ),
         Spacer(),
-        RaisedButton(
+        ElevatedButton(
           onPressed: () {
             context.read<AuthenticationService>().signOut();
           },
