@@ -1,8 +1,10 @@
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_storage/firebase_storage.dart' as firebase_storage;
 import 'package:gpx/gpx.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:provider/provider.dart';
 
 import 'package:path/path.dart' as path;
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
@@ -31,6 +33,9 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final firebaseUser = context.watch<User>();
+    String userName = firebaseUser.email;
+
     return Scaffold(
       appBar: AppBar(
         title: Column(
@@ -51,7 +56,8 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
               child: Text(
                   'Press here to select the GPX files that you want to import'),
               onPressed: () {
-                _pickFiles().whenComplete(() => _numFilesAlert(context));
+                _pickFiles(userName)
+                    .whenComplete(() => _numFilesAlert(context));
               },
             ),
             Spacer(),
@@ -62,7 +68,7 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
   }
 
   // ----
-  Future<void> _pickFiles() async {
+  Future<void> _pickFiles(String userName) async {
     // TODO: support other formats when we can (tcx, fit?)
 
     numFilesUploaded = 0;
@@ -82,33 +88,44 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
             // the gpx string:
             String gpxDataString = Utf8Decoder().convert(file.bytes);
 
-            // convert to google encoded track (only the track: all other data discarded)
-            List<String> encodedTrackStrings = [];
-            encodedTrackStrings = _gpxToGoogleEncodedTrack(gpxDataString);
+            // create gpx from the string
+            Gpx xmlGpx = GpxReader().fromString(gpxDataString);
+            String gpxDateTime = xmlGpx.metadata.time.toString();
+            String uploadDateTime = DateTime.now().toUtc().toString();
 
-            // location for file uploads
-            // TODO: update location for uploaded data
-            String baseTrackName =
-                'testupload/' + path.basenameWithoutExtension(file.name);
+            // convert tracks in the Gpx to google encoded tracks
+            List<String> encodedTrackStrings = [];
+            encodedTrackStrings = _gpxToGoogleEncodedTrack(xmlGpx);
+
+            // base name for the document in firestore
+            String baseTrackName = path.basenameWithoutExtension(file.name);
 
             // upload the google encoded tracks
             for (int iTrack = 0;
                 iTrack < encodedTrackStrings.length;
                 iTrack++) {
-
               // change the gpx file extension
               // - the new file extension '.gencoded' approximates 'Google encoded'
               String encodedTrackUploadLocation =
-                  baseTrackName + '_' + iTrack.toString() + '.gencoded';
+                  baseTrackName + '_trackSeg' + iTrack.toString() + '.gencoded';
+
+              // a map for the uploaded data
+              Map<String, dynamic> importedTrackMap = {
+                'originalFileName': file.name,
+                'gpxDateTime': gpxDateTime,
+                'uploadDateTime': uploadDateTime,
+                'userName': userName,
+                'encodedLocation': encodedTrackStrings[iTrack],
+                'processed': false,
+              };
 
               // do the actual upload
-              firebase_storage.Reference ref = firebase_storage
-                  .FirebaseStorage.instance
-                  .ref()
-                  .child(encodedTrackUploadLocation);
-              firebase_storage.UploadTask uploadTask = ref
-                  .putData(Utf8Encoder().convert(encodedTrackStrings[iTrack]));
-              print(uploadTask.storage.toString());
+              FirebaseFirestore.instance
+                  .collection('athletes')
+                  .doc(userName)
+                  .collection('importedData')
+                  .doc(encodedTrackUploadLocation)
+                  .set(importedTrackMap);
             }
 
             fileNameString = path.basenameWithoutExtension(file.name);
@@ -117,7 +134,8 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
           }
 
           if (fileNameString.isNotEmpty) {
-            print('pickFiles: $fileNameString was uploaded as a google encoded string');
+            print(
+                'pickFiles: $fileNameString was uploaded as a google encoded string');
             numFilesUploaded++;
           }
         },
@@ -173,20 +191,18 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
 }
 
 // ----
-List<String> _gpxToGoogleEncodedTrack(String gpxDataString) {
-  // create gpx from the string
-  var xmlGpx = GpxReader().fromString(gpxDataString);
-
+List<String> _gpxToGoogleEncodedTrack(Gpx xmlGpx) {
   // pull out the tracks
   List<String> encodedTracks = [];
   String numtrks = 'number of trks = ' + xmlGpx.trks.length.toString();
   print(numtrks);
 
   // loop over all separate track and track segments
-  for(int iTrack = 0; iTrack < xmlGpx.trks.length; iTrack++) {
+  for (int iTrack = 0; iTrack < xmlGpx.trks.length; iTrack++) {
     Trk theTrack = xmlGpx.trks[iTrack];
-    String numtrksegs = 'number of trksegs = ' + theTrack.trksegs.length.toString();
-    print(numtrksegs) ;
+    String numtrksegs =
+        'number of trksegs = ' + theTrack.trksegs.length.toString();
+    print(numtrksegs);
 
     for (int iSeg = 0; iSeg < theTrack.trksegs.length; iSeg++) {
       Trkseg trackSeg = theTrack.trksegs[iSeg];
