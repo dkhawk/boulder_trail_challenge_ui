@@ -37,7 +37,7 @@ class AuthenticationService {
         email: email,
         password: password,
       );
-      return 'You are now signed up';
+      return '';
     } on FirebaseAuthException catch (e) {
       print(e.toString());
       print(e.code);

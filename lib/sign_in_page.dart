@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
 import 'package:provider/provider.dart';
 
+import 'package:osmp_project/createAccountData.dart';
+
 class SignInPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
@@ -44,10 +46,13 @@ class SignInPage extends StatelessWidget {
                           context
                               .read<AuthenticationService>()
                               .signIn(
-                                  email: emailController.text.trim(),
-                                  password: passwordController.text.trim())
-                              .then((returnString) =>
-                                  _signInUpAlert(context, returnString));
+                                email: emailController.text.trim(),
+                                password: passwordController.text.trim(),
+                              )
+                              .then(
+                                (returnString) =>
+                                    signInUpAlert(context, returnString),
+                              );
                         },
                         child: Text("Sign in"),
                       ),
@@ -59,9 +64,15 @@ class SignInPage extends StatelessWidget {
                         onPressed: () {
                           context
                               .read<AuthenticationService>()
-                              .passwordReset(email: emailController.text.trim())
-                              .then((returnString) =>
-                                  _signInUpAlert(context, returnString));
+                              .passwordReset(
+                                email: emailController.text.trim(),
+                              )
+                              .then(
+                                (returnString) => signInUpAlert(
+                                  context,
+                                  returnString,
+                                ),
+                              );
                         },
                         child: Text("Reset password"),
                       ),
@@ -73,10 +84,23 @@ class SignInPage extends StatelessWidget {
                       context
                           .read<AuthenticationService>()
                           .signUp(
-                              email: emailController.text.trim(),
-                              password: passwordController.text.trim())
-                          .then((returnString) =>
-                              _signInUpAlert(context, returnString));
+                            email: emailController.text.trim(),
+                            password: passwordController.text.trim(),
+                          )
+                          .then(
+                        (returnString) {
+                          if (returnString.isNotEmpty)
+                            signInUpAlert(context, returnString);
+                          else
+                            createBasicAcctData(emailController.text.trim())
+                                .whenComplete(
+                              () => signInUpAlert(
+                                context,
+                                'Your account has been set up',
+                              ),
+                            );
+                        },
+                      );
                     },
                     child: Text("New account"),
                   ),
@@ -88,54 +112,54 @@ class SignInPage extends StatelessWidget {
       ),
     );
   }
-}
 
-// ----
-Future<void> _signInUpAlert(BuildContext context, String error) async {
-  if (error.isNotEmpty)
-    return showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(bottom: 450.0),
-          child: Dialog(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[
-                SizedBox(
-                  height: 15,
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    error,
-                    style: TextStyle(fontSize: 15),
-                    softWrap: true,
+  // ----
+  Future<void> signInUpAlert(BuildContext context, String error) async {
+    if (error.isNotEmpty)
+      return showDialog(
+        context: context,
+        barrierDismissible: true,
+        builder: (BuildContext context) {
+          return Padding(
+            padding: EdgeInsets.only(bottom: 450.0),
+            child: Dialog(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: <Widget>[
+                  SizedBox(
+                    height: 15,
                   ),
-                ),
-                SizedBox(
-                  height: 10,
-                ),
-                TextButton(
-                  onPressed: () {
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(
-                    'Dismiss',
-                    style: TextStyle(
-                      color: Colors.orange,
-                      fontSize: 15.0,
+                  Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: Text(
+                      error,
+                      style: TextStyle(fontSize: 15),
+                      softWrap: true,
                     ),
                   ),
-                ),
-                SizedBox(
-                  height: 15,
-                ),
-              ],
+                  SizedBox(
+                    height: 10,
+                  ),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.of(context).pop();
+                    },
+                    child: Text(
+                      'Dismiss',
+                      style: TextStyle(
+                        color: Colors.orange,
+                        fontSize: 15.0,
+                      ),
+                    ),
+                  ),
+                  SizedBox(
+                    height: 15,
+                  ),
+                ],
+              ),
             ),
-          ),
-        );
-      },
-    );
+          );
+        },
+      );
+  }
 }
