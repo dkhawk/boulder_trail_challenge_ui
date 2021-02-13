@@ -9,17 +9,6 @@ Future<void> createBasicAcctData(String accountName) async {
   createTrailStatsMap().then(
     (trails) => uploadTrailStats(trails, accountName),
   );
-
-  // create overallStats for the user
-  Map<String, Object> overallStats = {
-    'completedDistance': 0,
-    'percentDone': 0.0,
-    'totalDistance': 247602,
-  };
-  Map<String, Object> stats = {
-    'overallStats': overallStats,
-  };
-  FirebaseFirestore.instance.collection('athletes').doc(accountName).set(stats);
 }
 
 // ----
@@ -72,7 +61,28 @@ Future<void> uploadTrailStats(
   //print('uploadTrails ==========');
   //print(trails);
 
-  //put things here:
+  // compute totalDistance
+  // - cannot do this in the firestore future set loop below...
+  int totalDistance = 0;
+  trails.forEach(
+    (trailId, trail) {
+      totalDistance += trail['length'];
+    },
+  );
+  //print('totalDistance $totalDistance');
+
+  // create and upload the overallStats for the user
+  Map<String, Object> overallStats = {
+    'completedDistance': 0,
+    'percentDone': 0.0,
+    'totalDistance': totalDistance,
+  };
+  Map<String, Object> stats = {
+    'overallStats': overallStats,
+  };
+  FirebaseFirestore.instance.collection('athletes').doc(accountName).set(stats);
+
+  // upload the trailStats
   trails.forEach(
     (trailId, trail) {
       FirebaseFirestore.instance
