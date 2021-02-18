@@ -15,6 +15,7 @@ class OverallStatusWidget extends StatelessWidget {
     // TODO: implement build
     final firebaseUser = context.watch<User>();
 
+    print('overallStatusWidget');
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
           .collection('athletes')
@@ -30,7 +31,7 @@ class OverallStatusWidget extends StatelessWidget {
   Widget _buildStatus(BuildContext context, DocumentSnapshot data,
       SettingsOptions settingsOptions) {
     var stats = data["overallStats"];
-    var percent = stats["percentDone"];
+    var percent = stats["percentDone"].toDouble();
     var completed =
     (stats["completedDistance"] * 0.000621371).toStringAsFixed(2);
     var total = (stats["totalDistance"] * 0.000621371).toStringAsFixed(2);

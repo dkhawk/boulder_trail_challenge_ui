@@ -120,44 +120,22 @@ class SignInPage extends StatelessWidget {
         context: context,
         barrierDismissible: true,
         builder: (BuildContext context) {
-          return Padding(
-            padding: EdgeInsets.only(bottom: 450.0),
-            child: Dialog(
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  SizedBox(
-                    height: 15,
+          return AlertDialog(
+            content: Text(error),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: Text(
+                  'Dismiss',
+                  style: TextStyle(
+                    color: Colors.orange,
+                    fontSize: 15.0,
                   ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      error,
-                      style: TextStyle(fontSize: 15),
-                      softWrap: true,
-                    ),
-                  ),
-                  SizedBox(
-                    height: 10,
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    child: Text(
-                      'Dismiss',
-                      style: TextStyle(
-                        color: Colors.orange,
-                        fontSize: 15.0,
-                      ),
-                    ),
-                  ),
-                  SizedBox(
-                    height: 15,
-                  ),
-                ],
-              ),
-            ),
+                ),
+              )
+            ],
           );
         },
       );

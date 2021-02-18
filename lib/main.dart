@@ -57,6 +57,8 @@ class AuthenticationWrapper extends StatelessWidget {
     final firebaseUser = context.watch<User>();
 
     if (firebaseUser != null) {
+      String userName = firebaseUser.email;
+      print('AuthenticationWrapper signing in as: $userName');
       return BottomNavWidget();
     } else {
       return SignInPage();
