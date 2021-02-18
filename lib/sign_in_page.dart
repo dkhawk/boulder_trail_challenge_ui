@@ -121,7 +121,13 @@ class SignInPage extends StatelessWidget {
         barrierDismissible: true,
         builder: (BuildContext context) {
           return AlertDialog(
-            content: Text(error),
+            content: Text(
+              error,
+              softWrap: true,
+              style: TextStyle(
+                fontSize: 15.0,
+              ),
+            ),
             actions: [
               TextButton(
                 onPressed: () {
