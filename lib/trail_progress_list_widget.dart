@@ -24,6 +24,7 @@ class TrailProgressListWidget extends StatelessWidget {
       stream: trailCollection.orderBy("name").snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
+        if (snapshot.hasError) return LinearProgressIndicator();
         var docs = snapshot.data.docs;
         return _buildTrailsList(
             context,

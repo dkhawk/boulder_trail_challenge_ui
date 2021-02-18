@@ -92,13 +92,8 @@ class SignInPage extends StatelessWidget {
                           if (returnString.isNotEmpty)
                             signInUpAlert(context, returnString);
                           else
-                            createBasicAcctData(emailController.text.trim())
-                                .whenComplete(
-                              () => signInUpAlert(
-                                context,
-                                'Your account has been set up',
-                              ),
-                            );
+                            createBasicAcctDataWidget(
+                                context, emailController.text.trim());
                         },
                       );
                     },

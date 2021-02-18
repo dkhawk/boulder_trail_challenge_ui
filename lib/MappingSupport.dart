@@ -117,7 +117,7 @@ class _LoadDisplayMapSummaryData extends StatelessWidget {
 }
 
 // ----
-Future<String> _readSegmentsStringFromJson() async {
+Future<String> readSegmentsStringFromJson() async {
   String jsonString;
   try {
     jsonString = await rootBundle.loadString('assets/mapData/encoded-segments.json');
@@ -141,7 +141,7 @@ class _LoadDisplayMapData extends StatelessWidget {
       // Pull the trail segment data out of assets/MapData/encoded-segments.json
       List<SegmentSummary> segmentList = [];
       return FutureBuilder<String>(
-        future: _readSegmentsStringFromJson(),
+        future: readSegmentsStringFromJson(),
         builder: (BuildContext context, AsyncSnapshot<String> jsonString) {
           if (jsonString.hasData) {
             Map<String, dynamic> jsonMapObject = jsonDecode(jsonString.data);

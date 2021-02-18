@@ -23,6 +23,7 @@ class OverallStatusWidget extends StatelessWidget {
           .snapshots(),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
+        if (snapshot.hasError) return LinearProgressIndicator();
         return _buildStatus(context, snapshot.data, settingsOptions);
       },
     );
