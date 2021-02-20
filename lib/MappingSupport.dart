@@ -546,6 +546,9 @@ class SegmentSummary {
   final String name;
   final String segmentNameId;
   final String encodedLocations;
+  final int length;
+  final String trailId;
+
   // latLong list after decoding
   List<LatLng> latLong;
   // bounds
@@ -560,6 +563,8 @@ class SegmentSummary {
         name = map['name'],
         segmentNameId = map['segmentId'],
         latLong = map['latLong'],
+        length = map['length'],
+        trailId = map['trailId'],
         encodedLocations = map['encodedLocations'],
         boundsMap = map['bounds'];
 
