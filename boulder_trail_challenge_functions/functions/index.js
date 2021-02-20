@@ -66,14 +66,14 @@ var btcApi = {
 		console.log(`athlete: ${tokenInfo.athlete.lastname}`);
 
 		return { athlete: tokenInfo.athlete, accessToken: accessToken };
-		
+
     	    } else {
 		throw new Error('Failed to get strava token for athlete');
 	    }
 	})},
     getTrailStats: async (athleteId) => {
 	const trailStats = await db.collection('athletes').doc(athleteId).collection('trailStats').get();
-	
+
 	var results = {};
 	trailStats.forEach(stats => {
 	    results[stats.id] = stats.data();
@@ -178,7 +178,7 @@ var stravaApi = {
 	    },
 	    qs: {
 		keys: 'latlng',
-		key_by_type: true 
+		key_by_type: true
 	    },
 	};
 	return await rp(options)
@@ -208,7 +208,7 @@ var stravaApi = {
 		return JSON.parse(activityString);
 	    }); // TODO: handle exception
     },
-    
+
     getActivityLocations: async (activityId, accessToken) => {
 	var options = {
 	    method: 'GET',
@@ -221,7 +221,7 @@ var stravaApi = {
 	    },
 	    qs: {
 		keys: 'latlng',
-		key_by_type: true 
+		key_by_type: true
 	    },
 	};
 	return await rp(options)
@@ -253,7 +253,7 @@ var stravaApi = {
     },
 };
 
-// Take the text parameter passed to this HTTP endpoint and insert it into 
+// Take the text parameter passed to this HTTP endpoint and insert it into
 // Firestore under the path /messages/:documentId/original
 exports.addMessage = functions.https.onRequest(async (req, res) => {
     // Grab the text parameter.
@@ -292,7 +292,7 @@ exports.processGpxFileInFirestore = functions.https.onRequest(async (request, re
 
 	    var updatedTrails = await calculateCompletedStats(completedSegments, trailStats);
 	    var updatedStats = calculateOverallStats(trailStats);
-	    
+
 	    console.log('===========================================');
 	    console.log('updatedStats');
 	    console.log(JSON.stringify(updatedStats));
@@ -346,7 +346,7 @@ exports.getStravaInfo = functions.https.onRequest(async (request, response) => {
     });
 });
 
-// Take the text parameter passed to this HTTP endpoint and insert it into 
+// Take the text parameter passed to this HTTP endpoint and insert it into
 // Firestore under the path /messages/:documentId/original
 exports.getStats = functions.https.onRequest(async (request, response) => {
     const athlete = request.query.athlete;
@@ -360,7 +360,7 @@ exports.getStats = functions.https.onRequest(async (request, response) => {
     // response.send('Just work');
 
     // return;
-    
+
     // const stats = await admin.firestore().collection('athletes').doc(athlete).get().then(documentSnapshot => {
     // 	console.log('got data from firestore');
     // 	if (documentSnapshot.exists) {
@@ -375,7 +375,7 @@ exports.getStats = functions.https.onRequest(async (request, response) => {
     // 	.catch(error => {
     // 	    response.status(500).send(error);
     // 	});
-    
+
     // Push the new message into Firestore using the Firebase Admin SDK.
     // const writeResult = await admin.firestore().collection('messages').add({original: original});
     // Send back a message that we've successfully written the message
@@ -441,7 +441,7 @@ exports.refreshToken = functions.https.onRequest(async (request, response) => {
 	    console.log(Date.now());
 	    if (Date.now() >= expirationTimeMillis) {
 		console.log('token has expired');
-		
+
 		var options = {
 		    method: 'POST',
 		    uri: 'https://www.strava.com/api/v3/oauth/token',
@@ -485,7 +485,7 @@ exports.getActivities = functions.https.onRequest(async (request, response) => {
     // http://localhost:5001/boulder-trail-challenge/us-central1/getActivities?athleteId=dkhawk@gmail.com&after=1609459200
     // const after = 1609459200;  // 2021-01-01 0:00.  Need to pass this in as a parameter.
     // const after = 1610348400;  // Tuesday, January 11, 2021 12:00:00 AM GMT-07:00
-    
+
     // admin.firestore.Timestamp.fromDate(new Date(''));
     var accessToken = await stravaApi.getBearerToken(athleteId);
 
@@ -519,7 +519,7 @@ exports.getActivities = functions.https.onRequest(async (request, response) => {
 
 	var updatedTrails = await calculateCompletedStats(completedSegments, trailStats);
 	var updatedStats = calculateOverallStats(trailStats);
-	
+
 	console.log('===========================================');
 	console.log('updatedStats');
 	console.log(JSON.stringify(updatedStats));
@@ -633,7 +633,7 @@ async function calculateCompletedStats(completedSegments, trailStats) {
     }
 
     completedSegments.forEach(segment => {
-	// Look up the trail 
+	// Look up the trail
 	var stats = trailProgress[segment.trailId];
 
 	// Update with the newly completed segments
@@ -656,20 +656,20 @@ async function calculateCompletedStats(completedSegments, trailStats) {
 function calculateAllTrailStats() {
     var tsegments = {};
 
-    var trails = [];
-    for (var segmentId in encodedSegments) {
-	let segment = encodedSegments[segmentId];
-	let trail = tsegments[segment.trailId] || {
-	    trailId: segment.trailId,
-	    name: segment.name,
-	    segments: [],
-	    length: 0,
-	};
+    let trails = [];
+    for (let segmentId in encodedSegments) {
+		let segment = encodedSegments[segmentId];
+		let trail = tsegments[segment.trailId] || {
+			trailId: segment.trailId,
+			name: segment.name,
+			segments: [],
+			length: 0,
+		};
 
-	trail.segments.push(segment.segmentId);
-	trail.length += segment.length;
-	tsegments[segment.trailId] = trail;
-    };
+		trail.segments.push(segment.segmentId);
+		trail.length += segment.length;
+		tsegments[segment.trailId] = trail;
+    }
 
     return tsegments;
 }
@@ -693,67 +693,67 @@ function mapToCompletedSegment(segmentId, activityId, timestamp) {
 }
 
 function getSegmentLocations(segmentId) {
-    var locations = segmentData[segmentId];
-    if (locations) {
-	return locations;
-    }
+	var locations = segmentData[segmentId];
+	if (locations) {
+		return locations;
+	}
 
-    var encoded = encodedSegments[segmentId].encodedLocations;
-    locations = decode(encoded);
-    segmentData[segmentId] = locations;
-    return locations;
+	var encoded = encodedSegments[segmentId].encodedLocations;
+	locations = decode(encoded);
+	segmentData[segmentId] = locations;
+	return locations;
 }
 
 function decode(encoded) {
-    const mask = ~0x20;
+	const mask = ~0x20;
 
-    var part = [];
-    var parts = [];
-    for (var c of encoded) {
-	var b = c.charCodeAt() - 63;
-	part.push(b & mask);
-	if ((b & 0x20) != 0x20) {
-	    parts.push(part);
-	    part = [];
+	var part = [];
+	var parts = [];
+	for (var c of encoded) {
+		var b = c.charCodeAt() - 63;
+		part.push(b & mask);
+		if ((b & 0x20) != 0x20) {
+			parts.push(part);
+			part = [];
+		}
 	}
-    }
 
-    if (part.length) {
-	parts.push(part);
-    }
-
-    var lastLat = 0.0;
-    var lastLng = 0.0;
-    var count = 0;
-
-    var polyline = [];
-
-    for (var p of parts) {
-	let value = 0;
-	let reversed = p.reverse();
-	for (let b of reversed) {
-	    value = (value << 5) | b;
+	if (part.length) {
+		parts.push(part);
 	}
-	var invert = (value & 1) == 1;
-	value = value >> 1;
-	if (invert) {
-	    // value = -value;
-	    // this should be the ~ operator (rather than negative) to invert the encoding of the int but unfortunately
-	    // cannot get ~ to work correctly on Chrome w/o jumping through some hoops
-	    value = Number(~BigInt(value));
-	}
-	var result = value / 1E5;
 
-	if (count % 2 == 0) {
-	    lastLat += result;
-	} else {
-	    lastLng += result;
-	    polyline.push([lastLat, lastLng]);
-	}
-	count++;
-    }
+	var lastLat = 0.0;
+	var lastLng = 0.0;
+	var count = 0;
 
-    return polyline;
+	var polyline = [];
+
+	for (var p of parts) {
+		let value = 0;
+		let reversed = p.reverse();
+		for (let b of reversed) {
+			value = (value << 5) | b;
+		}
+		var invert = (value & 1) == 1;
+		value = value >> 1;
+		if (invert) {
+			// value = -value;
+			// this should be the ~ operator (rather than negative) to invert the encoding of the int but unfortunately
+			// cannot get ~ to work correctly on Chrome w/o jumping through some hoops
+			value = Number(~BigInt(value));
+		}
+		var result = value / 1E5;
+
+		if (count % 2 == 0) {
+			lastLat += result;
+		} else {
+			lastLng += result;
+			polyline.push([lastLat, lastLng]);
+		}
+		count++;
+	}
+
+	return polyline;
 }
 
 function scoreSegments(activity, segments) {
@@ -824,14 +824,14 @@ function boundsForLocations(locations) {
 
 class LatLngGrid {
     constructor(bounds) {
-	const cellSizeMeters = 30;
+	const cellSizeMeters = 50;
 
 	var latMeters = bounds.getLatitudeSpanMeters();
 	var lngMeters = bounds.getLongtitudeSpanMeters();
 
 	var northSouthDegrees = bounds.maxLat - bounds.minLat;
 	var eastWestDegrees = bounds.maxLng - bounds.minLng;
-	
+
 	this.nsNumCells = Math.ceil(latMeters / cellSizeMeters);
 	this.ewNumCells = Math.ceil(lngMeters / cellSizeMeters);
 
