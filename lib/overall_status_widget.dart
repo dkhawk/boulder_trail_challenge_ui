@@ -15,7 +15,6 @@ class OverallStatusWidget extends StatelessWidget {
     // TODO: implement build
     final firebaseUser = context.watch<User>();
 
-    print('overallStatusWidget');
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance
           .collection('athletes')

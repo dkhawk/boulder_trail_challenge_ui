@@ -81,19 +81,30 @@ class SignInPage extends StatelessWidget {
                   Spacer(),
                   ElevatedButton(
                     onPressed: () {
-                      context
-                          .read<AuthenticationService>()
-                          .signUp(
-                            email: emailController.text.trim(),
-                            password: passwordController.text.trim(),
-                          )
-                          .then(
+                      // attempt to register the new account
+                      // - returns error if account exists or if account
+                      //   name is malformed
+                      registerNewAcct(
+                        context,
+                        emailController.text.trim(),
+                        passwordController.text.trim(),
+                      ).then(
                         (returnString) {
-                          if (returnString.isNotEmpty)
-                            signInUpAlert(context, returnString);
-                          else
-                            createBasicAcctDataWidget(
-                                context, emailController.text.trim());
+                          if (returnString != validAccountRegistration)
+                            // show the error string to the user
+                            signInUpAlert(
+                              context,
+                              returnString,
+                            );
+                          else {
+                            // set up (i.e. upload) the account data in Cloud Firestore
+                            // - this can take a while so a circular progress is shown
+                            createNewAcct(
+                              context,
+                              emailController.text.trim(),
+                              passwordController.text.trim(),
+                            );
+                          }
                         },
                       );
                     },
@@ -119,6 +130,7 @@ class SignInPage extends StatelessWidget {
             content: Text(
               error,
               softWrap: true,
+              textAlign: TextAlign.center,
               style: TextStyle(
                 fontSize: 15.0,
               ),
