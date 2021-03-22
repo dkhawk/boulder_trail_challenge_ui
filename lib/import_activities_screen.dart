@@ -143,6 +143,29 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
     }
 
     print('Number of files uploaded = $numFilesUploaded');
+
+    // get and update the number of files uploaded
+    // - this is used to trigger the cloud script that processes the uploaded files
+    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
+        .collection('athletes')
+        .doc(userName)
+        .collection('importedData')
+        .doc('UploadStats')
+        .get();
+    int numFilesPreviouslyUploaded = documentSnapshot.get('numFilesUploaded');
+    int totalFilesUploaded = numFilesPreviouslyUploaded + numFilesUploaded;
+    print('Number of files previously uploaded = $numFilesPreviouslyUploaded');
+    print('Total number of files uploaded = $totalFilesUploaded');
+    Map<String, dynamic> numFilesUploadedMap = {
+      'numFilesUploaded': totalFilesUploaded,
+    };
+    await FirebaseFirestore.instance
+        .collection('athletes')
+        .doc(userName)
+        .collection('importedData')
+        .doc('UploadStats')
+        .set(numFilesUploadedMap);
+
     return;
   }
 

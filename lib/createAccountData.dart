@@ -282,6 +282,19 @@ Future<String> _uploadTrailStats(
   );
   //print('_uploadTrailStats ==== trailStats finished');
 
+  // keep track of how many gpx files the user has uploaded
+  // - when this is updated this triggers a cloud function to process the data
+  Map<String, Object> uploadStats = {
+    'numFilesUploaded': 0,
+  };
+  await firestoreSecondary
+      .collection('athletes')
+      .doc(accountName)
+      .collection('importedData')
+      .doc('UploadStats')
+      .set(uploadStats)
+      .whenComplete(() => print('    uploaded UploadStats'));
+
   // flush local cache
   await firestoreSecondary.waitForPendingWrites();
 
