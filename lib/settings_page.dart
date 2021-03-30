@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
 import 'package:osmp_project/import_activities_screen.dart';
 import 'package:osmp_project/strava_service.dart';
+import 'package:osmp_project/createAccountData.dart';
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -67,6 +68,20 @@ class _SettingsPageState extends State<SettingsPage> {
           child: settingsOptions.useTopoMaps ? Text('Disable Topo Map Display') : Text('Enable Topo Map Display'),
           onPressed: () {
             setState(() => settingsOptions.useTopoMaps = !settingsOptions.useTopoMaps);
+          },
+        ),
+        Spacer(),
+        ElevatedButton(
+          child: Text('Reset all activities: Use with caution!'),
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) {
+                return Scaffold(
+                  body: LoadSegmentsData(firebaseUser.email,'',true /*reset trail data*/),
+                );
+              }),
+            );
           },
         ),
         Spacer(),
