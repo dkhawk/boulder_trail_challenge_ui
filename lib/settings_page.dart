@@ -13,7 +13,7 @@ class SettingsPage extends StatefulWidget {
   final SettingsOptions settingsOptions;
 
   static const TextStyle optionStyle =
-  TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   @override
   _SettingsPageState createState() => _SettingsPageState(settingsOptions);
@@ -29,7 +29,10 @@ class _SettingsPageState extends State<SettingsPage> {
 
     return Column(
       children: [
-        Text("Settings", style: SettingsPage.optionStyle,),
+        Text(
+          "Settings",
+          style: SettingsPage.optionStyle,
+        ),
         Spacer(),
         ElevatedButton(
           onPressed: () {
@@ -58,27 +61,61 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         Spacer(),
         ElevatedButton(
-          child: settingsOptions.displayTrailNames ? Text('Disable Trail Name Display') : Text('Enable Trail Name Display'),
+          child: settingsOptions.displayTrailNames
+              ? Text('Disable Trail Name Display')
+              : Text('Enable Trail Name Display'),
           onPressed: () {
-            setState(() => settingsOptions.displayTrailNames = !settingsOptions.displayTrailNames);
+            setState(() => settingsOptions.displayTrailNames =
+                !settingsOptions.displayTrailNames);
           },
         ),
         Spacer(),
         ElevatedButton(
-          child: settingsOptions.useTopoMaps ? Text('Disable Topo Map Display') : Text('Enable Topo Map Display'),
+          child: settingsOptions.useTopoMaps
+              ? Text('Disable Topo Map Display')
+              : Text('Enable Topo Map Display'),
           onPressed: () {
-            setState(() => settingsOptions.useTopoMaps = !settingsOptions.useTopoMaps);
+            setState(() =>
+                settingsOptions.useTopoMaps = !settingsOptions.useTopoMaps);
           },
         ),
         Spacer(),
         ElevatedButton(
-          child: Text('Reset all activities: Use with caution!'),
+          child: Column(
+            children: [
+              Text('Reset all activities: Use with caution!'),
+            ],
+          ),
           onPressed: () {
             Navigator.push(
               context,
               MaterialPageRoute(builder: (context) {
-                return Scaffold(
-                  body: LoadSegmentsData(firebaseUser.email,'',true /*reset trail data*/),
+                return AlertDialog(
+                  title: Text('Delete all activities?'),
+                  content: Text(
+                      'This will remove all your activities from the database'),
+                  actions: [
+                    TextButton(
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) {
+                            return Scaffold(
+                              body: LoadSegmentsData(firebaseUser.email, '',
+                                  true /*reset trail data*/),
+                            );
+                          }),
+                        ).whenComplete(() => Navigator.of(context).pop());
+                      },
+                      child: Text('OK'),
+                    ),
+                    TextButton(
+                      onPressed: () {
+                        Navigator.of(context).pop();
+                      },
+                      child: Text('Cancel'),
+                    )
+                  ],
                 );
               }),
             );
@@ -97,7 +134,9 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   void _launchURL(String user) async {
-    var redirectUrl = 'http://localhost:5001/boulder-trail-challenge/us-central1/exchangeTokens?athleteId=' + user;
+    var redirectUrl =
+        'http://localhost:5001/boulder-trail-challenge/us-central1/exchangeTokens?athleteId=' +
+            user;
     var queryParameters = {
       'client_id': '43792',
       'response_type': 'code',
