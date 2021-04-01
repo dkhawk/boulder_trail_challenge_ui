@@ -90,7 +90,10 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
 
             // create gpx from the string
             Gpx xmlGpx = GpxReader().fromString(gpxDataString);
-            String gpxDateTime = xmlGpx.metadata.time.toString();
+            String gpxDateTime = '';
+            if ((xmlGpx.metadata != null) && (xmlGpx.metadata.time != null))
+              gpxDateTime = xmlGpx.metadata.time.toString();
+
             String uploadDateTime = DateTime.now().toUtc().toString();
 
             // convert tracks in the Gpx to google encoded tracks
