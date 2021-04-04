@@ -29,8 +29,6 @@ class ImportActivitiesScreen extends StatefulWidget {
 
 // ----
 class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
-  int numFilesUploaded = 0;
-
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
@@ -50,14 +48,22 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
         child: Column(
           children: [
             Spacer(),
-            Image(image: AssetImage('images/UploadFile.png')),
+            Image(image: AssetImage('assets/images/UploadFile.png')),
             Spacer(),
             ElevatedButton(
               child: Text(
                   'Press here to select the GPX files that you want to import'),
               onPressed: () {
-                _pickFiles(userName)
-                    .whenComplete(() => _numFilesAlert(context));
+                Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (BuildContext context) {
+                      return Scaffold(
+                        body: PickFilesScreen(userName),
+                      );
+                    },
+                  ),
+                );
               },
             ),
             Spacer(),
@@ -66,11 +72,27 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
       ),
     );
   }
+}
+
+// ----
+class PickFilesScreen extends StatefulWidget {
+  PickFilesScreen(this.userName);
+  final userName;
+
+  @override
+  _PickFilesScreenState createState() => _PickFilesScreenState(userName);
+}
+
+// ----
+class _PickFilesScreenState extends State<PickFilesScreen> {
+  _PickFilesScreenState(this.userName);
+  final userName;
+
+  int numFilesUploaded = 0;
 
   // ----
-  Future<void> _pickFiles(String userName) async {
+  Future<String> _pickFiles(String userName) async {
     // TODO: support other formats when we can (tcx, fit?)
-
     numFilesUploaded = 0;
     FilePickerResult result = await FilePicker.platform.pickFiles(
       type: FileType.custom,
@@ -78,6 +100,11 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
       withData: true,
       allowMultiple: true,
     );
+
+    if ((result == null) || (result.count == 0)) {
+      print('No files selected');
+      return 'done';
+    }
 
     if ((result != null) && (result.count != 0)) {
       print(result.names.toString());
@@ -169,48 +196,65 @@ class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
         .doc('UploadStats')
         .set(numFilesUploadedMap);
 
-    return;
+    return 'done';
   }
 
-// ----
-  Future<void> _numFilesAlert(BuildContext context) async {
-    print('_numFilesAlert dialog $numFilesUploaded');
-    return showDialog(
-      context: context,
-      barrierDismissible: true,
-      builder: (BuildContext context) {
-        return Padding(
-          padding: EdgeInsets.only(bottom: 450.0),
-          child: Dialog(
-            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-              SizedBox(
-                height: 15,
-              ),
-              Text(
-                numFilesUploaded.toString() + ' files uploaded',
-                style: TextStyle(fontSize: 15),
-              ),
-              SizedBox(
-                height: 10,
-              ),
-              TextButton(
-                onPressed: () {
-                  Navigator.of(context).pop();
-                },
-                child: Text(
-                  'Dismiss',
-                  style: TextStyle(
-                    color: Colors.orange,
-                    fontSize: 15.0,
-                  ),
+  // ----
+  Widget _numFilesAlertWidget(BuildContext context) {
+    return AlertDialog(
+      title: Text('GPX File Import', style: TextStyle(color: Colors.white)),
+      content: Text(
+        numFilesUploaded.toString() + ' file(s) uploaded',
+        style: TextStyle(fontSize: 15, color: Colors.white),
+      ),
+      backgroundColor: Colors.deepPurple,
+      shape:
+          RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
+      actions: [
+        TextButton(
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+          child: Text('OK', style: TextStyle(color: Colors.white)),
+        ),
+      ],
+    );
+  }
+
+  // ----
+  @override
+  Widget build(BuildContext context) {
+    return FutureBuilder<String>(
+      future: _pickFiles(userName),
+      builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
+        List<Widget> children;
+        if (snapshot.hasData && (snapshot.data == 'done')) {
+          print('snapshot.hasData and done');
+          return _numFilesAlertWidget(context);
+        } else {
+          return Center(
+            child: Column(
+              children: [
+                Spacer(
+                  flex: 5,
                 ),
-              ),
-              SizedBox(
-                height: 15,
-              ),
-            ]),
-          ),
-        );
+                SizedBox(
+                  child: CircularProgressIndicator(
+                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                  ),
+                  width: 40,
+                  height: 40,
+                ),
+                Spacer(),
+                Text('Uploading GPX data...',
+                    style: TextStyle(color: Colors.black, fontSize: 12.0)),
+                Spacer(
+                  flex: 5,
+                ),
+              ],
+            ),
+          );
+        }
       },
     );
   }

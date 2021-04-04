@@ -27,14 +27,14 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.1
-  firebase_core: "^0.7.0"
-  firebase_auth: "^0.20.0+1"
-  cloud_firestore: "^0.16.0"
+  firebase_core: "^1.0.2"
+  firebase_auth: "^1.0.1"
+  cloud_firestore: "^1.0.3"
   provider: ^4.3.2+3
-  google_fonts: ^1.1.0
-  url_launcher: 5.7.10
-  firebase_storage: ^7.0.0
-  file_picker: ^2.1.5+1
+  google_fonts: ^2.0.0
+  url_launcher: 6.0.3
+  firebase_storage: ^8.0.1
+  file_picker: 3.0.1
   gpx: ^1.1.1
   google_polyline_algorithm: ^2.0.0
 
@@ -48,8 +48,8 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  integration_test:
-    sdk: flutter
+  #integration_test:
+  #  sdk: flutter
 
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
@@ -66,6 +66,7 @@ flutter:
   assets:
     - assets/images/dummy_map.png
     - assets/images/FlatIrons.jpg
+    - assets/images/UploadFile.png
     - assets/mapData/encoded-segments.json
   #   - images/a_dot_ham.jpeg
 
