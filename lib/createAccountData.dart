@@ -158,7 +158,9 @@ class LoadSegmentsData extends StatelessWidget {
         }
         return Center(
           child: SizedBox(
-            child: CircularProgressIndicator(),
+            child: CircularProgressIndicator(
+              valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+            ),
             width: 40,
             height: 40,
           ),
@@ -208,7 +210,9 @@ class _UploadMapDataToAcct extends StatelessWidget {
                 flex: 5,
               ),
               SizedBox(
-                child: CircularProgressIndicator(),
+                child: CircularProgressIndicator(
+                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+                ),
                 width: 40,
                 height: 40,
               ),

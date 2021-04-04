@@ -91,9 +91,14 @@ class _SettingsPageState extends State<SettingsPage> {
               context,
               MaterialPageRoute(builder: (context) {
                 return AlertDialog(
-                  title: Text('Delete all activities?'),
+                  title: Text('Delete all activities?',
+                      style: TextStyle(color: Colors.white)),
                   content: Text(
-                      'This will remove all your activities from the database'),
+                      'This will remove all your activities from the database',
+                      style: TextStyle(color: Colors.white)),
+                  backgroundColor: Colors.deepPurple,
+                  shape: RoundedRectangleBorder(
+                      borderRadius: new BorderRadius.circular(15)),
                   actions: [
                     TextButton(
                       onPressed: () {
@@ -107,13 +112,14 @@ class _SettingsPageState extends State<SettingsPage> {
                           }),
                         ).whenComplete(() => Navigator.of(context).pop());
                       },
-                      child: Text('OK'),
+                      child: Text('OK', style: TextStyle(color: Colors.white)),
                     ),
                     TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
                       },
-                      child: Text('Cancel'),
+                      child:
+                          Text('Cancel', style: TextStyle(color: Colors.white)),
                     )
                   ],
                 );
