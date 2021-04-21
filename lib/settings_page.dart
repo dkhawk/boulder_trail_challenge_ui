@@ -3,10 +3,12 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
 import 'package:osmp_project/import_activities_screen.dart';
-import 'package:osmp_project/strava_service.dart';
+import 'package:osmp_project/import_strava_activities.dart';
 import 'package:osmp_project/createAccountData.dart';
+
 import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:universal_platform/universal_platform.dart';
 
 class SettingsPage extends StatefulWidget {
   SettingsPage(this.settingsOptions);
@@ -27,29 +29,61 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
 
+    // dim the Strava input button if not mobile
+    bool isMobilePlatform = (UniversalPlatform.isAndroid || UniversalPlatform.isIOS);
+    Color stravaImportColor = Colors.white;
+    if (isMobilePlatform == false)
+    {
+      stravaImportColor = Colors.white70;
+    }
+
     return Column(
       children: [
         Text(
           "Settings",
           style: SettingsPage.optionStyle,
         ),
+        // Spacer(),
+        // ElevatedButton(
+        //   onPressed: () {
+        //     _launchURL(firebaseUser.email);
+        //   },
+        //   child: Text("Connect with Strava"),
+        // ),
+        // Spacer(),
+        // ElevatedButton(
+        //   onPressed: () {
+        //     context.read<StravaService>().refreshToken(firebaseUser.email);
+        //   },
+        //   child: Text("Refresh Strava token"),
+        // ),
         Spacer(),
+        // Strava sync only works on mobile platforms...
         ElevatedButton(
+          child: Column(
+            children: [
+              Text('Import activities from Strava',
+                style: TextStyle(color: stravaImportColor),),
+              Text(
+                '(Android and IOS only)',
+                style: TextStyle(fontSize: 11, color: Colors.white),
+              ),
+            ],
+          ),
           onPressed: () {
-            _launchURL(firebaseUser.email);
+            if(isMobilePlatform) {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return ImportStravaActivities();
+                }),
+              );
+            }
           },
-          child: Text("Connect with Strava"),
         ),
         Spacer(),
         ElevatedButton(
-          onPressed: () {
-            context.read<StravaService>().refreshToken(firebaseUser.email);
-          },
-          child: Text("Refresh Strava token"),
-        ),
-        Spacer(),
-        ElevatedButton(
-          child: Text('Import old activities using GPX files'),
+          child: Text('Import activities using GPX files'),
           onPressed: () {
             Navigator.push(
               context,
@@ -130,6 +164,8 @@ class _SettingsPageState extends State<SettingsPage> {
         Spacer(),
         ElevatedButton(
           onPressed: () {
+            // sign out of strava
+            RevokeStravaAccess();
             context.read<AuthenticationService>().signOut();
           },
           child: Text("Sign out"),

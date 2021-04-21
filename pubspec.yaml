@@ -38,6 +38,12 @@ dependencies:
   gpx: ^1.1.1
   google_polyline_algorithm: ^2.0.0
 
+  # strava lib
+  oauth2_client: ^2.1.0
+  uni_links: ^0.4.0
+  shared_preferences: ^2.0.5
+  universal_platform: ^0.1.3
+
   splashscreen: ^1.3.5
 
   # map creation
@@ -67,6 +73,7 @@ flutter:
     - assets/images/dummy_map.png
     - assets/images/FlatIrons.jpg
     - assets/images/UploadFile.png
+    - assets/images/Strava.png
     - assets/mapData/encoded-segments.json
   #   - images/a_dot_ham.jpeg
 

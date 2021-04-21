@@ -159,20 +159,18 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
             }
 
             fileNameString = path.basenameWithoutExtension(file.name);
+
+            print(
+                'pickFiles: $fileNameString from $gpxDateTime was uploaded as a google encoded string');
+            numFilesUploaded++;
           } catch (e) {
             print(e);
-          }
-
-          if (fileNameString.isNotEmpty) {
-            print(
-                'pickFiles: $fileNameString was uploaded as a google encoded string');
-            numFilesUploaded++;
           }
         },
       );
     }
 
-    print('Number of files uploaded = $numFilesUploaded');
+    print('Number of gpx files uploaded = $numFilesUploaded');
 
     // get and update the number of files uploaded
     // - this is used to trigger the cloud script that processes the uploaded files
@@ -185,7 +183,8 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
     int numFilesPreviouslyUploaded = documentSnapshot.get('numFilesUploaded');
     int totalFilesUploaded = numFilesPreviouslyUploaded + numFilesUploaded;
     print('Number of files previously uploaded = $numFilesPreviouslyUploaded');
-    print('Total number of files uploaded = $totalFilesUploaded');
+    print(
+        'Total number of files gpx or Strava files uploaded = $totalFilesUploaded');
     Map<String, dynamic> numFilesUploadedMap = {
       'numFilesUploaded': totalFilesUploaded,
     };
