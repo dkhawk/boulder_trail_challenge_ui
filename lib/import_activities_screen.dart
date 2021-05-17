@@ -226,7 +226,6 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
     return FutureBuilder<String>(
       future: _pickFiles(userName),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
-        List<Widget> children;
         if (snapshot.hasData && (snapshot.data == 'done')) {
           print('snapshot.hasData and done');
           return _numFilesAlertWidget(context);

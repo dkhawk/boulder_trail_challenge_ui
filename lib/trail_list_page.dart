@@ -28,19 +28,29 @@ class _TrailsProgressState extends State<TrailsProgressWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      children: <Widget>[
-        OverallStatusWidget(settingsOptions),
-        FilterWidget(
-          progressFilterValue: _progressFilterValue,
-          onChanged: _handleProgressFilterChanged,
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/images/TopoMapPattern.png"),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(Colors.white60, BlendMode.lighten),
         ),
-        Expanded(
-            child: TrailProgressListWidget(
-          settingsOptions: settingsOptions,
-          progressFilterValue: _progressFilterValue,
-        ))
-      ],
+      ),
+      width: double.infinity,
+      child: Column(
+        children: <Widget>[
+          OverallStatusWidget(settingsOptions),
+          FilterWidget(
+            progressFilterValue: _progressFilterValue,
+            onChanged: _handleProgressFilterChanged,
+          ),
+          Expanded(
+              child: TrailProgressListWidget(
+            settingsOptions: settingsOptions,
+            progressFilterValue: _progressFilterValue,
+          ))
+        ],
+      ),
     );
   }
 }
@@ -62,7 +72,14 @@ class FilterWidget extends StatelessWidget {
           padding:
               EdgeInsets.only(top: 6.0, left: 6.0, right: 6.0, bottom: 6.0),
           child: ExpansionTile(
-            title: Text('Filter'),
+            title: Text(
+              'Filter',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+                backgroundColor: Colors.white,
+              ),
+            ),
             children: <Widget>[
               ProgressStatusFilterWidget(
                   progressFilterValue: progressFilterValue,

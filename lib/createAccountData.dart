@@ -266,26 +266,34 @@ Future<String> _uploadTrailStats(
     },
   );
 
-  // create and upload the overallStats for the user
+  // create and upload the overallStats and dummy Strava tokens for the user
   double percentDone = 0.0;
+  String emptyString = '';
   Map<String, Object> overallStats = {
     'completedDistance': 0,
     'percentDone': percentDone,
     'totalDistance': totalDistance,
   };
-  Map<String, Object> stats = {
-    'overallStats': overallStats,
+  Map<String, Object> tokens = {
+    'access_token': emptyString,
+    'expires_at': -1,
+    'expires_in': -1,
+    'refresh_token': emptyString,
+    'token_type': 'Bearer',
   };
-
-  // print('_uploadTrailStats await firestoreSecondary ====');
+  Map<String, Object> statsTokens = {
+    'overallStats': overallStats,
+    'tokenInfo': tokens,
+  };
 
   await firestoreSecondary
       .collection('athletes')
       .doc(accountName)
-      .set(stats)
-      .whenComplete(
-          () => print('_uploadTrailStats ==== overallStats whenComplete'));
+      .set(statsTokens)
+      .whenComplete(() =>
+          print('_uploadTrailStats ==== overallStatsTokens whenComplete'));
 
+  // upload the trail stats
   trails.forEach(
     (trailId, trail) async {
       await firestoreSecondary
@@ -308,7 +316,6 @@ Future<String> _uploadTrailStats(
     for (DocumentSnapshot doc in snapshot.docs) {
       doc.reference.delete();
     }
-    ;
   });
   // print('_uploadTrailStats ==== deleted completed segments');
 

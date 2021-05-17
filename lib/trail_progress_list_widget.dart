@@ -69,6 +69,7 @@ class TrailProgressListWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Container(
           decoration: BoxDecoration(
+            color: Colors.white,
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(5.0),
             // color: Colors.lightGreen,

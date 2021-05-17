@@ -12,7 +12,6 @@ class OverallStatusWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // TODO: implement build
     final firebaseUser = context.watch<User>();
 
     return StreamBuilder<DocumentSnapshot>(
@@ -33,7 +32,7 @@ class OverallStatusWidget extends StatelessWidget {
     var stats = data["overallStats"];
     var percent = stats["percentDone"].toDouble();
     var completed =
-    (stats["completedDistance"] * 0.000621371).toStringAsFixed(2);
+        (stats["completedDistance"] * 0.000621371).toStringAsFixed(2);
     var total = (stats["totalDistance"] * 0.000621371).toStringAsFixed(2);
     percent = percent >= 0.98 ? 1.0 : percent;
 
@@ -51,6 +50,7 @@ class OverallStatusWidget extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Container(
           decoration: BoxDecoration(
+            color: Colors.white,
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(5.0),
             // color: Colors.lightGreen,
@@ -59,12 +59,19 @@ class OverallStatusWidget extends StatelessWidget {
           child: Column(
             children: [
               ListTile(
-                title: Text("Overall completion: " +
-                    " " +
-                    completed +
-                    " of " +
-                    total +
-                    " miles"),
+                title: Text(
+                  "Overall completion: " +
+                      " " +
+                      completed +
+                      " of " +
+                      total +
+                      " miles",
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                    backgroundColor: Colors.white,
+                  ),
+                ),
                 subtitle: Text((percent * 100).toStringAsFixed(2) + "%"),
                 trailing: IconButton(
                   icon: Icon(
@@ -83,3 +90,4 @@ class OverallStatusWidget extends StatelessWidget {
     );
   }
 }
+
