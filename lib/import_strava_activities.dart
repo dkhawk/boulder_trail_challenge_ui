@@ -263,6 +263,11 @@ Future<oauth2.Client> _getAuthClient(
       _popupWindowWeb = null;
     }
 
+    // make sure we got an auth code
+    if (stravaUserCode.isEmpty) {
+      return null;
+    }
+
     // authorize Strava for web using code
     Map<String, String> stravaCodeMap = {
       'code': stravaUserCode,
@@ -806,15 +811,15 @@ Future<void> revokeStravaAccess(String userName) async {
 
   // reset the Uploadstats
   int totalFilesUploaded = 0;
-  int updateTimeSeconds = -1;
+  //int updateTimeSeconds = -1;
   Map<String, dynamic> numFilesUploadedMap = {
     'numFilesUploaded': totalFilesUploaded,
-    'lastUpdateTime': updateTimeSeconds,
+    //'lastUpdateTime': updateTimeSeconds,
   };
   await FirebaseFirestore.instance
       .collection('athletes')
       .doc(userName)
       .collection('importedData')
       .doc('UploadStats')
-      .set(numFilesUploadedMap);
+      .set(numFilesUploadedMap, SetOptions(merge: true));
 }
