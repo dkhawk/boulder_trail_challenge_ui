@@ -193,7 +193,7 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
         .doc(userName)
         .collection('importedData')
         .doc('UploadStats')
-        .set(numFilesUploadedMap);
+        .set(numFilesUploadedMap, SetOptions(merge: true));
 
     return 'done';
   }

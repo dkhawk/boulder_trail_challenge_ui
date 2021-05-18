@@ -682,7 +682,7 @@ class _ImportStravaState extends State<_ImportStrava> {
           .doc(userName)
           .collection('importedData')
           .doc('UploadStats')
-          .set(numFilesUploadedMap);
+          .set(numFilesUploadedMap, SetOptions(merge: true));
     }
 
     return 'done';
