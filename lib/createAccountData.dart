@@ -274,24 +274,37 @@ Future<String> _uploadTrailStats(
     'percentDone': percentDone,
     'totalDistance': totalDistance,
   };
-  Map<String, Object> tokens = {
-    'access_token': emptyString,
-    'expires_at': -1,
-    'expires_in': -1,
-    'refresh_token': emptyString,
-    'token_type': 'Bearer',
-  };
-  Map<String, Object> statsTokens = {
+
+  Map<String, Object> statsMap = {
     'overallStats': overallStats,
-    'tokenInfo': tokens,
   };
 
   await firestoreSecondary
       .collection('athletes')
       .doc(accountName)
-      .set(statsTokens)
-      .whenComplete(() =>
-          print('_uploadTrailStats ==== overallStatsTokens whenComplete'));
+      .set(statsMap, SetOptions(merge: true))
+      .whenComplete(
+          () => print('_uploadTrailStats ==== overallStats whenComplete'));
+
+  // if creating a new user set up empty token info
+  if (resettingData == false) {
+    Map<String, Object> tokens = {
+      'access_token': emptyString,
+      'expires_at': -1,
+      'expires_in': -1,
+      'refresh_token': emptyString,
+      'token_type': 'Bearer',
+    };
+    Map<String, Object> tokensMap = {
+      'tokenInfo': tokens,
+    };
+    await firestoreSecondary
+        .collection('athletes')
+        .doc(accountName)
+        .set(tokensMap, SetOptions(merge: true))
+        .whenComplete(
+            () => print('_uploadTrailStats ==== tokenInfo whenComplete'));
+  }
 
   // upload the trail stats
   trails.forEach(
@@ -329,7 +342,7 @@ Future<String> _uploadTrailStats(
       .doc(accountName)
       .collection('importedData')
       .doc('UploadStats')
-      .set(uploadStats)
+      .set(uploadStats, SetOptions(merge: true))
       .whenComplete(() => print('    uploaded UploadStats'));
 
   // flush local cache
