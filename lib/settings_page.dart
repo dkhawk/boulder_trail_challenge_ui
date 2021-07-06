@@ -5,6 +5,7 @@ import 'package:osmp_project/authentication_service.dart';
 import 'package:osmp_project/import_activities_screen.dart';
 import 'package:osmp_project/import_strava_activities.dart';
 import 'package:osmp_project/createAccountData.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 
 import 'package:provider/provider.dart';
 //import 'package:url_launcher/url_launcher.dart';
@@ -24,6 +25,25 @@ class _SettingsPageState extends State<SettingsPage> {
   _SettingsPageState(this.settingsOptions);
   final SettingsOptions settingsOptions;
 
+  PackageInfo _packageInfo = PackageInfo(
+    appName: 'Unknown',
+    packageName: 'Unknown',
+    version: 'Unknown',
+    buildNumber: 'Unknown',
+  );
+  @override
+  void initState() {
+    super.initState();
+    _initPackageInfo();
+  }
+
+  Future<void> _initPackageInfo() async {
+    final info = await PackageInfo.fromPlatform();
+    setState(() {
+      _packageInfo = info;
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
@@ -39,7 +59,7 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.all(10.0),
+            padding: const EdgeInsets.fromLTRB(10.0, 40.0, 10.0, 2.0),
             child: Text(
               "Settings",
               //style: SettingsPage.optionStyle,
@@ -48,6 +68,13 @@ class _SettingsPageState extends State<SettingsPage> {
                 fontWeight: FontWeight.bold,
                 backgroundColor: Colors.white,
               ),
+            ),
+          ),
+          Text(
+            "Build: ${_packageInfo.version}.${_packageInfo.buildNumber}",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              backgroundColor: Colors.white,
             ),
           ),
           // Spacer(),
@@ -183,6 +210,16 @@ class _SettingsPageState extends State<SettingsPage> {
               revokeStravaAccess(firebaseUser.email);
               context.read<AuthenticationService>().signOut();
             },
+          ),
+          Padding(
+            padding: const EdgeInsets.all(10.0),
+            child: Text(
+              firebaseUser.email,
+              style: TextStyle(
+                fontWeight: FontWeight.bold,
+                backgroundColor: Colors.white,
+              ),
+            ),
           ),
           Spacer(),
         ],
