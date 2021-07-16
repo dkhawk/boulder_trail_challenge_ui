@@ -20,8 +20,11 @@ import 'package:universal_html/html.dart' as html;
 
 // ----
 // globals
-final String clientId = '43792';
-final String secret = 'b5cc7b11df2bf0390406f4bcc88592f7944880e9';
+
+// - clientID and secret:
+//   n.b. : previous version(s) of clientID & secret are not valid
+import 'oursecrets.dart';
+
 final String tokenUrl =
     'https://www.strava.com/api/v3/oauth/token?client_id=$clientId&client_secret=$secret';
 final String revokeUrl = 'https://www.strava.com/oauth/deauthorize';
@@ -50,21 +53,30 @@ class _ListenWebAsync {
   Future<String> _listenStravaRedirectWeb(String authorizationUrlString) {
     html.window.onMessage.listen(
       (event) {
-        // If the event contains the code/token it means the user is authenticated.
-        if (event.data.toString().contains('code=')) {
-          // print('_listenStravaRedirectWeb login event data2 <> ${event.data.toString()}');
-          // print('_listenStravaRedirectWeb login event type  <> ${event.type}');
+        // If the event contains the code/token it means the user is authenticated
+        // - but may not have given activity read access
+        String eventDataString = event.data.toString();
+        if (eventDataString.contains('code=')) {
+          // print(
+          //     '_listenStravaRedirectWeb login event data2 <> $eventDataString');
 
-          // extract the strava code
-          String code = event.data
-              .toString()
-              .split('&')
-              .firstWhere((e) => e.startsWith('code='))
-              .substring('code='.length);
-          print('_listenStravaRedirectWeb strava token/code <> $code');
+          // did user give activity read access
+          String code = '';
+          if (eventDataString.contains('activity:read')) {
+            // if yes, then extract the strava code
+            code = eventDataString
+                .split('&')
+                .firstWhere((e) => e.startsWith('code='))
+                .substring('code='.length);
+            print('_listenStravaRedirectWeb strava token/code <> $code');
+          }
 
           // complete the future
+          // - an empty, non-null string indicates failure/improper access rights
           _finishOperation(code);
+        }
+        if (eventDataString.contains('access_denied')) {
+          _finishOperation('');
         }
       },
       cancelOnError: true,
@@ -97,7 +109,7 @@ Future<oauth2.Credentials> _getCredentialsFromFirestore(String userName) async {
   oauth2.Credentials credentials;
   if (accessToken.isNotEmpty && (expirationInSeconds > 0)) {
     print(
-        '_getCredentialsFromFirestore: using Strava credentials from firestore <>');
+        '_getCredentialsFromFirestore: attempting to use Strava credentials from firestore <>');
     print('   refreshToken $refreshToken');
     print('   expiration   $expiration');
 
@@ -108,8 +120,11 @@ Future<oauth2.Credentials> _getCredentialsFromFirestore(String userName) async {
         tokenEndpoint: Uri.parse(tokenUrl),
         scopes: ['activity:read'],
         expiration: expiration);
+
+    print('_getCredentialsFromFirestore: using credentials from firestore <>');
   } else {
-    print('cannot use credentials from firestore <>');
+    print(
+        '_getCredentialsFromFirestore: cannot use credentials from firestore <>');
     return credentials;
   }
 
@@ -122,6 +137,12 @@ Future<oauth2.Credentials> _getCredentialsFromFirestore(String userName) async {
         secret: secret,
         basicAuth: false,
       );
+    } on StateError {
+      print('failed to refresh Strava credentials StateError <>');
+      return null;
+    } on oauth2.AuthorizationException {
+      print('failed to refresh Strava credentials AuthorizationException <>');
+      return null;
     } catch (e) {
       print('failed to refresh Strava credentials <>');
       return null;
@@ -190,11 +211,39 @@ Future<oauth2.Client> _getAuthClient(
       await _getCredentialsFromFirestore(userName);
   if (existingCredentials != null) {
     // create the Client
-    return oauth2.Client(
-      existingCredentials,
-      identifier: clientId,
-      secret: secret,
-    );
+    oauth2.Client theClient;
+    try {
+      theClient = oauth2.Client(
+        existingCredentials,
+        identifier: clientId,
+        secret: secret,
+      );
+    } on FormatException {
+      theClient = null;
+      print('_getAuthClient: FormatException <>');
+    } on oauth2.AuthorizationException {
+      theClient = null;
+      print('_getAuthClient: AuthorizationException <>');
+    } on oauth2.ExpirationException {
+      theClient = null;
+      print('_getAuthClient: ExpirationException <>');
+    }
+
+    // test whether the client is valid by accessing the athlete
+    if (theClient != null) {
+      final String theAthlete = 'https://www.strava.com/api/v3/athlete';
+      await theClient.read(Uri.parse(theAthlete)).catchError((e) {
+        print('_getAuthClient: theClient.read could not get theAuthAthlete');
+        theClient = null;
+      });
+    }
+
+    // the client appears valid so return it
+    // - else try to log in to Strava again below
+    if (theClient != null) {
+      print('_getAuthClient: returning oauth2 client using firestore creds <>');
+      return theClient;
+    }
   }
 
   // Don't want to ask the user to log into Strava when deactivating an account
@@ -204,7 +253,8 @@ Future<oauth2.Client> _getAuthClient(
   }
 
   // ----
-  // There are no credentials in firestore so ask the user to authorize Strava
+  // There are no credentials in firestore (or they've been rejected) so ask
+  // the user to authorize Strava
   //
   // Two very different flows to get initial auth code from Strava
   // depending on whether web or mobile app.  After the initial authorization
@@ -233,13 +283,9 @@ Future<oauth2.Client> _getAuthClient(
 
     // the URL on the authorization server
     // (authorizationEndpoint with some additional query parameters)
-    final currentWebUri = Uri.base;
-    final redirectWebUrl = Uri(
-      host: currentWebUri.host,
-      scheme: currentWebUri.scheme,
-      port: currentWebUri.port,
-      path: '/static.html',
-    );
+    final redirectWebUrl =
+        Uri.parse('https://bouldertrailchallenge.com/static.html');
+    //print('Strava redirectWebUrl <> $redirectWebUrl');
 
     Uri authorizationUrl = grant.getAuthorizationUrl(
       redirectWebUrl,
@@ -277,6 +323,10 @@ Future<oauth2.Client> _getAuthClient(
       oauth2Client = await grant.handleAuthorizationResponse(stravaCodeMap);
       print(
           'webAuthorization: grant.handleAuthorizationResponse got oauth2.Client for initial authentication <>');
+    } on oauth2.AuthorizationException {
+      print(
+          'webAuthorization: grant.handleAuthorizationResponse AuthorizationException <> ');
+      return null;
     } catch (e) {
       print(
           'webAuthorization: grant.handleAuthorizationResponse threw exception <> ${e.data.toString()}');

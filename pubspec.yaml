@@ -58,7 +58,7 @@ dependencies:
 dev_dependencies:
   flutter_test:
     sdk: flutter
-  firebase_auth_web:
+  #firebase_auth_web:
   #integration_test:
   #  sdk: flutter
 

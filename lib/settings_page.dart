@@ -71,6 +71,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           Text(
+            // Note that version and buildNumber are taken from pubspec.yaml
             "Build: ${_packageInfo.version}.${_packageInfo.buildNumber}",
             style: TextStyle(
               fontWeight: FontWeight.bold,
