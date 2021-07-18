@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:osmp_project/settings_page.dart';
 import 'package:osmp_project/trail_list_page.dart';
+import 'package:osmp_project/IntroPages.dart';
 
 /// This is the stateful widget that the main application instantiates.
 class BottomNavWidget extends StatefulWidget {
@@ -21,6 +22,7 @@ class _BottomNavWidgetState extends State<BottomNavWidget> {
   List<Widget> _widgetOptions() => <Widget>[
     TrailsProgressWidget(settingsOptions),
     // TrailsProgressWidget(TrailStatus.completed, settingsOptions),
+    IntroPages(),
     SettingsPage(settingsOptions),
   ];
 
@@ -51,8 +53,12 @@ class _BottomNavWidgetState extends State<BottomNavWidget> {
           //   label: 'Completed',
           // ),
           BottomNavigationBarItem(
+            icon: Icon(Icons.help_center_outlined),
+            label: 'Intro/Help',
+          ),
+          BottomNavigationBarItem(
             icon: Icon(Icons.settings),
-            label: 'Settings',
+            label: 'Import Data/Settings',
           ),
         ],
         currentIndex: _selectedIndex,

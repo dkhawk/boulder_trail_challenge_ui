@@ -39,6 +39,7 @@ dependencies:
   gpx: ^1.1.1
   google_polyline_algorithm: ^2.0.0
   package_info_plus: ^1.0.3
+  introduction_screen: ^2.1.0
 
   # strava lib
   oauth2_client: ^2.1.0
@@ -80,9 +81,14 @@ flutter:
     - assets/images/UploadFile.png
     - assets/images/Strava.png
     - assets/images/TopoMapPattern.png
+    - assets/images/HelpTrailsPage1.png
+    - assets/images/HelpTrailsPage2.png
+    - assets/images/HelpStravaImport.png
+    - assets/images/HelpSettings1.png
+    - assets/images/HelpSettings2.png
+    - assets/images/HelpMapsPage.png
+    - assets/images/HelpMapOptions.png
     - assets/mapData/encoded-segments.json
-    #- assets/credentials.json
-  #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/assets-and-images/#resolution-aware.
