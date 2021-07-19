@@ -44,8 +44,8 @@ class OverallStatusWidget extends StatelessWidget {
     inputMapSummaryData.isMapSummary = true;
     inputMapSummaryData.percentComplete = percent;
 
-    // return Text(
-    //     "Overall completion: " + (percent * 100).toStringAsFixed(2) + "%");
+    final firebaseUser = context.watch<User>();
+
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
       child: Container(
@@ -72,7 +72,10 @@ class OverallStatusWidget extends StatelessWidget {
                     backgroundColor: Colors.white,
                   ),
                 ),
-                subtitle: Text((percent * 100).toStringAsFixed(2) + "%"),
+                subtitle: Text((percent * 100).toStringAsFixed(2) +
+                    "%    < " +
+                    firebaseUser.email +
+                    " >"),
                 trailing: IconButton(
                   icon: Icon(
                     Icons.map,
@@ -83,6 +86,8 @@ class OverallStatusWidget extends StatelessWidget {
                   onPressed: () => displayMapSummary(
                       context, inputMapSummaryData, settingsOptions),
                 ),
+                onTap: () => displayMapSummary(
+                    context, inputMapSummaryData, settingsOptions),
               ),
               progress,
             ],
@@ -90,4 +95,3 @@ class OverallStatusWidget extends StatelessWidget {
     );
   }
 }
-

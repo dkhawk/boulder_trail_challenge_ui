@@ -6,7 +6,9 @@ import 'package:osmp_project/settings_page.dart';
 import 'package:provider/provider.dart';
 
 class TrailProgressListWidget extends StatelessWidget {
-  TrailProgressListWidget({Key key, this.progressFilterValue: 'All', this.settingsOptions}) : super(key: key);
+  TrailProgressListWidget(
+      {Key key, this.progressFilterValue: 'All', this.settingsOptions})
+      : super(key: key);
 
   final SettingsOptions settingsOptions;
   final String progressFilterValue;
@@ -26,21 +28,21 @@ class TrailProgressListWidget extends StatelessWidget {
         if (!snapshot.hasData) return LinearProgressIndicator();
         if (snapshot.hasError) return LinearProgressIndicator();
         var docs = snapshot.data.docs;
-        return _buildTrailsList(
-            context,
-            docs
-        );
+        return _buildTrailsList(context, docs);
       },
     );
   }
 
-  Widget _buildTrailsList(BuildContext context, List<DocumentSnapshot> snapshot) {
-    var trails = snapshot.map((data) => TrailSummary.fromSnapshot(data)).toList();
+  Widget _buildTrailsList(
+      BuildContext context, List<DocumentSnapshot> snapshot) {
+    var trails =
+        snapshot.map((data) => TrailSummary.fromSnapshot(data)).toList();
     trails.retainWhere((trail) => matchesFilter(trail));
 
     return ListView(
       padding: const EdgeInsets.only(top: 20.0),
-      children: trails.map((trail) => _buildTrailsListItem(context, trail)).toList(),
+      children:
+          trails.map((trail) => _buildTrailsListItem(context, trail)).toList(),
     );
   }
 
@@ -48,7 +50,8 @@ class TrailProgressListWidget extends StatelessWidget {
     // Just shoot me!  Use enum values or something.  Not strings!
     if (progressFilterValue == 'In progress' && trail.percentDone >= 0.99999) {
       return false;
-    } else if (progressFilterValue == 'Completed' && trail.percentDone < 0.99999) {
+    } else if (progressFilterValue == 'Completed' &&
+        trail.percentDone < 0.99999) {
       return false;
     }
     return true;
@@ -57,7 +60,7 @@ class TrailProgressListWidget extends StatelessWidget {
   Widget _buildTrailsListItem(BuildContext context, TrailSummary trail) {
     final percent = trail.percentDone >= 0.98 ? 1.0 : trail.percentDone;
     final completedMiles =
-    (trail.completedDistance * 0.000621371).toStringAsFixed(2);
+        (trail.completedDistance * 0.000621371).toStringAsFixed(2);
     final total = (trail.length * 0.000621371).toStringAsFixed(2);
 
     var progress = LinearProgressIndicator(
@@ -98,6 +101,7 @@ class TrailProgressListWidget extends StatelessWidget {
                   alignment: Alignment.centerRight,
                   onPressed: () => displayMap(context, trail, settingsOptions),
                 ),
+                onTap: () => displayMap(context, trail, settingsOptions),
               ),
               progress,
             ],
@@ -127,7 +131,9 @@ class TrailSummary {
         name = map['name'],
         length = map['length'],
         completedDistance = map['completedDistance'],
-        percentDone = map['percentDone'].toDouble() >= 0.95 ? 1.0 : map['percentDone'].toDouble(),
+        percentDone = map['percentDone'].toDouble() >= 0.95
+            ? 1.0
+            : map['percentDone'].toDouble(),
         completedSegs = map['completed'],
         remainingSegs = map['remaining'];
 
