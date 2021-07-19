@@ -7,7 +7,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
 import 'package:flutter_map/flutter_map.dart';
-import 'package:latlong/latlong.dart';
+import 'package:latlong2/latlong.dart';
 import 'package:flutter_map_tappable_polyline/flutter_map_tappable_polyline.dart';
 
 import 'package:osmp_project/trail_progress_list_widget.dart';
@@ -402,15 +402,16 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
 
     // zoom out and in
     void _zoomOut() {
-      if (mapController.ready) mapController.move(mapController.center, mapController.zoom - 1);
+      mapController.onReady.whenComplete(() =>
+          mapController.move(mapController.center, mapController.zoom - 1));
     }
 
     void _zoomIn() {
-      if (mapController.ready) {
-        double newZoom = mapController.zoom + 1;
-        if (newZoom > 18) newZoom = 18;
-        mapController.move(mapController.center, newZoom);
-      }
+      // limit the zoom level
+      double newZoom = mapController.zoom + 1;
+      if (newZoom > 18) newZoom = 18;
+      mapController.onReady.whenComplete(
+              () => mapController.move(mapController.center, newZoom));
     }
 
     return Scaffold(
