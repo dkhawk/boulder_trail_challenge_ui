@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:introduction_screen/introduction_screen.dart';
 
 class IntroPages extends StatefulWidget {
@@ -38,6 +39,14 @@ class _IntroPagesState extends State<IntroPages> {
       pageColor: Colors.white,
       imagePadding: EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 0.0),
     );
+
+    // are we in a web browser on a desktop device or a mobile device
+    // - controls padding and dot size changes for narrower screen
+    bool isWebDesktop = true;
+    if ((defaultTargetPlatform == TargetPlatform.android) ||
+        (defaultTargetPlatform == TargetPlatform.iOS)) {
+      isWebDesktop = false;
+    }
 
     return IntroductionScreen(
       key: introKey,
@@ -113,10 +122,10 @@ class _IntroPagesState extends State<IntroPages> {
       showSkipButton: false,
       next: const Icon(Icons.arrow_forward),
       controlsMargin: const EdgeInsets.all(16),
-      controlsPadding: kIsWeb
+      controlsPadding: isWebDesktop
           ? const EdgeInsets.all(12.0)
           : const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
-      dotsDecorator: kIsWeb
+      dotsDecorator: isWebDesktop
           ? const DotsDecorator(
               size: Size(10.0, 10.0),
               color: Color(0xFFBDBDBD),

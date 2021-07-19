@@ -45,7 +45,8 @@ class TopApp extends StatelessWidget {
         ),
         // Display splash screen for a couple of seconds and
         // then call class AuthenticationWrapper
-        home: OSMPSplash(),
+        //home: OSMPSplash(),
+        home: AuthenticationWrapper(),
       ),
     );
   }
