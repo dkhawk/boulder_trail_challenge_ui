@@ -675,21 +675,27 @@ class _ImportStravaState extends State<_ImportStrava> {
               'processed': false,
             };
 
-            // do the actual upload to the cloud/firestore
-            String encodedTrackUploadLocation =
-                activitySummary['external_id'] + '.gencoded';
-            numFilesUploaded++;
-            print(
-                'Uploading file: = $numFilesUploaded <> ${activitySummary['start_date_local']} <> $encodedTrackUploadLocation');
+            // do not upload empty polylines - this causes cloud function to crash
+            if (theActivityMap['summary_polyline'].toString().isNotEmpty) {
+              // do the actual upload to the cloud/firestore
+              String encodedTrackUploadLocation =
+                  activitySummary['external_id'] + '.gencoded';
+              numFilesUploaded++;
+              print(
+                  'Uploading file: = $numFilesUploaded <> ${activitySummary['start_date_local']} <> $encodedTrackUploadLocation');
 
-            FirebaseFirestore.instance
-                .collection('athletes')
-                .doc(userName)
-                .collection('importedData')
-                .doc(encodedTrackUploadLocation)
-                .set(importedTrackMap);
+              FirebaseFirestore.instance
+                  .collection('athletes')
+                  .doc(userName)
+                  .collection('importedData')
+                  .doc(encodedTrackUploadLocation)
+                  .set(importedTrackMap);
 
-            _nbActivity++;
+              _nbActivity++;
+            } else {
+              print(
+                  'Uploading Strava activity failed: = <> ${activitySummary['start_date_local']} <> encodedTrackUploadLocation is EMPTY');
+            }
           });
 
           // are we done with all the pages?

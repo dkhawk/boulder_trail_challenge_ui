@@ -387,6 +387,8 @@ class _WelcomePage extends StatelessWidget {
             'import them using GPX files. ';
     String howtoString2 =
         'Click on the blue \'runner\' icons on the Trails List \npage to see maps of your progress. ';
+    String howtoString3 =
+        'Be safe out there. \nThis app is not associated with Boulder OSMP or any other entity';
 
     //print('_WelcomePage ====');
     return SizedBox(
@@ -402,7 +404,7 @@ class _WelcomePage extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           Spacer(
-            flex: 5,
+            flex: 6,
           ),
           RichText(
             textAlign: TextAlign.center,
@@ -414,20 +416,18 @@ class _WelcomePage extends StatelessWidget {
                 ),
                 TextSpan(
                   text: osmp,
-                  style: TextStyle(
-                      fontSize: 15,
-                      color: Colors.blueAccent,
-                      decoration: TextDecoration.underline),
-                  recognizer: TapGestureRecognizer()
-                    ..onTap = () async {
-                      var url =
-                          "https://bouldercolorado.gov/osmp/osmp-trail-challenge";
-                      if (await canLaunch(url)) {
-                        await launch(url);
-                      } else {
-                        print('Could not launch $url');
-                      }
-                    },
+                  // style: TextStyle(fontSize: 15, color: Colors.blueAccent),
+                  //    decoration: TextDecoration.underline),
+                  // recognizer: TapGestureRecognizer()
+                  //   ..onTap = () async {
+                  //     var url =
+                  //         "https://bouldercolorado.gov/osmp/osmp-trail-challenge";
+                  //     if (await canLaunch(url)) {
+                  //       await launch(url);
+                  //     } else {
+                  //       print('Could not launch $url');
+                  //     }
+                  //   },
                 ),
                 TextSpan(
                   text: introString2,
@@ -437,7 +437,7 @@ class _WelcomePage extends StatelessWidget {
             ),
           ),
           Spacer(
-            flex: 2,
+            flex: 3,
           ),
           Text(
             howtoString1,
@@ -448,6 +448,15 @@ class _WelcomePage extends StatelessWidget {
           Text(
             howtoString2,
             style: TextStyle(fontSize: 15, color: Colors.black),
+            softWrap: true,
+            textAlign: TextAlign.center,
+          ),
+          Spacer(
+            flex: 1,
+          ),
+          Text(
+            howtoString3,
+            style: TextStyle(fontSize: 15, color: Colors.black, fontStyle: FontStyle.italic),
             softWrap: true,
             textAlign: TextAlign.center,
           ),
@@ -471,7 +480,7 @@ class _WelcomePage extends StatelessWidget {
             ),
           ),
           Spacer(
-            flex: 4,
+            flex: 5,
           ),
         ],
       ),

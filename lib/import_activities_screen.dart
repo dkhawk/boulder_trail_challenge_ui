@@ -149,13 +149,18 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
                 'processed': false,
               };
 
-              // do the actual upload
-              FirebaseFirestore.instance
-                  .collection('athletes')
-                  .doc(userName)
-                  .collection('importedData')
-                  .doc(encodedTrackUploadLocation)
-                  .set(importedTrackMap);
+              // do the actual upload if not empty
+              if (encodedTrackStrings[iTrack].isNotEmpty) {
+                FirebaseFirestore.instance
+                    .collection('athletes')
+                    .doc(userName)
+                    .collection('importedData')
+                    .doc(encodedTrackUploadLocation)
+                    .set(importedTrackMap);
+              } else {
+                print(
+                    'Uploading GPX activity failed: = <> $uploadDateTime <> encodedTrackUploadLocation is EMPTY');
+              }
             }
 
             fileNameString = path.basenameWithoutExtension(file.name);

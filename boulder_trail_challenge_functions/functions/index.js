@@ -1,5 +1,9 @@
-// // Cloud Functions for processing activities
-// // https://firebase.google.com/docs/functions/write-firebase-functions
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.processGencodedFiles = void 0;
+
+// Cloud Functions for processing activities
+// https://firebase.google.com/docs/functions/write-firebase-functions
 
 // The Cloud Functions for Firebase SDK to create Cloud Functions and setup triggers.
 const functions = require('firebase-functions');
@@ -18,7 +22,7 @@ var geod = GeographicLib.Geodesic.WGS84, r;
 const grid = require('./grid-data.json');
 const encodedSegments = require('./encoded-segments.json');
 
-let gpxParser = require('gpxparser');
+//let gpxParser = require('gpxparser');
 
 const minLat = grid.bounds.minLatitude;
 const minLng = grid.bounds.minLongitude;
@@ -47,74 +51,82 @@ const stravaApiCredentials = {
 const db = admin.firestore();
 
 var btcApi = {
-    getStravaInfo: async (athleteId) => {
-    	return db.collection('athletes').doc(athleteId).get().then(documentSnapshot => {
-    	    if (documentSnapshot.exists) {
-    		var athlete = documentSnapshot.data();
-    		var tokenInfo = athlete.tokenInfo;
-    		var accessToken = tokenInfo.access_token;
-    		console.log(`tokenInfo.expires_at ${tokenInfo.expires_at}`);
-    		var expirationTimeMillis = tokenInfo.expires_at * 1000;
+	getStravaInfo: async (athleteId) => {
+		return db.collection('athletes').doc(athleteId).get().then(documentSnapshot => {
+			if (documentSnapshot.exists) {
+				var athlete = documentSnapshot.data();
+				var tokenInfo = athlete.tokenInfo;
+				var accessToken = tokenInfo.access_token;
+				console.log(`tokenInfo.expires_at ${tokenInfo.expires_at}`);
+				var expirationTimeMillis = tokenInfo.expires_at * 1000;
 
-		if (Date.now() >= expirationTimeMillis) {
-		    console.log('token has expired');
-		    tokenInfo = stravaApi.refreshToken(tokenInfo.refresh_token);
-		    accessToken = tokenInfo.access_token;
-		    console.log(`New token received: ${accessToken}`);
-		}
+				if (Date.now() >= expirationTimeMillis) {
+					console.log('token has expired');
+					tokenInfo = stravaApi.refreshToken(tokenInfo.refresh_token);
+					accessToken = tokenInfo.access_token;
+					console.log(`New token received: ${accessToken}`);
+				}
 
-		console.log(`athlete: ${tokenInfo.athlete.lastname}`);
+				console.log(`athlete: ${tokenInfo.athlete.lastname}`);
 
-		return { athlete: tokenInfo.athlete, accessToken: accessToken };
+				return {athlete: tokenInfo.athlete, accessToken: accessToken};
 
-    	    } else {
-		throw new Error('Failed to get strava token for athlete');
+			} else {
+				throw new Error('Failed to get strava token for athlete');
+			}
+		})
+	},
+	getTrailStats: async(athleteId) => {
+	    var results = new Map();
+
+	    const trailStatsRef = db.collection('athletes').doc(athleteId).collection('trailStats');
+	    const trailStats = await trailStatsRef.get();
+
+	    trailStats.forEach((doc) => {
+	        results.set(doc.id, doc.data());
+	    });
+
+	    return results;
+	},
+	updateStats: async (athleteId, updatedTrails, updatedStats) => {
+	    // Get a new write batch
+	    const batch = db.batch();
+
+	    const athleteRef = db.collection('athletes').doc(athleteId);
+	    const trailStatsRef = athleteRef.collection('trailStats');
+
+	    batch.update(athleteRef, {
+	        'overallStats': updatedStats
+	    });
+		
+	    for (let[trailId, trail] of updatedTrails.entries()) {
+	        let trailDoc = trailStatsRef.doc(trailId);
+	        batch.set(trailDoc, trail);
 	    }
-	})},
-    getTrailStats: async (athleteId) => {
-	const trailStats = await db.collection('athletes').doc(athleteId).collection('trailStats').get();
 
-	var results = {};
-	trailStats.forEach(stats => {
-	    results[stats.id] = stats.data();
-	});
+	    // Commit the batch
+	    await batch.commit();
+	},
+	writeCompletedSegments: async (segments, athleteId) => {
+		const batch = db.batch();
+		const athleteRef = db.collection('athletes').doc(athleteId);
+		const completedRef = athleteRef.collection('completed');
 
-	return results;
-    },
-    updateStats: async (athleteId, updatedTrails, updatedStats) => {
-	// Get a new write batch
-	const batch = db.batch();
+		segments.forEach(segment => {
+			let completedSegment = {
+				segmentId: segment.segmentId,
+				length: segment.length,
+				trailId: segment.trailId,
+				trailName: segment.trailName,
+			};
 
-	const athleteRef = db.collection('athletes').doc(athleteId);
-	const trailStatsRef =  athleteRef.collection('trailStats');
+      console.log(`writeCompletedSegments: ${segment.trailName} segID: ${segment.segmentId} length: ${segment.length}`);
 
-	batch.update(athleteRef, {'overallStats': updatedStats});
-	for (let trailId in updatedTrails) {
-	    let trail = updatedTrails[trailId];
-	    let trailDoc = trailStatsRef.doc(trailId);
-	    batch.set(trailDoc, trail);
-	}
-
-	// Commit the batch
-	await batch.commit();
-    },
-    writeCompletedSegments: async (segments, athleteId) => {
-	const batch = db.batch();
-	const athleteRef = db.collection('athletes').doc(athleteId);
-	const completedRef =  athleteRef.collection('completed');
-
-	segments.forEach(segment => {
-	    let completedSegment = {
-		segmentId: segment.segmentId,
-		length: segment.length,
-		trailId: segment.trailId,
-		trailName: segment.trailName,
-	    };
-	    let compDoc = completedRef.doc(segment.segmentId);
-	    batch.set(compDoc, completedSegment);
-	});
-	await batch.commit();
-    },
+			let compDoc = completedRef.doc(segment.segmentId);
+			batch.set(compDoc, completedSegment);
+		});
+		await batch.commit();
+	},
 }
 
 var stravaApi = {
@@ -209,26 +221,26 @@ var stravaApi = {
 	    }); // TODO: handle exception
     },
 
-    getActivityLocations: async (activityId, accessToken) => {
-	var options = {
-	    method: 'GET',
-	    // TODO: sanitize the input!
-	    uri: `https://www.strava.com/api/v3/activities/${activityId}/streams`,
-	    headers: {
-		'User-Agent': 'Request-Promise',
-		'accept': 'application/json',
-		'authorization': `Bearer ${accessToken}`
-	    },
-	    qs: {
-		keys: 'latlng',
-		key_by_type: true
-	    },
-	};
-	return await rp(options)
-	    .then(locationsString => {
-		return JSON.parse(locationsString);
-	    }); // TODO: handle exception
-    },
+	getActivityLocations: async (activityId, accessToken) => {
+		let options = {
+			method: 'GET',
+			// TODO: sanitize the input!
+			uri: `https://www.strava.com/api/v3/activities/${activityId}/streams`,
+			headers: {
+				'User-Agent': 'Request-Promise',
+				'accept': 'application/json',
+				'authorization': `Bearer ${accessToken}`
+			},
+			qs: {
+				keys: 'latlng',
+				key_by_type: true
+			},
+		};
+		return await rp(options)
+			.then(locationsString => {
+				return JSON.parse(locationsString);
+			}); // TODO: handle exception
+	},
 
     getActivities: async (athleteId, after, accessToken) => {
 	// https://www.strava.com/api/v3/athlete/activities?after=1609459200&per_page=30
@@ -264,77 +276,90 @@ exports.addMessage = functions.https.onRequest(async (req, res) => {
     res.json({result: `Message with ID: ${writeResult.id} added.`});
 });
 
-exports.processGpxFileInFirestore = functions.https.onRequest(async (request, response) => {
-    const athleteId = request.query.athleteId;
-    const filePath = request.query.filePath;
+exports.processGencodedFiles = functions.firestore
+    .document('athletes/{athlete}/importedData/UploadStats')
+    .onUpdate( async (change, context) => {
 
-    const fileName = path.join(athleteId, filePath);
+    var athleteId = context.params.athlete;
+    console.log(`processGencodedFiles: processing imported data for athlete <==> ${athleteId}`);
 
-    // // Download file from bucket.
-    const bucket = admin.storage().bucket('gs://boulder-trail-challenge.appspot.com/');
+    // console.log(`processGencodedFiles: latDegrees ${latDegrees}   lngDegrees ${lngDegrees}`);
+    // console.log(`processGencodedFiles: minLat ${minLat}           minLng ${minLng}`);    
+    // console.log(`processGencodedFiles: width ${width}             height ${height}`);
 
-    const remoteFile = bucket.file(fileName);
+    const importedSegsRef = db.collection('athletes').doc(athleteId).collection('importedData');
+    const importedSegs = await importedSegsRef.get();
 
-    var gpx = "";
-    remoteFile.createReadStream()
-	.on('error', function(err) { response.status(500).send(error) })
-	.on('response', function(res) {
-	})
-	.on('close', async () => {
-	    let activity = await parseGpx(gpx);
-	    // console.log(JSON.stringify(activity));
+    var filesProcessed = 0;
+    let totalCompletedSegments = [];
+    importedSegs.forEach(async(doc) => {
+       
+        if(doc.id.endsWith('.gencoded') == true) {
+            console.log(`gencoded importedSegs docId: ${doc.id} <==> ${doc.data().originalFileName} <> ${doc.data().processed} `);            
+        } else {
+            console.log(`uploadStats: total number of files uploaded to date <==> ${doc.data().numFilesUploaded}`);                    
+        }
+        
+        if ((doc.id.endsWith('.gencoded') == true) && (doc.data().processed == false)) {
+            console.log(`... processing`);
+            var timestamp = doc.data().gpxDateTime;
+            var encoded = doc.data().encodedLocation;
 
-	    var completedSegments = [];
-	    completedSegments.push(...(await processActivity(activity.locations, athleteId, 0, activity.timestamp)));
+            if((encoded != null) && (encoded.length))
+            {
+              var locations = decode(encoded);
+              // console.log(`... locations: srt ${locations[0]}`);
+              // console.log(`... locations: end ${locations[locations.length - 1]}`);
 
-	    // Load trail data from database
-	    let trailStats = await btcApi.getTrailStats(athleteId);
+              var completedSegments = processActivity(locations, athleteId, 0, timestamp);
+              console.log(`Number of completedSegments: ${completedSegments.length}`);
 
-	    var updatedTrails = await calculateCompletedStats(completedSegments, trailStats);
-	    var updatedStats = calculateOverallStats(trailStats);
+              // write these completed segments into the database
+              // - note that only 500 segments can be written in one batch
+              btcApi.writeCompletedSegments(completedSegments, athleteId);
+              // concatenate all completedSegments
+              Array.prototype.push.apply(totalCompletedSegments,completedSegments); 
 
-	    console.log('===========================================');
-	    console.log('updatedStats');
-	    console.log(JSON.stringify(updatedStats));
-	    console.log('===========================================');
-	    // console.log('completedSegments');
-	    // console.log(JSON.stringify(completedSegments));
-	    // console.log('===========================================');
+              filesProcessed = filesProcessed + 1;
+              console.log(`... done processing ${athleteId} activity at ${timestamp} ; count ${filesProcessed}`);
+            }
+            else
+            {
+              console.log(`... cannot process ${athleteId} activity at ${timestamp} ; encoded path is empty`);              
+            }
+        }
+    })
 
-	    btcApi.updateStats(athleteId, updatedTrails, updatedStats);
-	    btcApi.writeCompletedSegments(completedSegments, athleteId);
+    console.log(`totalCompletedSegments length for this group of uploads ${totalCompletedSegments.length}`);
+    var filesProcessedString = filesProcessed.toString();
+    console.log(`processGencodedFiles: processed file count <==> ${filesProcessedString}`);
 
-	    response.send(`Done processing ${athleteId}/${filePath}\n`);
-	})
-	.on('data', function(chunk) {
-	    // console.log(chunk.toString());
-	    gpx = gpx + chunk.toString();
-	});
+    // Load trail data from database
+    let trailStats = await btcApi.getTrailStats(athleteId);
+
+    // Write stats and segments
+    var updatedTrails = await calculateCompletedStats(totalCompletedSegments, trailStats);
+    var updatedStats = calculateOverallStats(updatedTrails);
+
+    await btcApi.updateStats(athleteId, updatedTrails, updatedStats);
+    //await btcApi.writeCompletedSegments(totalCompletedSegments, athleteId);
+            
+    // delete processed files
+    const batch = db.batch();
+    importedSegs.forEach((doc) => {
+      if (doc.id.endsWith('.gencoded') == true)
+      {
+        var docName = `${doc.id}`;
+        console.log(`delete docName: ${docName}`);          
+        //const res = await db.collection('athletes').doc(athleteId).collection('importedData').doc(docName).delete();
+        const res = db.collection('athletes').doc(athleteId).collection('importedData').doc(docName);
+        batch.delete(res);      
+      }
+    })
+    await batch.commit();
+    
+    return filesProcessed;    
 });
-
-async function parseGpx(gpx) {
-    let parser = new gpxParser();
-    parser.parse(gpx);
-
-    let tracksAndRoutes = parser.tracks.concat(parser.routes);
-    var locations = [];
-    var timestamp = tracksAndRoutes[0].points[0].time;
-    for(let track in tracksAndRoutes) {
-	// console.log(tracksAndRoutes[track].points);
-	for (let point in tracksAndRoutes[track].points) {
-	    let loc = tracksAndRoutes[track].points[point];
-	    locations.push([loc.lat, loc.lon]);
-	}
-	// console.log(JSON.stringify(locations));
-
-	break;
-    }
-
-    return {
-	'timestamp': timestamp,
-	'locations': locations,
-    };
-}
 
 exports.getStravaInfo = functions.https.onRequest(async (request, response) => {
     const athleteId = request.query.athleteId;
@@ -480,59 +505,55 @@ exports.refreshToken = functions.https.onRequest(async (request, response) => {
 });
 
 exports.getActivities = functions.https.onRequest(async (request, response) => {
-    const athleteId = request.query.athleteId;
-    const after = request.query.after;
-    // http://localhost:5001/boulder-trail-challenge/us-central1/getActivities?athleteId=dkhawk@gmail.com&after=1609459200
-    // const after = 1609459200;  // 2021-01-01 0:00.  Need to pass this in as a parameter.
-    // const after = 1610348400;  // Tuesday, January 11, 2021 12:00:00 AM GMT-07:00
+	const athleteId = request.query.athleteId;
+	const after = request.query.after;
+	// http://localhost:5001/boulder-trail-challenge/us-central1/getActivities?athleteId=dkhawk@gmail.com&after=1609459200
+	// const after = 1609459200;  // 2021-01-01 0:00.  Need to pass this in as a parameter.
+	// const after = 1610348400;  // Tuesday, January 11, 2021 12:00:00 AM GMT-07:00
 
-    // admin.firestore.Timestamp.fromDate(new Date(''));
-    var accessToken = await stravaApi.getBearerToken(athleteId);
-
-    var activities = await stravaApi.getActivities(athleteId, after, accessToken);
-
-    var completedSegments = [];
-    for (let num in activities) {
-	let activity = activities[num];
-	console.log(activity.id);
-	// console.log(JSON.stringify(activities));
-
-	// var activity = activities[1];
-	// console.log(JSON.stringify(activity));
-
-	// let activity = await fetchActivity(athleteId, activityInfo.id, timestamp);
-
+	// admin.firestore.Timestamp.fromDate(new Date(''));
 	var accessToken = await stravaApi.getBearerToken(athleteId);
 
-	const locations = await stravaApi.getActivityLocations(activity.id, accessToken).then(activity => {
-	    return activity['latlng']['data'];
-	});
+	var activities = await stravaApi.getActivities(athleteId, after, accessToken);
 
-	let timestamp = admin.firestore.Timestamp.fromDate(new Date(activity.start_date));
+	var completedSegments = [];
+	for (let num in activities) {
+		let activity = activities[num];
+		console.log(activity.id);
+		// console.log(JSON.stringify(activities));
 
-	completedSegments.push(...(await processActivity(locations, athleteId, activity.id, timestamp)));
-    };
+		// var activity = activities[1];
+		// console.log(JSON.stringify(activity));
 
-    if (completedSegments.length > 0) {
-	// Load trail data from database
-	let trailStats = await btcApi.getTrailStats(athleteId);
+		// let activity = await fetchActivity(athleteId, activityInfo.id, timestamp);
+		const locations = await stravaApi.getActivityLocations(activity.id, accessToken).then(activity => {
+			return activity['latlng']['data'];
+		});
 
-	var updatedTrails = await calculateCompletedStats(completedSegments, trailStats);
-	var updatedStats = calculateOverallStats(trailStats);
+		let timestamp = admin.firestore.Timestamp.fromDate(new Date(activity.start_date));
+		completedSegments.push(...(await processActivity(locations, athleteId, activity.id, timestamp)));
+	}
 
-	console.log('===========================================');
-	console.log('updatedStats');
-	console.log(JSON.stringify(updatedStats));
-	console.log('===========================================');
-	// console.log('completedSegments');
-	// console.log(JSON.stringify(completedSegments));
-	// console.log('===========================================');
+	if (completedSegments.length > 0) {
+		// Load trail data from database
+		let trailStats = await btcApi.getTrailStats(athleteId);
 
-	btcApi.updateStats(athleteId, updatedTrails, updatedStats);
-	btcApi.writeCompletedSegments(completedSegments, athleteId);
-    }
+		var updatedTrails = await calculateCompletedStats(completedSegments, trailStats);
+		var updatedStats = calculateOverallStats(trailStats);
 
-    response.send('Done\n');
+		console.log('===========================================');
+		console.log('updatedStats');
+		console.log(JSON.stringify(updatedStats));
+		console.log('===========================================');
+		// console.log('completedSegments');
+		// console.log(JSON.stringify(completedSegments));
+		// console.log('===========================================');
+
+		btcApi.updateStats(athleteId, updatedTrails, updatedStats);
+		btcApi.writeCompletedSegments(completedSegments, athleteId);
+	}
+
+	response.send('Done\n');
 });
 
 exports.processActivity = functions.https.onRequest(async (request, response) => {
@@ -545,118 +566,160 @@ exports.processActivity = functions.https.onRequest(async (request, response) =>
     response.send('Done\n');
 });
 
+exports.resetTrailStats = functions.https.onRequest(async (request, response) => {
+	const athleteId = request.query.athleteId;
+	let unfinishedTrails = {};
+	for (const [key, trail] of Object.entries(trailSegments)) {
+		let stats = {
+			name: trail.name,
+			length: trail.length,
+			remaining: [...trail.segments],
+			completed: [],
+			completedDistance: 0,
+			percentDone: 0,
+			finishedTimeStamp: 0,
+		};
+		unfinishedTrails[trail.trailId] = stats;
+	}
+	let updatedTrails = unfinishedTrails;
+	let updatedStats = {
+		completedDistance: 0.0,
+		totalDistance: 0.0,
+		percentDone: 0.0,
+	};
+
+	await btcApi.updateStats(athleteId, updatedTrails, updatedStats);
+	await btcApi.writeCompletedSegments([], athleteId);
+
+	response.send('Done\n');
+});
+
 async function fetchActivity(athleteId, activityId) {
-    var accessToken = await stravaApi.getBearerToken(athleteId);
-    var activity = await stravaApi.getActivityInfo(activityId, accessToken);
-    const locations = await stravaApi.getActivityLocations(activityId, accessToken).then(activity => {
-	return activity['latlng']['data'];
-    });
-    activity.locations = locations;
-    return activity;
+	const accessToken = await stravaApi.getBearerToken(athleteId);
+	const activity = await stravaApi.getActivityInfo(activityId, accessToken);
+	const locations = await stravaApi.getActivityLocations(activityId, accessToken).then(activity => {
+		return activity['latlng']['data'];
+	});
+	activity.locations = locations;
+	return activity;
 }
 
 
 function candidateSegments(activity) {
-    var coordsSet = new Set(activity.map(location => locationToCoordinates(location)));
+	const coordsSet = new Set(activity.map(location => locationToCoordinates(location)));
 
-    var segSet = new Set();
-    var coords = coordsSet.forEach(function(cString) {
-	var cellSegments = grid.coordinatesToSegments[cString];
-	if (cellSegments) {
-	    cellSegments.forEach(function(seg) {
-		segSet.add(seg);
-	    });
-	}
-    });
+	const segSet = new Set();
+	const coords = coordsSet.forEach(function (cString) {
 
-    return [...segSet];
+    // console.log(`candidateSegments: cString ${cString}`);       
+		const cellSegments = grid.coordinatesToSegments[cString];
+   
+		if (cellSegments) {
+
+      // console.log(`candidateSegments: cellSegments ${cellSegments}`);          
+			cellSegments.forEach(function (seg) {
+				segSet.add(seg);
+			});
+		}
+	});
+
+  // console.log(`candidateSegments: segSet ${segSet}`);     
+	return [...segSet];
 }
 
 function locationToCoordinates(location) {
-    var y = Math.round(((location[0] - minLat) / latDegrees) * height);
-    var x = Math.round(((location[1] - minLng) / lngDegrees) * width);
+	// const y = Math.round(((location[0] - minLat) / latDegrees) * height);
+	// const x = Math.round(((location[1] - minLng) / lngDegrees) * width);
 
-    return `${x},${y}`;
+	const y = Math.floor(((location[0] - minLat) / latDegrees) * height);
+	const x = Math.floor(((location[1] - minLng) / lngDegrees) * width);
+
+  // console.log(`locationToCoordinates: location[0] ${location[0]}  location[1] ${location[1]}, x ${x} y ${y}`);
+
+	return `${x},${y}`;
 }
 
-async function processActivity(activity, athleteId, activityId, timestamp) {
-    var segments = candidateSegments(activity);
-    var finishedSegments = scoreSegments(activity, segments);
-    let completedSegments = [];
-    if (finishedSegments.length > 0) {
-	for (let segmentId of finishedSegments) {
-	    completedSegments.push(mapToCompletedSegment(segmentId, activityId, timestamp));
+function processActivity(activity, athleteId, activityId, timestamp) {
+	const segments = candidateSegments(activity);
+	const finishedSegments = scoreSegments(activity, segments);
+	let completedSegments = [];
+	if (finishedSegments.length > 0) {
+		for (let segmentId of finishedSegments) {
+			completedSegments.push(mapToCompletedSegment(segmentId, activityId, timestamp));
+		}
 	}
-    }
 
-    return completedSegments;
+  console.log(`processActivity: ${completedSegments.length}`);
+	return completedSegments;
 }
 
 function calculateOverallStats(trailStats) {
-    var totalDistance = 0;
-    var completedDistance = 0;
-    for (let trailId in trailStats) {
-	let trail = trailStats[trailId];
-	totalDistance += trail.length;
-	completedDistance += trail.completedDistance;
-    };
-    let percent = (completedDistance * 1.0) / totalDistance;
+	let totalDistance = 0;
+	let completedDistance = 0;
+	for (let [trailId, trail] of trailStats) {
+		totalDistance += trail.length;
+		completedDistance += trail.completedDistance;
+	}
+	let percent = (completedDistance * 1.0) / totalDistance;
 
-    return {
-	completedDistance: completedDistance,
-	totalDistance: totalDistance,
-	percentDone: percent,
-    };
+	return {
+		completedDistance: completedDistance,
+		totalDistance: totalDistance,
+		percentDone: percent,
+	};
 }
 
 async function calculateCompletedStats(completedSegments, trailStats) {
-    let updatedTrails = {};
-
-    // Create a map of all the trails
-    let unfinishedTrails = {};
-    for (const [key, trail] of Object.entries(trailSegments)) {
-	stats = {
-	    name: trail.name,
-	    length: trail.length,
-	    remaining: [...trail.segments],
-	    completed: [],
-	    completedDistance: 0,
-	    percentDone: 0,
-	};
-	unfinishedTrails[trail.trailId] = stats;
-    }
-
-    // Create a map of total progress using the old stats if they exist, otherwise the unfinished stats
-    let trailProgress = {};
-    for (const [key, trail] of Object.entries(unfinishedTrails)) {
-	trailProgress[key] = trailStats[key] || trail;
-    }
-
-    completedSegments.forEach(segment => {
-	// Look up the trail
-	var stats = trailProgress[segment.trailId];
-
-	// Update with the newly completed segments
-	const index = stats.remaining.indexOf(segment.segmentId);
-	if (index > -1) {
-	    stats.remaining.splice(index, 1);
+	// Create a map of all the trails
+	let unfinishedTrails = new Map();
+	for (const [key, trail] of Object.entries(trailSegments)) {
+		let stats = {
+			name: trail.name,
+			length: trail.length,
+			remaining: trail.segments,
+			completed: [],
+			completedDistance: 0,
+			percentDone: 0,
+			finishedTimeStamp: 0,
+		};
+		unfinishedTrails.set(trail.trailId,stats);
 	}
-	const ci = stats.completed.indexOf(segment.segmentId);
-	if (ci < 0) {
-	    stats.completed.push(segment.segmentId);
-	    stats.completedDistance += segment.length;
-	    stats.percentDone = (stats.completedDistance * 1.0) / stats.length;
-	}
-	trailProgress[segment.trailId] = stats;
-    });
 
-    return trailProgress;
+	// Create a map of total progress using the old stats if they exist, otherwise the unfinished stats
+	let trailProgress = new Map();
+	for (const [key, trail] of unfinishedTrails) {
+    if(trailStats.has(key)) {
+      trailProgress.set(key, trailStats.get(key));  
+    } else {
+      trailProgress.set(key, trail);    
+    }
+	}
+
+	completedSegments.forEach(segment => {
+		// Look up the trail
+		let stats = trailProgress.get(segment.trailId);
+
+		// Update with the newly completed segments
+		const index = stats.remaining.indexOf(segment.segmentId);
+		if (index > -1) {
+			stats.remaining.splice(index, 1);
+		}
+		const ci = stats.completed.indexOf(segment.segmentId);
+		if (ci < 0) {
+			stats.completed.push(segment.segmentId);
+			stats.completedDistance += segment.length;
+			stats.percentDone = (stats.completedDistance * 1.0) / stats.length;
+			stats.finishedTimeStamp = segment.timestamp;
+		}
+		trailProgress.set(segment.trailId,stats);
+	});
+
+	return trailProgress;
 }
 
 function calculateAllTrailStats() {
-    var tsegments = {};
+    let tsegments = {};
 
-    let trails = [];
     for (let segmentId in encodedSegments) {
 		let segment = encodedSegments[segmentId];
 		let trail = tsegments[segment.trailId] || {
@@ -679,26 +742,25 @@ function getSegmentsForTrail(trailId) {
 }
 
 function mapToCompletedSegment(segmentId, activityId, timestamp) {
-    let segment = encodedSegments[segmentId];
-    let completedSegment = {
-	activityId: activityId,
-	segmentId: segmentId,
-	trailId: segment.trailId,
-	trailName: segment.name,
-	timestamp: timestamp,
-	length: segment.length,
-    };
+	let segment = encodedSegments[segmentId];
+	let completedSegment = {
+		activityId: activityId,
+		segmentId: segmentId,
+		trailId: segment.trailId,
+		trailName: segment.name,
+		timestamp: timestamp,
+		length: segment.length,
+	};
 
-    return completedSegment;
+	return completedSegment;
 }
 
-function getSegmentLocations(segmentId) {
-	var locations = segmentData[segmentId];
+function getSegmentLocations(segmentId) { 
+	let locations = segmentData[segmentId];
 	if (locations) {
 		return locations;
 	}
-
-	var encoded = encodedSegments[segmentId].encodedLocations;
+	let encoded = encodedSegments[segmentId].encodedLocations;
 	locations = decode(encoded);
 	segmentData[segmentId] = locations;
 	return locations;
@@ -757,133 +819,147 @@ function decode(encoded) {
 }
 
 function scoreSegments(activity, segments) {
-    // Calculate the bounds of the activity
-    var bounds = boundsForLocations(activity);
-    var llGrid = new LatLngGrid(bounds);
-    var tiles = new Set(activity.map(location => llGrid.locationToTileCoordinates(location).toString()));
-    var fatTiles = new Set();
+	// Calculate the bounds of the activity
+	let bounds = boundsForLocations(activity);
+	let llGrid = new LatLngGrid(bounds);
 
-    for (let tile of tiles) {
-	var neighbors = getNeighbors(tile);
-	for (let neighbor of neighbors) {
-	    fatTiles.add(neighbor.toString());
-	}
-    }
+	let tiles = new Set(activity.map(location => llGrid.locationToTileCoordinates(location).toString()));
+	let fatTiles = new Set();
 
-    var completedSegments = [];
-    for (let segmentId of segments) {
-	var locations = getSegmentLocations(segmentId);
-	var count = 0;
-	for (let location of locations) {
-	    let coords = llGrid.locationToTileCoordinates(location).toString();
-	    if (fatTiles.has(coords)) {
-		count++;
-	    }
+	for (let tile of tiles) {
+		let neighbors = getNeighbors(tile);
+		for (let neighbor of neighbors) {
+			fatTiles.add(neighbor.toString());
+		}
 	}
 
-	var score = (count * 1.0) / locations.length;
-	if (score >= MATCH_THRESHOLD) {
-	    completedSegments.push(segmentId);
+	let completedSegments = [];
+	for (let segmentId of segments) {
+
+    console.log(`scoreSegments: testing segmentId ${segmentId}`);      
+		let locations = getSegmentLocations(segmentId);
+		let count = 0;
+		for (let location of locations) {
+      //console.log(`scoreSegments: location ${location}`);    
+			let coords = llGrid.locationToTileCoordinates(location).toString();
+
+      //console.log(`scoreSegments: coords ${coords}`);        
+			if (fatTiles.has(coords)) {
+				count++;
+        //console.log(`scoreSegments: incrementing count ${count}`);             
+			}
+		}
+
+		let score = (count * 1.0) / locations.length;
+    console.log(`                   ... score ${score} count ${count} length ${locations.length}`);
+
+		if (score >= MATCH_THRESHOLD) {
+			completedSegments.push(segmentId);                
+      console.log(`                   ... Completed ${segmentId} matched`);   
+		}
+      console.log(`                   ... Completed ${segmentId} no match`);       
 	}
-    }
-    return completedSegments;
+
+  console.log(`scoreSegments: ${completedSegments.length}`);      
+	return completedSegments;
 }
 
 
 class LatLngBounds {
-    constructor(minLat, minLng, maxLat, maxLng) {
-	this.minLat = minLat;
-	this.minLng = minLng;
-	this.maxLat = maxLat;
-	this.maxLng = maxLng;
+	constructor(minLat, minLng, maxLat, maxLng) {
+		this.minLat = minLat;
+		this.minLng = minLng;
+		this.maxLat = maxLat;
+		this.maxLng = maxLng;
 
-	// southwest to northwest
-	r = geod.Inverse(minLat, minLng, maxLat, minLng);
-	this.latSpanMeters = r.s12;
+		// southwest to northwest
+		r = geod.Inverse(minLat, minLng, maxLat, minLng);
+		this.latSpanMeters = r.s12;
 
-	// southwest to southeast
-	r = geod.Inverse(minLat, minLng, minLat, maxLng);
-	this.lngSpanMeters = r.s12;
-    }
+		// southwest to southeast
+		r = geod.Inverse(minLat, minLng, minLat, maxLng);
+		this.lngSpanMeters = r.s12;
+	}
 
-    getLatitudeSpanMeters() {
-	return this.latSpanMeters;
-    }
+	getLatitudeSpanMeters() {
+		return this.latSpanMeters;
+	}
 
-    getLongtitudeSpanMeters() {
-	return this.lngSpanMeters;
-    }
+	getLongitudeSpanMeters() {
+		return this.lngSpanMeters;
+	}
 }
 
 function boundsForLocations(locations) {
-    var lats = locations.map(l => l[0]);
-    var lngs = locations.map(l => l[1]);
+	const lats = locations.map(l => l[0]);
+	const lngs = locations.map(l => l[1]);
 
-    return new LatLngBounds(Math.min(...lats), Math.min(...lngs), Math.max(...lats), Math.max(...lngs));
+  // console.log(`boundsForLocations: ${Math.min(...lats)}, ${Math.min(...lngs)}, ${Math.max(...lats)}, ${Math.max(...lngs)} `);
+	return new LatLngBounds(Math.min(...lats), Math.min(...lngs), Math.max(...lats), Math.max(...lngs));
 }
 
 class LatLngGrid {
-    constructor(bounds) {
-	const cellSizeMeters = 50;
+	constructor(bounds) {
+		const cellSizeMeters = 20;
 
-	var latMeters = bounds.getLatitudeSpanMeters();
-	var lngMeters = bounds.getLongtitudeSpanMeters();
+		let latMeters = bounds.getLatitudeSpanMeters();
+		let lngMeters = bounds.getLongitudeSpanMeters();
 
-	var northSouthDegrees = bounds.maxLat - bounds.minLat;
-	var eastWestDegrees = bounds.maxLng - bounds.minLng;
+		let northSouthDegrees = bounds.maxLat - bounds.minLat;
+		let eastWestDegrees = bounds.maxLng - bounds.minLng;
 
-	this.nsNumCells = Math.ceil(latMeters / cellSizeMeters);
-	this.ewNumCells = Math.ceil(lngMeters / cellSizeMeters);
+		this.nsNumCells = Math.ceil(latMeters / cellSizeMeters);
+		this.ewNumCells = Math.ceil(lngMeters / cellSizeMeters);
 
-	var latDegreesPerCell = northSouthDegrees / this.nsNumCells;
-	var lngDegreesPerCell = eastWestDegrees / this.ewNumCells;
+		let latDegreesPerCell = northSouthDegrees / this.nsNumCells;
+		let lngDegreesPerCell = eastWestDegrees / this.ewNumCells;
 
-	// This is to make the grid one cell bigger in each dimension
+		// This is to make the grid one cell bigger in each dimension
 
-	this.minLat = bounds.minLat - latDegreesPerCell;
-	var maxLat = bounds.maxLat + latDegreesPerCell;
-	this.minLng = bounds.minLng - lngDegreesPerCell;
-	var maxLng = bounds.maxLng + lngDegreesPerCell;
+		this.minLat = bounds.minLat - latDegreesPerCell;
+		let maxLat = bounds.maxLat + latDegreesPerCell;
+		this.minLng = bounds.minLng - lngDegreesPerCell;
+		let maxLng = bounds.maxLng + lngDegreesPerCell;
 
-	this.latDegrees = maxLat - this.minLat;
-	this.lngDegrees = maxLng - this.minLng;
-    }
+		this.latDegrees = maxLat - this.minLat;
+		this.lngDegrees = maxLng - this.minLng;
+	}
 
-    locationToTileCoordinates(location) {
-	var y = Math.round(((location[0] - this.minLat) / this.latDegrees) * this.nsNumCells);
-	var x = Math.round(((location[1] - this.minLng) / this.lngDegrees) * this.ewNumCells);
-	return new Coordinates(x, y);
-    }
+	locationToTileCoordinates(location) {
+		let y = Math.round(((location[0] - this.minLat) / this.latDegrees) * this.nsNumCells);
+		let x = Math.round(((location[1] - this.minLng) / this.lngDegrees) * this.ewNumCells);
+		return new Coordinates(x, y);
+	}
 }
 
 class Coordinates {
-    constructor(x, y) {
-	this.x = x;
-	this.y = y;
-    }
-
-    toString() {
-	return `${this.x},${this.y}`;
-    }
-
-    getNeighbors() {
-	var y;
-	var x;
-	var result = [];
-	for (y = this.y - 1;  y <= this.y + 1; ++y) {
-	    for (x = this.x - 1;  x <= this.x + 1; ++x) {
-		result.push(new Coordinates(x, y));
-	    }
+	constructor(x, y) {
+		this.x = x;
+		this.y = y;
 	}
-	return result;
-    }
+
+	toString() {
+		return `${this.x},${this.y}`;
+	}
+
+	getNeighbors() {
+		let y;
+		let x;
+		const result = [];
+		for (y = this.y - 1; y <= this.y + 1; ++y) {
+			for (x = this.x - 1; x <= this.x + 1; ++x) {
+				result.push(new Coordinates(x, y));
+			}
+		}
+		return result;
+	}
 }
 
 function getNeighbors(locString) {
-    var strs = locString.split(",");
-    var x = parseInt(strs[0]);
-    var y = parseInt(strs[1]);
+	const coordString = locString.split(",");
+	const x = parseInt(coordString[0]);
+	const y = parseInt(coordString[1]);
 
-    var c = new Coordinates(x, y);
-    return c.getNeighbors();
+	const c = new Coordinates(x, y);
+	return c.getNeighbors();
 }
