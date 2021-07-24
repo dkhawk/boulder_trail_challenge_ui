@@ -62,7 +62,7 @@ class _ListenWebAsync {
 
           // did user give activity read access
           String code = '';
-          if (eventDataString.contains('activity:read')) {
+          if (eventDataString.contains('activity:read_all')) {
             // if yes, then extract the strava code
             code = eventDataString
                 .split('&')
@@ -118,7 +118,7 @@ Future<oauth2.Credentials> _getCredentialsFromFirestore(String userName) async {
         refreshToken: refreshToken,
         idToken: emptyString,
         tokenEndpoint: Uri.parse(tokenUrl),
-        scopes: ['activity:read'],
+        scopes: ['activity:read_all'],
         expiration: expiration);
 
     print('_getCredentialsFromFirestore: using credentials from firestore <>');
@@ -289,7 +289,7 @@ Future<oauth2.Client> _getAuthClient(
 
     Uri authorizationUrl = grant.getAuthorizationUrl(
       redirectWebUrl,
-      scopes: ['activity:read'],
+      scopes: ['activity:read_all'],
     );
 
     // Launch a separate window for Strava and listen for the redirect that
@@ -348,7 +348,7 @@ Future<oauth2.Client> _getAuthClient(
         grantType: OAuth2Helper.AUTHORIZATION_CODE,
         clientId: clientId,
         clientSecret: secret,
-        scopes: ['activity:read']);
+        scopes: ['activity:read_all']);
     await oAuth2HelperCleaner.removeAllTokens();
 
     // start grabbing the tokens from Strava
@@ -356,7 +356,7 @@ Future<oauth2.Client> _getAuthClient(
         grantType: OAuth2Helper.AUTHORIZATION_CODE,
         clientId: clientId,
         clientSecret: secret,
-        scopes: ['activity:read']);
+        scopes: ['activity:read_all']);
 
     // take a look at the token
     // - returns a previously acquired token or gets a new one if necessary
@@ -387,7 +387,7 @@ Future<oauth2.Client> _getAuthClient(
         refreshToken: refreshToken,
         idToken: emptyString,
         tokenEndpoint: Uri.parse(tokenUrl),
-        scopes: ['activity:read'],
+        scopes: ['activity:read_all'],
         expiration: expiration);
 
     try {
@@ -849,7 +849,7 @@ Future<void> revokeStravaAccess(String userName) async {
         grantType: OAuth2Helper.AUTHORIZATION_CODE,
         clientId: clientId,
         clientSecret: secret,
-        scopes: ['activity:read']);
+        scopes: ['activity:read_all']);
     await oAuth2HelperCleaner.removeAllTokens();
   }
 
@@ -860,7 +860,7 @@ Future<void> revokeStravaAccess(String userName) async {
       refreshToken: emptyString,
       idToken: emptyString,
       tokenEndpoint: Uri.parse(tokenUrl),
-      scopes: ['activity:read'],
+      scopes: ['activity:read_all'],
       expiration: expiration);
 
   await _putCredentialsIntoFirestore(userName, deadCredentials);

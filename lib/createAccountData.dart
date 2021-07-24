@@ -336,6 +336,7 @@ Future<String> _uploadTrailStats(
   // - when this is updated this triggers a cloud function to process the data
   Map<String, Object> uploadStats = {
     'numFilesUploaded': 0,
+    'lastUpdateTime': -1,
   };
   await firestoreSecondary
       .collection('athletes')
@@ -456,7 +457,8 @@ class _WelcomePage extends StatelessWidget {
           ),
           Text(
             howtoString3,
-            style: TextStyle(fontSize: 15, color: Colors.black, fontStyle: FontStyle.italic),
+            style: TextStyle(
+                fontSize: 15, color: Colors.black, fontStyle: FontStyle.italic),
             softWrap: true,
             textAlign: TextAlign.center,
           ),
