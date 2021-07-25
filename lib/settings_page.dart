@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
-import 'package:osmp_project/import_activities_screen.dart';
+import 'package:osmp_project/import_gpx_activities.dart';
 import 'package:osmp_project/import_strava_activities.dart';
 import 'package:osmp_project/createAccountData.dart';
 import 'package:package_info_plus/package_info_plus.dart';
@@ -117,7 +117,7 @@ class _SettingsPageState extends State<SettingsPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) {
-                  return ImportActivitiesScreen();
+                  return ImportGPXActivities();
                 }),
               );
             },

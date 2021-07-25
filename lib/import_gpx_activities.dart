@@ -22,13 +22,13 @@ import 'dart:convert';
 //
 
 // ----
-class ImportActivitiesScreen extends StatefulWidget {
+class ImportGPXActivities extends StatefulWidget {
   @override
-  _ImportActivitiesScreenState createState() => _ImportActivitiesScreenState();
+  _ImportGPXActivitiesState createState() => _ImportGPXActivitiesState();
 }
 
 // ----
-class _ImportActivitiesScreenState extends State<ImportActivitiesScreen> {
+class _ImportGPXActivitiesState extends State<ImportGPXActivities> {
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
