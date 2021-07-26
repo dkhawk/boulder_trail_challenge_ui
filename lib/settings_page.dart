@@ -30,6 +30,7 @@ class _SettingsPageState extends State<SettingsPage> {
     packageName: 'Unknown',
     version: 'Unknown',
     buildNumber: 'Unknown',
+    buildSignature: 'Unknown',
   );
   @override
   void initState() {

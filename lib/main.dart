@@ -1,13 +1,10 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
-import 'package:osmp_project/OSMPSplash.dart';
 import 'package:osmp_project/authentication_service.dart';
 import 'package:osmp_project/home_page.dart';
 import 'package:osmp_project/sign_in_page.dart';
-import 'package:osmp_project/strava_service.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
@@ -27,9 +24,6 @@ class TopApp extends StatelessWidget {
         StreamProvider(
             create: (context) =>
                 context.read<AuthenticationService>().authStateChanges),
-        Provider<StravaService>(
-          create: (_) => StravaService(FirebaseFirestore.instance),
-        ),
       ],
       child: MaterialApp(
         title: 'Boulder Trails Challenge',
@@ -43,9 +37,6 @@ class TopApp extends StatelessWidget {
           ),
           visualDensity: VisualDensity.adaptivePlatformDensity,
         ),
-        // Display splash screen for a couple of seconds and
-        // then call class AuthenticationWrapper
-        //home: OSMPSplash(),
         home: AuthenticationWrapper(),
       ),
     );
