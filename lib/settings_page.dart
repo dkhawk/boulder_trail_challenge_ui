@@ -7,6 +7,8 @@ import 'package:osmp_project/import_strava_activities.dart';
 import 'package:osmp_project/createAccountData.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
+import 'buildDate.dart';
+
 import 'package:provider/provider.dart';
 //import 'package:url_launcher/url_launcher.dart';
 
@@ -79,20 +81,15 @@ class _SettingsPageState extends State<SettingsPage> {
               backgroundColor: Colors.white,
             ),
           ),
-          // Spacer(),
-          // ElevatedButton(
-          //   onPressed: () {
-          //     _launchURL(firebaseUser.email);
-          //   },
-          //   child: Text("Connect with Strava"),
-          // ),
-          // Spacer(),
-          // ElevatedButton(
-          //   onPressed: () {
-          //     context.read<StravaService>().refreshToken(firebaseUser.email);
-          //   },
-          //   child: Text("Refresh Strava token"),
-          // ),
+          Text(
+            // buildDateTime is imported from buildDate.dart
+            "$buildDateTime",
+            style: TextStyle(
+              fontSize: 12,
+              fontWeight: FontWeight.bold,
+              backgroundColor: Colors.white,
+            ),
+          ),
           Spacer(),
           ElevatedButton(
             child: Padding(
