@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:async';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' show ClientException;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -516,6 +517,7 @@ class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
               width: 140,
               height: 140,
             ),
+            Text('Powered by Strava'),
             Spacer(
               flex: 4,
             ),
@@ -648,10 +650,14 @@ class _ImportStravaState extends State<_ImportStrava> {
         var activities;
         try {
           activities = await client.read(Uri.parse(reqActivities));
-        } catch (e) {
+        } on ClientException catch (error) {
           tokenIsValid = false;
           print(
-              '_getActivities: client.read threw exception <> ${e.data.toString()}');
+              '_getActivities: client.read threw ClientException <> ${error.message}');
+        } catch (error) {
+          tokenIsValid = false;
+          print(
+              '_getActivities: client.read threw exception <> ${error.data.toString()}');
         }
 
         // keep track of how many activities so we can move to the next Strava page
@@ -716,7 +722,7 @@ class _ImportStravaState extends State<_ImportStrava> {
 
     // get and update the number of files uploaded
     // - this is used to trigger the cloud script that processes the uploaded files
-    if (tokenIsValid) {
+    if (numFilesUploaded > 0) {
       DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
           .collection('athletes')
           .doc(userName)
@@ -754,7 +760,8 @@ class _ImportStravaState extends State<_ImportStrava> {
   Widget _numFilesAlertWidget(BuildContext context) {
     String stravaText =
         numFilesUploaded.toString() + ' activities synchronized';
-    if (tokenIsValid == false) stravaText = 'Strava authorization failed';
+    if (tokenIsValid == false)
+      stravaText = 'Strava authorization failed or synchronization failed';
 
     return AlertDialog(
       title: Text('Strava Activity Synchronization',
