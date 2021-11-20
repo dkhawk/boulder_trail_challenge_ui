@@ -14,14 +14,11 @@ class BottomNavWidget extends StatefulWidget {
 /// This is the private State class that goes with MyStatefulWidget.
 class _BottomNavWidgetState extends State<BottomNavWidget> {
   int _selectedIndex = 0;
-  static const TextStyle optionStyle =
-    TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   SettingsOptions settingsOptions = new SettingsOptions();
 
   List<Widget> _widgetOptions() => <Widget>[
     TrailsProgressWidget(settingsOptions),
-    // TrailsProgressWidget(TrailStatus.completed, settingsOptions),
     IntroPages(),
     SettingsPage(settingsOptions),
   ];

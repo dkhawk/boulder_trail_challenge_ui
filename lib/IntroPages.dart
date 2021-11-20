@@ -47,6 +47,9 @@ class _IntroPagesState extends State<IntroPages> {
       isWebDesktop = false;
     }
 
+    String trailCompletionText = 'Blue trails have been completed;\nRed trails have not been completed yet;\nClick on a segment to display the trail name\n\n';
+    trailCompletionText = trailCompletionText + 'Note that OSMP has been rerouting some trails (Anenome, Bear Canyon, Mesa ...)\nThese may not be marked complete if you run or hike them!';
+
     return IntroductionScreen(
       key: introKey,
       showDoneButton: false,
@@ -82,8 +85,7 @@ class _IntroPagesState extends State<IntroPages> {
         ),
         PageViewModel(
           title: "Trail Completion Maps",
-          body:
-              "Blue trails have been completed;\nRed trails have not been completed yet;\nClick on a segment to display the trail name",
+          body: trailCompletionText,
           image: _buildImage('HelpMapsPage.png'),
           decoration: pageDecoration,
         ),
