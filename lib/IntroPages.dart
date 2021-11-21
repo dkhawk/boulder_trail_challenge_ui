@@ -92,14 +92,14 @@ class _IntroPagesState extends State<IntroPages> {
         PageViewModel(
           title: "The Import Data/Settings Page",
           body:
-              "Synchronize your activities with Strava or import GPX files from your computer or device",
+              "Synchronize your activities with Strava or import GPX files from your computer or device\nOnly runs, walks and hikes are syncronized from Strava",
           image: _buildImage('HelpSettings1.png'),
           decoration: pageDecoration,
         ),
         PageViewModel(
           title: "Import Activities from Strava",
           body:
-              "A one-time Strava login and authorization is required\nThereafter clicking the 'import activities' button will read all activities after the 'Start date' ",
+              "A one-time Strava login and authorization is required\nThereafter clicking the 'import activities' button will read activities after the 'Start date' ",
           image: _buildImage('HelpStravaImport.png'),
           decoration: pageDecoration,
         ),

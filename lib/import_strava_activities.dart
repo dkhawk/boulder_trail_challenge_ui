@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:async';
+import 'dart:math';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' show ClientException;
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -18,6 +20,9 @@ import 'package:oauth2_client/oauth2_client.dart';
 import 'package:oauth2/oauth2.dart' as oauth2;
 import 'package:universal_html/html.dart' as html;
 
+// Google polyline encode/decode
+import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
+
 // ----
 // globals
 
@@ -25,8 +30,7 @@ import 'package:universal_html/html.dart' as html;
 //   n.b. : previous version(s) of clientID & secret are not valid
 import 'oursecrets.dart';
 
-final String tokenUrl =
-    'https://www.strava.com/api/v3/oauth/token?client_id=$clientId&client_secret=$secret';
+final String tokenUrl = 'https://www.strava.com/api/v3/oauth/token?client_id=$clientId&client_secret=$secret';
 final String revokeUrl = 'https://www.strava.com/oauth/deauthorize';
 
 // ----
@@ -64,10 +68,7 @@ class _ListenWebAsync {
           String code = '';
           if (eventDataString.contains('activity:read_all')) {
             // if yes, then extract the strava code
-            code = eventDataString
-                .split('&')
-                .firstWhere((e) => e.startsWith('code='))
-                .substring('code='.length);
+            code = eventDataString.split('&').firstWhere((e) => e.startsWith('code=')).substring('code='.length);
             print('_listenStravaRedirectWeb strava token/code <> $code');
           }
 
@@ -92,24 +93,19 @@ class _ListenWebAsync {
 Future<oauth2.Credentials> _getCredentialsFromFirestore(String userName) async {
   // get the oauth2 credentials/tokens out of firestore
   // return null if invalid or not available
-  DocumentSnapshot credentialsSnapshot = await FirebaseFirestore.instance
-      .collection('athletes')
-      .doc(userName)
-      .get();
+  DocumentSnapshot credentialsSnapshot = await FirebaseFirestore.instance.collection('athletes').doc(userName).get();
 
   // token info from Firestore
   var tokenInfo = credentialsSnapshot["tokenInfo"];
   String accessToken = tokenInfo["access_token"];
   String refreshToken = tokenInfo["refresh_token"];
   int expirationInSeconds = tokenInfo["expires_at"];
-  DateTime expiration = DateTime.fromMillisecondsSinceEpoch(
-      (expirationInSeconds * 1000.0).round());
+  DateTime expiration = DateTime.fromMillisecondsSinceEpoch((expirationInSeconds * 1000.0).round());
   print('accessToken $accessToken');
 
   oauth2.Credentials credentials;
   if (accessToken.isNotEmpty && (expirationInSeconds > 0)) {
-    print(
-        '_getCredentialsFromFirestore: attempting to use Strava credentials from firestore <>');
+    print('_getCredentialsFromFirestore: attempting to use Strava credentials from firestore <>');
     print('   refreshToken $refreshToken');
     print('   expiration   $expiration');
 
@@ -123,8 +119,7 @@ Future<oauth2.Credentials> _getCredentialsFromFirestore(String userName) async {
 
     print('_getCredentialsFromFirestore: using credentials from firestore <>');
   } else {
-    print(
-        '_getCredentialsFromFirestore: cannot use credentials from firestore <>');
+    print('_getCredentialsFromFirestore: cannot use credentials from firestore <>');
     return credentials;
   }
 
@@ -169,13 +164,11 @@ Future _putCredentialsIntoFirestore(
 ) async {
   //   - note that credentials.expiration is a DateTime while expiration is stored
   //     in firestore as seconds since epoch
-  int expirationInSeconds =
-      (credentials.expiration.millisecondsSinceEpoch / 1000.0).round();
+  int expirationInSeconds = (credentials.expiration.millisecondsSinceEpoch / 1000.0).round();
 
   // empty/invalid tokens
   if (credentials.accessToken.isEmpty || credentials.refreshToken.isEmpty) {
-    print(
-        '_putCredentialsIntoFirestore: putting dummy/invalid Strava credentials into firestore <>');
+    print('_putCredentialsIntoFirestore: putting dummy/invalid Strava credentials into firestore <>');
     expirationInSeconds = -1;
   }
 
@@ -194,8 +187,7 @@ Future _putCredentialsIntoFirestore(
       .collection('athletes')
       .doc(userName)
       .set(tokenInfo, SetOptions(merge: true))
-      .whenComplete(() => print(
-          '_putCredentialsIntoFirestore: put Strava credentials into firestore <>'));
+      .whenComplete(() => print('_putCredentialsIntoFirestore: put Strava credentials into firestore <>'));
 }
 
 // ----
@@ -207,8 +199,7 @@ Future<oauth2.Client> _getAuthClient(
 ) async {
   // reload Strava credentials from firestore if they're available
   // - will refresh credentials if necessary
-  oauth2.Credentials existingCredentials =
-      await _getCredentialsFromFirestore(userName);
+  oauth2.Credentials existingCredentials = await _getCredentialsFromFirestore(userName);
   if (existingCredentials != null) {
     // create the Client
     oauth2.Client theClient;
@@ -283,8 +274,7 @@ Future<oauth2.Client> _getAuthClient(
 
     // the URL on the authorization server
     // (authorizationEndpoint with some additional query parameters)
-    final redirectWebUrl =
-        Uri.parse('https://bouldertrailchallenge.com/static.html');
+    final redirectWebUrl = Uri.parse('https://bouldertrailchallenge.com/static.html');
     //print('Strava redirectWebUrl <> $redirectWebUrl');
 
     Uri authorizationUrl = grant.getAuthorizationUrl(
@@ -299,8 +289,7 @@ Future<oauth2.Client> _getAuthClient(
       "Strava Auth",
       "width=800, height=900, scrollbars=yes",
     );
-    String stravaUserCode = await _ListenWebAsync()
-        ._listenStravaRedirectWeb(authorizationUrl.toString());
+    String stravaUserCode = await _ListenWebAsync()._listenStravaRedirectWeb(authorizationUrl.toString());
     print('Strava userCode <> $stravaUserCode');
 
     // close the separate Strava window
@@ -321,15 +310,12 @@ Future<oauth2.Client> _getAuthClient(
 
     try {
       oauth2Client = await grant.handleAuthorizationResponse(stravaCodeMap);
-      print(
-          'webAuthorization: grant.handleAuthorizationResponse got oauth2.Client for initial authentication <>');
+      print('webAuthorization: grant.handleAuthorizationResponse got oauth2.Client for initial authentication <>');
     } on oauth2.AuthorizationException {
-      print(
-          'webAuthorization: grant.handleAuthorizationResponse AuthorizationException <> ');
+      print('webAuthorization: grant.handleAuthorizationResponse AuthorizationException <> ');
       return null;
     } catch (e) {
-      print(
-          'webAuthorization: grant.handleAuthorizationResponse threw exception <> ${e.data.toString()}');
+      print('webAuthorization: grant.handleAuthorizationResponse threw exception <> ${e.data.toString()}');
       return null;
     }
   } // end web authorization
@@ -345,18 +331,12 @@ Future<oauth2.Client> _getAuthClient(
 
     // knock out any existing tokens in local storage
     OAuth2Helper oAuth2HelperCleaner = OAuth2Helper(stravaClient,
-        grantType: OAuth2Helper.AUTHORIZATION_CODE,
-        clientId: clientId,
-        clientSecret: secret,
-        scopes: ['activity:read_all']);
+        grantType: OAuth2Helper.AUTHORIZATION_CODE, clientId: clientId, clientSecret: secret, scopes: ['activity:read_all']);
     await oAuth2HelperCleaner.removeAllTokens();
 
     // start grabbing the tokens from Strava
     OAuth2Helper oAuth2Helper = OAuth2Helper(stravaClient,
-        grantType: OAuth2Helper.AUTHORIZATION_CODE,
-        clientId: clientId,
-        clientSecret: secret,
-        scopes: ['activity:read_all']);
+        grantType: OAuth2Helper.AUTHORIZATION_CODE, clientId: clientId, clientSecret: secret, scopes: ['activity:read_all']);
 
     // take a look at the token
     // - returns a previously acquired token or gets a new one if necessary
@@ -365,8 +345,7 @@ Future<oauth2.Client> _getAuthClient(
     try {
       tknResp = await oAuth2Helper.getToken();
     } catch (e) {
-      print(
-          'mobileAuthorization: oAuth2Helper.getToken threw exception <> ${e.data.toString()}');
+      print('mobileAuthorization: oAuth2Helper.getToken threw exception <> ${e.data.toString()}');
       return null;
     }
 
@@ -396,11 +375,9 @@ Future<oauth2.Client> _getAuthClient(
         identifier: clientId,
         secret: secret,
       );
-      print(
-          'mobileAuthorization: created oauth2.Client for initial authentication <>');
+      print('mobileAuthorization: created oauth2.Client for initial authentication <>');
     } catch (e) {
-      print(
-          'mobileAuthorization: oauth2.Client threw exception <> ${e.data.toString()}');
+      print('mobileAuthorization: oauth2.Client threw exception <> ${e.data.toString()}');
       return null;
     }
   } // end mobile authorization
@@ -451,8 +428,7 @@ class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
       firstDate: DateTime(2020, 1, 1),
       lastDate: DateTime.now(),
     );
-    if (picked != null && picked != selectedStartDate)
-      userChangedStartDate = true;
+    if (picked != null && picked != selectedStartDate) userChangedStartDate = true;
     setState(() {
       selectedStartDate = picked;
     });
@@ -475,8 +451,7 @@ class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
       if (updateTimeSeconds > 0) {
         // convert from seconds to a DateTime
         int millisecondsSinceEpoch = (updateTimeSeconds * 1000.0).round();
-        DateTime newSelectedStartDate =
-            DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
+        DateTime newSelectedStartDate = DateTime.fromMillisecondsSinceEpoch(millisecondsSinceEpoch);
         if (newSelectedStartDate != selectedStartDate) {
           setState(() {
             selectedStartDate = newSelectedStartDate;
@@ -516,6 +491,7 @@ class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
               width: 140,
               height: 140,
             ),
+            Text('Powered by Strava'),
             Spacer(
               flex: 4,
             ),
@@ -581,8 +557,7 @@ class _ImportStrava extends StatefulWidget {
   final selectedStartDate;
 
   @override
-  _ImportStravaState createState() =>
-      _ImportStravaState(userName, selectedStartDate);
+  _ImportStravaState createState() => _ImportStravaState(userName, selectedStartDate);
 }
 
 // ----
@@ -592,7 +567,70 @@ class _ImportStravaState extends State<_ImportStrava> {
   final selectedStartDate;
 
   int numFilesUploaded = 0;
+  int numSkippedActivities = 0;
   bool tokenIsValid = false;
+
+  // ----
+  String _interpolateLocations(String summaryPolyline) {
+    // 1) take a Google encoded polyline 'summaryPolyline'
+    // 2) expand to lat & longs
+    // 3) do simple interpolation between points if distance is too large
+    // 4) return Google encoded polyline that includes interpolated points
+
+    List<List<num>> trackPoints = decodePolyline(summaryPolyline);
+    List<List<num>> interpolatedTrackPoints = [];
+
+    // using the polar coordinate flat-earth formula to calculate distances between two lat/longs
+    double radius = 6371e3; // metres
+    double halfPi = pi / 2.0;
+    double deg2Rad = pi / 180.0;
+
+    for (int trackPointId = 0; trackPointId < (trackPoints.length - 1); trackPointId++) {
+      interpolatedTrackPoints.add(trackPoints[trackPointId]);
+
+      // convert to radians
+      double lat1rad = trackPoints[trackPointId].first * deg2Rad;
+      double lat2rad = trackPoints[trackPointId + 1].first * deg2Rad;
+
+      double long1rad = trackPoints[trackPointId].last * deg2Rad;
+      double long2rad = trackPoints[trackPointId + 1].last * deg2Rad;
+
+      double a = halfPi - lat1rad;
+      double b = halfPi - lat2rad;
+      double u = a * a + b * b - 2 * a * b * cos(long1rad - long2rad);
+      double distance = radius * sqrt(u.abs());
+      //print('  trackPointID  dist <> $trackPointId $distance');
+
+      // interpolate if distance is greater than 2x this (meters)
+      double maxDist = 12.5;
+
+      // simple fast dumb linear interpolation... duh
+      int numInterpPoints = (distance / maxDist).floor();
+      if (numInterpPoints > 1) {
+        // print(' trackPointID <> $trackPointId');
+        // print('   point1 <> ${trackPoints[trackPointId].first}  ${trackPoints[trackPointId].last}');
+        // print('   point2 <> ${trackPoints[trackPointId + 1].first}  ${trackPoints[trackPointId + 1].last}');
+
+        double deltaLat = (lat2rad - lat1rad) / numInterpPoints;
+        double deltaLong = (long2rad - long1rad) / numInterpPoints;
+
+        for (int i = 1; i < numInterpPoints; i++) {
+          double lat = (lat1rad + i * deltaLat) / deg2Rad;
+          double long = (long1rad + i * deltaLong) / deg2Rad;
+
+          //print('      interp <> $lat $long');
+          interpolatedTrackPoints.add([lat, long]);
+        }
+      }
+    }
+    interpolatedTrackPoints.add(trackPoints.last);
+
+    print('   trackPoints -> interpolatedTrackPoints lengths <> ${trackPoints.length} ${interpolatedTrackPoints.length}');
+    String encodedLine = encodePolyline(interpolatedTrackPoints);
+
+    //print(' encoded line <> $encodedLine');
+    return encodedLine;
+  }
 
   // ----
   Future<String> _getActivities(userName) async {
@@ -618,8 +656,7 @@ class _ImportStravaState extends State<_ImportStrava> {
       print('_getActivities: _getAuthClient done <>');
     } catch (e) {
       tokenIsValid = false;
-      print(
-          '_getActivities: _getAuthClient threw exception <> ${e.data.toString()}');
+      print('_getActivities: _getAuthClient threw exception <> ${e.data.toString()}');
     }
 
     // exit early if could not create a valid oauth2.Client
@@ -635,23 +672,23 @@ class _ImportStravaState extends State<_ImportStrava> {
       int _pageNumber = 1;
       int _perPage = 20; // Number of activities retrieved per http request
       var _nowTime = (DateTime.now().millisecondsSinceEpoch / 1000).round();
-      var _afterTime =
-          (selectedStartDate.millisecondsSinceEpoch / 1000).round();
+      var _afterTime = (selectedStartDate.millisecondsSinceEpoch / 1000).round();
 
       print('_getActivities: Pulling Strava data from <> $selectedStartDate');
       bool isRetrieveDone = false;
       do {
         // List of activities for the athlete
-        final String reqActivities =
-            'https://www.strava.com/api/v3/athlete/activities' +
-                '?before=$_nowTime&after=$_afterTime&page=$_pageNumber&per_page=$_perPage';
+        final String reqActivities = 'https://www.strava.com/api/v3/athlete/activities' +
+            '?before=$_nowTime&after=$_afterTime&page=$_pageNumber&per_page=$_perPage';
         var activities;
         try {
           activities = await client.read(Uri.parse(reqActivities));
-        } catch (e) {
+        } on ClientException catch (error) {
           tokenIsValid = false;
-          print(
-              '_getActivities: client.read threw exception <> ${e.data.toString()}');
+          print('_getActivities: client.read threw ClientException <> ${error.message}');
+        } catch (error) {
+          tokenIsValid = false;
+          print('_getActivities: client.read threw exception <> ${error.data.toString()}');
         }
 
         // keep track of how many activities so we can move to the next Strava page
@@ -661,25 +698,37 @@ class _ImportStravaState extends State<_ImportStrava> {
           // decode the activities
           var jsonActivities = json.decode(activities);
           jsonActivities.forEach((activitySummary) {
-            // the encoded polyline for this activity
-            Map<String, dynamic> theActivityMap = activitySummary['map'];
+            // what kind of activity is this
+            String activityType = activitySummary['type'];
+            print('Activity type <<>> $activityType');
+            if ((activityType == 'Run') || (activityType == 'Hike') || (activityType == 'Walk')) {
+              // the encoded polyline for this activity
+              Map<String, dynamic> theActivityMap = activitySummary['map'];
 
-            // a map for the Cloud storage data
-            String uploadDateTime = DateTime.now().toUtc().toString();
-            Map<String, dynamic> importedTrackMap = {
-              'originalFileName': activitySummary['external_id'],
-              'gpxDateTime': activitySummary['start_date_local'],
-              'uploadDateTime': uploadDateTime,
-              'userName': userName,
-              'encodedLocation': theActivityMap['summary_polyline'],
-              'processed': false,
-            };
+              // interpolate between the 'summary_polyline' points that Strava gives us
+              // - the 'summary_polyline' does not contain all the gpx data points; for example
+              //   a long straight segment is given as only the start/stop locations and this
+              //   causes the route matching routine to fail
+              String interpolatedLocations = _interpolateLocations(theActivityMap['summary_polyline']);
 
-            // do not upload empty polylines - this causes cloud function to crash
-            if (theActivityMap['summary_polyline'].toString().isNotEmpty) {
+              // a map for the Cloud storage data
+              String uploadDateTime = DateTime.now().toUtc().toString();
+              Map<String, dynamic> importedTrackMap = {
+                'originalFileName': activitySummary['external_id'],
+                'gpxDateTime': activitySummary['start_date_local'],
+                'uploadDateTime': uploadDateTime,
+                'userName': userName,
+                //'encodedLocation': theActivityMap['summary_polyline'],
+                'encodedLocation': interpolatedLocations,
+                'processed': false,
+              };
+
+              // do not upload empty polylines - this causes cloud function to crash
+              // TEMP REMOVE THIS CHECK SO THAT WE CAN SEE WHETHER STRAVA
+              // SERVES UP EMPTY POLYLINES
+//            if (theActivityMap['summary_polyline'].toString().isNotEmpty) {
               // do the actual upload to the cloud/firestore
-              String encodedTrackUploadLocation =
-                  activitySummary['external_id'] + '.gencoded';
+              String encodedTrackUploadLocation = activitySummary['external_id'] + '.gencoded';
               numFilesUploaded++;
               print(
                   'Uploading file: = $numFilesUploaded <> ${activitySummary['start_date_local']} <> $encodedTrackUploadLocation');
@@ -692,9 +741,13 @@ class _ImportStravaState extends State<_ImportStrava> {
                   .set(importedTrackMap);
 
               _nbActivity++;
+              // } else {
+              //   print(
+              //       'Uploading Strava activity failed: = <> ${activitySummary['start_date_local']} <> encodedTrackUploadLocation is EMPTY');
+              // }
             } else {
-              print(
-                  'Uploading Strava activity failed: = <> ${activitySummary['start_date_local']} <> encodedTrackUploadLocation is EMPTY');
+              print('Skipping $activityType activity! <>');
+              numSkippedActivities++;
             }
           });
 
@@ -710,13 +763,12 @@ class _ImportStravaState extends State<_ImportStrava> {
         }
       } while (!isRetrieveDone & tokenIsValid);
 
-      print(
-          '_getActivities: Number of Strava files uploaded = $numFilesUploaded');
+      print('_getActivities: Number of Strava files uploaded = $numFilesUploaded');
     }
 
     // get and update the number of files uploaded
     // - this is used to trigger the cloud script that processes the uploaded files
-    if (tokenIsValid) {
+    if (numFilesUploaded > 0) {
       DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
           .collection('athletes')
           .doc(userName)
@@ -731,8 +783,7 @@ class _ImportStravaState extends State<_ImportStrava> {
       //     'Total number of files gpx or Strava files uploaded = $totalFilesUploaded');
 
       // keep track in firestore of when this upload occurred
-      int updateTimeSeconds =
-          (DateTime.now().millisecondsSinceEpoch / 1000.0).round();
+      int updateTimeSeconds = (DateTime.now().millisecondsSinceEpoch / 1000.0).round();
 
       Map<String, dynamic> numFilesUploadedMap = {
         'numFilesUploaded': totalFilesUploaded,
@@ -752,20 +803,20 @@ class _ImportStravaState extends State<_ImportStrava> {
   // ----
   // Tell the user how many activities were uploaded
   Widget _numFilesAlertWidget(BuildContext context) {
-    String stravaText =
-        numFilesUploaded.toString() + ' activities synchronized';
-    if (tokenIsValid == false) stravaText = 'Strava authorization failed';
+    String stravaText1 = numFilesUploaded.toString() + ' run, hike or walk activities synchronized\n';
+    stravaText1 = stravaText1 + numSkippedActivities.toString() + ' other activities skipped';
+    if (tokenIsValid == false) {
+      stravaText1 = 'Strava authorization failed or synchronization failed';
+    }
 
     return AlertDialog(
-      title: Text('Strava Activity Synchronization',
-          style: TextStyle(fontSize: 20, color: Colors.white)),
+      title: Text('Strava Activity Synchronization', style: TextStyle(fontSize: 20, color: Colors.white)),
       content: Text(
-        stravaText,
+        stravaText1,
         style: TextStyle(fontSize: 15, color: Colors.white),
       ),
       backgroundColor: Colors.deepPurple,
-      shape:
-          RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
+      shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
       actions: [
         TextButton(
           onPressed: () {
@@ -801,8 +852,7 @@ class _ImportStravaState extends State<_ImportStrava> {
                   height: 40,
                 ),
                 Spacer(),
-                Text('Importing Strava activities...',
-                    style: TextStyle(color: Colors.black, fontSize: 12.0)),
+                Text('Importing Strava activities...', style: TextStyle(color: Colors.black, fontSize: 12.0)),
                 Spacer(
                   flex: 5,
                 ),
@@ -827,8 +877,7 @@ Future<void> revokeStravaAccess(String userName) async {
     client = await _getAuthClient(userName, mustHaveAccount);
     print('revokeStravaAccess:: _getAuthClient done <>');
   } catch (e) {
-    print(
-        'revokeStravaAccess:: _getAuthClient threw exception <> ${e.data.toString()}');
+    print('revokeStravaAccess:: _getAuthClient threw exception <> ${e.data.toString()}');
   }
 
   if (client != null) {
@@ -846,10 +895,7 @@ Future<void> revokeStravaAccess(String userName) async {
       secret: secret,
     );
     OAuth2Helper oAuth2HelperCleaner = OAuth2Helper(stravaClient,
-        grantType: OAuth2Helper.AUTHORIZATION_CODE,
-        clientId: clientId,
-        clientSecret: secret,
-        scopes: ['activity:read_all']);
+        grantType: OAuth2Helper.AUTHORIZATION_CODE, clientId: clientId, clientSecret: secret, scopes: ['activity:read_all']);
     await oAuth2HelperCleaner.removeAllTokens();
   }
 
