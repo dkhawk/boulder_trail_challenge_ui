@@ -12,6 +12,7 @@ import 'package:flutter_map_tappable_polyline/flutter_map_tappable_polyline.dart
 
 import 'package:osmp_project/trail_progress_list_widget.dart';
 import 'package:osmp_project/settings_page.dart';
+import 'package:osmp_project/markTrailComplete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 
@@ -21,32 +22,53 @@ Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions sett
   inputMapData.mapName = Text(trail.name);
   inputMapData.percentComplete = trail.percentDone;
 
-  Navigator.push(context, MaterialPageRoute<void>(
-    builder: (BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(trail.name),
-              Text((trail.percentDone * 100).toStringAsFixed(2) + '%',
-                  style: TextStyle(
-                    fontSize: 12.0,
-                  )),
-              LinearProgressIndicator(
-                value: trail.percentDone,
-                backgroundColor: inputMapData.remainingSegColor,
-                valueColor: AlwaysStoppedAnimation<Color>(inputMapData.completedSegColor),
-                minHeight: 3,
-              )
-            ],
-          ),
-        ),
-        body: _LoadDisplayMapData(trail, inputMapData, settingsOptions),
-      );
-    },
-  ));
+  // ----
+  Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        settings: RouteSettings(name: '/singleTrail'),
+        builder: (BuildContext context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(trail.name),
+                  Text((trail.percentDone * 100).toStringAsFixed(2) + '%',
+                      style: TextStyle(
+                        fontSize: 12.0,
+                      )),
+                  LinearProgressIndicator(
+                    value: trail.percentDone,
+                    backgroundColor: inputMapData.remainingSegColor,
+                    valueColor: AlwaysStoppedAnimation<Color>(inputMapData.completedSegColor),
+                    minHeight: 3,
+                  )
+                ],
+              ),
+              actions: <Widget>[
+                if (trail.percentDone < 0.995)
+                  TextButton(
+                    onPressed: () {
+                      // confirm that this is what the user wants to do
+                      // and then mark the trail as completed
+                      return showCompleteTrailManuallyDialog(context, trail.name);
+                    },
+                    child: Column(
+                      children: [
+                        Text('Mark this', style: TextStyle(color: Colors.yellow)),
+                        Text('trail complete', style: TextStyle(color: Colors.yellow)),
+                      ],
+                      mainAxisAlignment: MainAxisAlignment.center,
+                    ),
+                  )
+              ],
+            ),
+            body: _LoadDisplayMapData(trail, inputMapData, settingsOptions),
+          );
+        },
+      ));
 
   return _NoDataScreen();
 }
@@ -55,32 +77,35 @@ Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions sett
 Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData, SettingsOptions settingsOptions) {
   double percentDone = inputMapSummaryData.percentComplete;
 
-  Navigator.push(context, MaterialPageRoute<void>(
-    builder: (BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text("Overall completion"),
-              Text((percentDone * 100).toStringAsFixed(2) + '%',
-                  style: TextStyle(
-                    fontSize: 12.0,
-                  )),
-              LinearProgressIndicator(
-                value: percentDone,
-                backgroundColor: inputMapSummaryData.remainingSegColor,
-                valueColor: AlwaysStoppedAnimation<Color>(inputMapSummaryData.completedSegColor),
-                minHeight: 3,
-              )
-            ],
-          ),
-        ),
-        body: _LoadDisplayMapSummaryData(inputMapSummaryData, settingsOptions),
-      );
-    },
-  ));
+  Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        settings: RouteSettings(name: '/summaryMap'),
+        builder: (BuildContext context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text("Overall completion"),
+                  Text((percentDone * 100).toStringAsFixed(2) + '%',
+                      style: TextStyle(
+                        fontSize: 12.0,
+                      )),
+                  LinearProgressIndicator(
+                    value: percentDone,
+                    backgroundColor: inputMapSummaryData.remainingSegColor,
+                    valueColor: AlwaysStoppedAnimation<Color>(inputMapSummaryData.completedSegColor),
+                    minHeight: 3,
+                  )
+                ],
+              ),
+            ),
+            body: _LoadDisplayMapSummaryData(inputMapSummaryData, settingsOptions),
+          );
+        },
+      ));
 
   return _NoDataScreen();
 }
@@ -259,14 +284,14 @@ Future<void> _mapInfoAlert(BuildContext context, String segmentNameID, Map<Strin
             ),
             Text(
               "Trail Length: " + theTrailLengthMap[trailName].toStringAsFixed(2) + " miles",
-              style: TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 15),
             ),
             SizedBox(
               height: 2,
             ),
             Text(
               "SegmentID: " + segmentNameID,
-              style: TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 12),
             ),
             SizedBox(
               height: 15,
