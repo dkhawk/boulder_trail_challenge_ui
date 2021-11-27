@@ -151,7 +151,7 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
 
               // do the actual upload if not empty
               if (encodedTrackStrings[iTrack].isNotEmpty) {
-                await FirebaseFirestore.instance
+                FirebaseFirestore.instance
                     .collection('athletes')
                     .doc(userName)
                     .collection('importedData')
