@@ -151,7 +151,7 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
 
               // do the actual upload if not empty
               if (encodedTrackStrings[iTrack].isNotEmpty) {
-                FirebaseFirestore.instance
+                await FirebaseFirestore.instance
                     .collection('athletes')
                     .doc(userName)
                     .collection('importedData')
@@ -205,23 +205,33 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
 
   // ----
   Widget _numFilesAlertWidget(BuildContext context) {
-    return AlertDialog(
-      title: Text('GPX File Import', style: TextStyle(color: Colors.white)),
-      content: Text(
-        numFilesUploaded.toString() + ' file(s) uploaded',
-        style: TextStyle(fontSize: 15, color: Colors.white),
-      ),
-      backgroundColor: Colors.deepPurple,
-      shape:
-          RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text('OK', style: TextStyle(color: Colors.white)),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/images/TopoMapPattern.png"),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
         ),
-      ],
+      ),
+      width: double.infinity,
+      child: AlertDialog(
+        title: Text('GPX File Import', style: TextStyle(color: Colors.white)),
+        content: Text(
+          numFilesUploaded.toString() + ' file(s) uploaded',
+          style: TextStyle(fontSize: 15, color: Colors.white),
+        ),
+        backgroundColor: Colors.deepPurple,
+        shape:
+            RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('OK', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 

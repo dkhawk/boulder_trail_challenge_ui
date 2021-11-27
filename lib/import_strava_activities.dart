@@ -809,22 +809,32 @@ class _ImportStravaState extends State<_ImportStrava> {
       stravaText1 = 'Strava authorization failed or synchronization failed';
     }
 
-    return AlertDialog(
-      title: Text('Strava Activity Synchronization', style: TextStyle(fontSize: 20, color: Colors.white)),
-      content: Text(
-        stravaText1,
-        style: TextStyle(fontSize: 15, color: Colors.white),
-      ),
-      backgroundColor: Colors.deepPurple,
-      shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text('OK', style: TextStyle(color: Colors.white)),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/images/TopoMapPattern.png"),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
         ),
-      ],
+      ),
+      width: double.infinity,
+      child: AlertDialog(
+        title: Text('Strava Activity Synchronization', style: TextStyle(fontSize: 20, color: Colors.white)),
+        content: Text(
+          stravaText1,
+          style: TextStyle(fontSize: 15, color: Colors.white),
+        ),
+        backgroundColor: Colors.deepPurple,
+        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('OK', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 
