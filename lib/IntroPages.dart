@@ -47,8 +47,10 @@ class _IntroPagesState extends State<IntroPages> {
       isWebDesktop = false;
     }
 
-    String trailCompletionText = 'Blue trails have been completed;\nRed trails have not been completed yet;\nClick on a segment to display the trail name\n\n';
-    trailCompletionText = trailCompletionText + 'Note that OSMP has been rerouting some trails (Anenome, Bear Canyon, Mesa ...)\nThese may not be marked complete if you run or hike them!';
+    String trailCompletionText = 'Blue trails have been completed;\nRed trails have not been completed yet;\nClick on a segment to display the trail name & length\n\n';
+    trailCompletionText = trailCompletionText + 'Note that OSMP has been rerouting some trails (Anenome, Bear Canyon, Mesa ...)\n';
+    trailCompletionText = trailCompletionText + 'These may not be marked complete if you run or hike them!\n';
+    trailCompletionText = trailCompletionText + 'You can manually mark a trail as completed on the map for the trail';
 
     return IntroductionScreen(
       key: introKey,
@@ -56,9 +58,9 @@ class _IntroPagesState extends State<IntroPages> {
       globalBackgroundColor: Colors.white,
       pages: [
         PageViewModel(
-          title: "Welcome to the Boulder Trail Challenge",
+          title: "Welcome to the Boulder Trails Challenge",
           body:
-              "This application uses imported Strava or GPX data to help you track \nyour progress on the Boulder Trail Challenge",
+              "This application uses imported Strava or GPX data to help you track \nyour progress on the Boulder Trails Challenge",
           image: _buildFullscreenImage('FlatIrons.jpg'),
           decoration: pageDecoration.copyWith(
             titleTextStyle:
@@ -106,7 +108,7 @@ class _IntroPagesState extends State<IntroPages> {
         PageViewModel(
           title: "The Import Data/Settings Page",
           body:
-              "Optionally show trail & segment names on the maps or show topographical maps",
+              "Optionally show the trail names on the maps or show topographical maps",
           image: _buildImage('HelpMapOptions.png'),
           decoration: pageDecoration,
         ),
