@@ -833,8 +833,7 @@ class _ImportStravaState extends State<_ImportStrava> {
     stravaText1 = stravaText1 + numSkippedActivities.toString() + ' other activities skipped';
     if (tokenIsValid == false) {
       stravaText1 = 'Strava authorization failed or synchronization failed';
-      if(stravaErrorMsg.isNotEmpty)
-        stravaText1 = stravaText1 + '\n' + stravaErrorMsg;
+      if (stravaErrorMsg.isNotEmpty) stravaText1 = stravaText1 + '\n' + stravaErrorMsg;
     }
 
     return Container(
