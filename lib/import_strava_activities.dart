@@ -34,6 +34,15 @@ final String tokenUrl = 'https://www.strava.com/api/v3/oauth/token?client_id=$cl
 final String revokeUrl = 'https://www.strava.com/oauth/deauthorize';
 
 // ----
+// What? No pair object in Dart? Rolling one...
+class Pair<T1, T2> {
+  final T1 a;
+  final T2 b;
+
+  Pair(this.a, this.b);
+}
+
+// ----
 // Mobile-only side client
 class _StravaOAuth2ClientMobile extends OAuth2Client {
   _StravaOAuth2ClientMobile({String clientId, String secret})
@@ -55,15 +64,20 @@ class _ListenWebAsync {
   }
 
   Future<String> _listenStravaRedirectWeb(String authorizationUrlString) {
+    // close out if user hasn't logged in after so many seconds
+    // - prevents hang; posts error message to user
+    Future.delayed(Duration(seconds: 60)).then(
+      (value) => {
+        if (_completer.isCompleted == false) _finishOperation('Error: Login timed out'),
+      },
+    );
+
     html.window.onMessage.listen(
       (event) {
         // If the event contains the code/token it means the user is authenticated
         // - but may not have given activity read access
         String eventDataString = event.data.toString();
         if (eventDataString.contains('code=')) {
-          // print(
-          //     '_listenStravaRedirectWeb login event data2 <> $eventDataString');
-
           // did user give activity read access
           String code = '';
           if (eventDataString.contains('activity:read_all')) {
@@ -73,11 +87,10 @@ class _ListenWebAsync {
           }
 
           // complete the future
-          // - an empty, non-null string indicates failure/improper access rights
           _finishOperation(code);
         }
         if (eventDataString.contains('access_denied')) {
-          _finishOperation('');
+          _finishOperation('Error: Access denied');
         }
       },
       cancelOnError: true,
@@ -90,9 +103,9 @@ class _ListenWebAsync {
 // ----
 // Mobile and web: get credentials out of firestore if the user has
 // authorized Strava at least once
-Future<oauth2.Credentials> _getCredentialsFromFirestore(String userName) async {
+// Returns a pair containing the credentials and an optional error message
+Future<Pair<oauth2.Credentials, String>> _getCredentialsFromFirestore(String userName) async {
   // get the oauth2 credentials/tokens out of firestore
-  // return null if invalid or not available
   DocumentSnapshot credentialsSnapshot = await FirebaseFirestore.instance.collection('athletes').doc(userName).get();
 
   // token info from Firestore
@@ -120,7 +133,7 @@ Future<oauth2.Credentials> _getCredentialsFromFirestore(String userName) async {
     print('_getCredentialsFromFirestore: using credentials from firestore <>');
   } else {
     print('_getCredentialsFromFirestore: cannot use credentials from firestore <>');
-    return credentials;
+    return Pair(credentials, '');
   }
 
   if ((credentials != null) && credentials.isExpired) {
@@ -134,16 +147,16 @@ Future<oauth2.Credentials> _getCredentialsFromFirestore(String userName) async {
       );
     } on StateError {
       print('failed to refresh Strava credentials StateError <>');
-      return null;
+      return Pair(null, 'Error: Failed to refresh Strava credentials due to StateError');
     } on oauth2.AuthorizationException {
       print('failed to refresh Strava credentials AuthorizationException <>');
-      return null;
+      return Pair(null, 'Error: Failed to refresh Strava credentials due to AuthorizationException');
     } catch (e) {
       print('failed to refresh Strava credentials <>');
-      return null;
+      return Pair(null, 'Error: Failed to refresh Strava credentials');
     }
     if (refreshedCredentials == null) {
-      return null;
+      return Pair(null, 'Error: Refreshed Strava credentials are empty');
     }
 
     credentials = refreshedCredentials;
@@ -153,7 +166,7 @@ Future<oauth2.Credentials> _getCredentialsFromFirestore(String userName) async {
     );
   }
 
-  return credentials;
+  return Pair(credentials, '');
 }
 
 // ----
@@ -193,19 +206,21 @@ Future _putCredentialsIntoFirestore(
 // ----
 // Either load an OAuth2 client from saved credentials or authenticate a new one.
 // Note that first time authentication is different for web and mobile platforms
-Future<oauth2.Client> _getAuthClient(
+// Returns a pair containing the auth client and an optional error message
+Future<Pair<oauth2.Client, String>> _getAuthClient(
   String userName,
   bool mustHaveAccount,
 ) async {
+  String errorString = '';
   // reload Strava credentials from firestore if they're available
   // - will refresh credentials if necessary
-  oauth2.Credentials existingCredentials = await _getCredentialsFromFirestore(userName);
-  if (existingCredentials != null) {
+  Pair<oauth2.Credentials, String> existingCredentials = await _getCredentialsFromFirestore(userName);
+  if (existingCredentials.a != null) {
     // create the Client
     oauth2.Client theClient;
     try {
       theClient = oauth2.Client(
-        existingCredentials,
+        existingCredentials.a,
         identifier: clientId,
         secret: secret,
       );
@@ -233,14 +248,14 @@ Future<oauth2.Client> _getAuthClient(
     // - else try to log in to Strava again below
     if (theClient != null) {
       print('_getAuthClient: returning oauth2 client using firestore creds <>');
-      return theClient;
+      return Pair(theClient, '');
     }
   }
 
   // Don't want to ask the user to log into Strava when deactivating an account
   // if they haven't already logged in and created the authorization tokens
   if (mustHaveAccount == true) {
-    return null;
+    return Pair(null, '');
   }
 
   // ----
@@ -286,7 +301,7 @@ Future<oauth2.Client> _getAuthClient(
     // contains the code; extract the code
     html.WindowBase _popupWindowWeb = html.window.open(
       authorizationUrl.toString(),
-      "Strava Auth",
+      "StravaAuth",
       "width=800, height=900, scrollbars=yes",
     );
     String stravaUserCode = await _ListenWebAsync()._listenStravaRedirectWeb(authorizationUrl.toString());
@@ -298,9 +313,14 @@ Future<oauth2.Client> _getAuthClient(
       _popupWindowWeb = null;
     }
 
+    if (stravaUserCode.startsWith('Error:')) {
+      print('Strava authentication error <> $stravaUserCode');
+      return Pair(null, stravaUserCode);
+    }
+
     // make sure we got an auth code
     if (stravaUserCode.isEmpty) {
-      return null;
+      return Pair(null, 'Error: Strava user code is empty');
     }
 
     // authorize Strava for web using code
@@ -313,10 +333,10 @@ Future<oauth2.Client> _getAuthClient(
       print('webAuthorization: grant.handleAuthorizationResponse got oauth2.Client for initial authentication <>');
     } on oauth2.AuthorizationException {
       print('webAuthorization: grant.handleAuthorizationResponse AuthorizationException <> ');
-      return null;
+      return Pair(null, 'Error: Strava web AuthorizationException');
     } catch (e) {
       print('webAuthorization: grant.handleAuthorizationResponse threw exception <> ${e.data.toString()}');
-      return null;
+      return Pair(null, 'Error: Strava web threw exception');
     }
   } // end web authorization
 
@@ -346,7 +366,7 @@ Future<oauth2.Client> _getAuthClient(
       tknResp = await oAuth2Helper.getToken();
     } catch (e) {
       print('mobileAuthorization: oAuth2Helper.getToken threw exception <> ${e.data.toString()}');
-      return null;
+      return Pair(null, 'Error: Strava get token mobile threw exception');
     }
 
     print('_getAuthClient: mobileAuthorization: got tknResp <>');
@@ -378,12 +398,12 @@ Future<oauth2.Client> _getAuthClient(
       print('mobileAuthorization: created oauth2.Client for initial authentication <>');
     } catch (e) {
       print('mobileAuthorization: oauth2.Client threw exception <> ${e.data.toString()}');
-      return null;
+      return Pair(null, 'Error: Strava client mobile threw exception');
     }
   } // end mobile authorization
 
   if (oauth2Client == null) {
-    return null;
+    return Pair(null, 'Error: Strava client is empty');
   }
 
   // String accessToken = oauth2Client.credentials.accessToken;
@@ -403,7 +423,7 @@ Future<oauth2.Client> _getAuthClient(
     oauth2Client.credentials,
   );
 
-  return oauth2Client;
+  return Pair(oauth2Client, errorString);
 }
 
 // ----
@@ -569,6 +589,7 @@ class _ImportStravaState extends State<_ImportStrava> {
   int numFilesUploaded = 0;
   int numSkippedActivities = 0;
   bool tokenIsValid = false;
+  String stravaErrorMsg = '';
 
   // ----
   String _interpolateLocations(String summaryPolyline) {
@@ -638,7 +659,8 @@ class _ImportStravaState extends State<_ImportStrava> {
     tokenIsValid = true;
 
     print('_getActivities <>');
-    oauth2.Client client;
+    // auth client and optional error message
+    Pair<oauth2.Client, String> client = Pair(null, '');
 
     // ----
     // Try to build a valid oauth2.Client that will be used to authenticate
@@ -660,9 +682,13 @@ class _ImportStravaState extends State<_ImportStrava> {
     }
 
     // exit early if could not create a valid oauth2.Client
-    if (client == null) {
+    if (client.a == null) {
       print('_getActivities: _getAuthClient client is null <>');
       tokenIsValid = false;
+      stravaErrorMsg = client.b;
+    }
+    if (client.b.isNotEmpty) {
+      print('_getActivities: _getAuthClient Error message: ${client.b} <>');
     }
 
     // pull activities out of Strava using HTTP requests
@@ -682,7 +708,7 @@ class _ImportStravaState extends State<_ImportStrava> {
             '?before=$_nowTime&after=$_afterTime&page=$_pageNumber&per_page=$_perPage';
         var activities;
         try {
-          activities = await client.read(Uri.parse(reqActivities));
+          activities = await client.a.read(Uri.parse(reqActivities));
         } on ClientException catch (error) {
           tokenIsValid = false;
           print('_getActivities: client.read threw ClientException <> ${error.message}');
@@ -807,6 +833,8 @@ class _ImportStravaState extends State<_ImportStrava> {
     stravaText1 = stravaText1 + numSkippedActivities.toString() + ' other activities skipped';
     if (tokenIsValid == false) {
       stravaText1 = 'Strava authorization failed or synchronization failed';
+      if(stravaErrorMsg.isNotEmpty)
+        stravaText1 = stravaText1 + '\n' + stravaErrorMsg;
     }
 
     return Container(
@@ -879,7 +907,7 @@ class _ImportStravaState extends State<_ImportStrava> {
 Future<void> revokeStravaAccess(String userName) async {
   print('revokeStravaAccess: removing strava tokens <>');
 
-  oauth2.Client client;
+  Pair<oauth2.Client, String> client = Pair(null, '');
   try {
     // don't try to revoke strava access if the user has not set up
     // strava access
@@ -890,12 +918,12 @@ Future<void> revokeStravaAccess(String userName) async {
     print('revokeStravaAccess:: _getAuthClient threw exception <> ${e.data.toString()}');
   }
 
-  if (client != null) {
-    String accessToken = client.credentials.accessToken;
+  if (client.a != null) {
+    String accessToken = client.a.credentials.accessToken;
     Uri revokeUri = Uri.parse(revokeUrl + '?access_token=$accessToken');
 
     // print('revokeStravaAccess:: revokeUri <> $revokeUri');
-    await client.post(revokeUri);
+    await client.a.post(revokeUri);
   }
 
   // knock out any existing tokens in local storage - mobile only
