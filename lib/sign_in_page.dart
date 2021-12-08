@@ -50,8 +50,7 @@ class SignInPage extends StatelessWidget {
                                 password: passwordController.text.trim(),
                               )
                               .then(
-                                (returnString) =>
-                                    signInUpAlert(context, returnString),
+                                (returnString) => signInUpAlert(context, returnString),
                               );
                         },
                         child: Text("Sign in"),
@@ -111,6 +110,30 @@ class SignInPage extends StatelessWidget {
                     child: Text("New account"),
                   ),
                 ],
+              ),
+            ),
+            Expanded(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    Text(
+                      'Welcome to the Boulder Trails Challenge!\n',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
+                    Text('Boulder OSMP challenges visitors to run or hike all of the OSMP trails.'),
+                    Text('This application uses imported Strava or GPX data to help you map & track your progress. Happy Running!'),
+                    Flexible(
+                      child: Padding(
+                        padding: const EdgeInsets.all(40.0),
+                        child: Image(
+                          image: AssetImage('assets/images/FlatIrons.jpg'),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ],
