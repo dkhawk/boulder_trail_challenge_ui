@@ -28,29 +28,37 @@ class _IntroPagesState extends State<IntroPages> {
 
   @override
   Widget build(BuildContext context) {
-    const bodyStyle = TextStyle(fontSize: 16.0);
-
     const pageDecoration = const PageDecoration(
       titleTextStyle: TextStyle(fontSize: 16.0, fontWeight: FontWeight.w700),
-      bodyTextStyle: bodyStyle,
+      bodyTextStyle: TextStyle(fontSize: 16.0),
       bodyFlex: 2,
       imageFlex: 4,
       pageColor: Colors.white,
       imagePadding: EdgeInsets.fromLTRB(15.0, 20.0, 15.0, 0.0),
     );
 
+    const pageDecorationMobile = const PageDecoration(
+      titleTextStyle: TextStyle(fontSize: 15.0, fontWeight: FontWeight.w700),
+      bodyTextStyle: TextStyle(fontSize: 15.0),
+      bodyFlex: 2,
+      imageFlex: 2,
+      pageColor: Colors.white,
+      imagePadding: EdgeInsets.fromLTRB(15.0, 5.0, 15.0, 0.0),
+    );
+
     // are we in a web browser on a desktop device or a mobile device
     // - controls padding and dot size changes for narrower screen
     bool isWebDesktop = true;
-    if ((defaultTargetPlatform == TargetPlatform.android) ||
-        (defaultTargetPlatform == TargetPlatform.iOS)) {
+    if ((defaultTargetPlatform == TargetPlatform.android) || (defaultTargetPlatform == TargetPlatform.iOS)) {
       isWebDesktop = false;
     }
 
-    String trailCompletionText = 'Blue trails have been completed;\nRed trails have not been completed yet;\nClick on a segment to display the trail name & length\n\n';
-    trailCompletionText = trailCompletionText + 'Note that OSMP has been rerouting some trails (Anenome, Bear Canyon, Mesa ...)\n';
-    trailCompletionText = trailCompletionText + 'These may not be marked complete if you run or hike them!\n';
-    trailCompletionText = trailCompletionText + 'You can manually mark a trail as completed on the map for the trail';
+    String trailCompletionText =
+        'Blue trails have been completed;\nRed trails have not been completed yet;\nClick on a segment to display the trail name & length\n\n';
+    trailCompletionText =
+        trailCompletionText + 'Note that OSMP has been rerouting some trails (Anenome, Bear Canyon, Mesa ...)\n';
+    trailCompletionText = trailCompletionText + 'These may not be marked complete if you run them!\n\n';
+    trailCompletionText = trailCompletionText + 'You can manually mark a trail completed on the map for the trail';
 
     return IntroductionScreen(
       key: introKey,
@@ -63,8 +71,7 @@ class _IntroPagesState extends State<IntroPages> {
               "This application uses imported Strava or GPX data to help you track \nyour progress on the Boulder Trails Challenge",
           image: _buildFullscreenImage('FlatIrons.jpg'),
           decoration: pageDecoration.copyWith(
-            titleTextStyle:
-                TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700),
+            titleTextStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700),
             fullScreen: true,
             bodyFlex: 2,
             imageFlex: 3,
@@ -72,52 +79,49 @@ class _IntroPagesState extends State<IntroPages> {
           ),
         ),
         PageViewModel(
-          title:
-              "There are three main pages in the Boulder Trails Challenge app:",
+          title: "There are three main pages in the Boulder Trails Challenge app:",
           body: "(1) Trails, (2) Info/Help and (3) Import Data/Settings",
           image: _buildImage('HelpTrailsPage1.png'),
-          decoration: pageDecoration,
+          decoration: isWebDesktop ? pageDecoration : pageDecorationMobile,
         ),
         PageViewModel(
           title: "The Trails Page",
-          body:
-              "Filter which trails you want to see;\nShow completion maps for the trails",
+          body: "Filter which trails you want to see;\nShow completion maps for the trails",
           image: _buildImage('HelpTrailsPage2.png'),
-          decoration: pageDecoration,
+          decoration: isWebDesktop ? pageDecoration : pageDecorationMobile,
         ),
         PageViewModel(
           title: "Trail Completion Maps",
           body: trailCompletionText,
           image: _buildImage('HelpMapsPage.png'),
-          decoration: pageDecoration,
+          decoration: isWebDesktop ? pageDecoration : pageDecorationMobile,
         ),
         PageViewModel(
           title: "The Import Data/Settings Page",
           body:
-              "Synchronize your activities with Strava or import GPX files from your computer or device\nOnly runs, walks and hikes are syncronized from Strava",
+              "Synchronize your activities with Strava or import GPX files from your computer or device\nOnly runs, walks and hikes are synchronized from Strava",
           image: _buildImage('HelpSettings1.png'),
-          decoration: pageDecoration,
+          decoration: isWebDesktop ? pageDecoration : pageDecorationMobile,
         ),
         PageViewModel(
           title: "Import Activities from Strava",
           body:
               "A one-time Strava login and authorization is required\nThereafter clicking the 'import activities' button will read activities after the 'Start date' ",
           image: _buildImage('HelpStravaImport.png'),
-          decoration: pageDecoration,
+          decoration: isWebDesktop ? pageDecoration : pageDecorationMobile,
         ),
         PageViewModel(
           title: "The Import Data/Settings Page",
-          body:
-              "Optionally show the trail names on the maps or show topographical maps",
+          body: "Optionally show the trail names on the maps or show topographical maps",
           image: _buildImage('HelpMapOptions.png'),
-          decoration: pageDecoration,
+          decoration: isWebDesktop ? pageDecoration : pageDecorationMobile,
         ),
         PageViewModel(
           title: "The Import Data/Settings Page",
           body:
               "Reset all of your activities so that nothing is marked as completed;\nSign out of this app (and disconnect from Strava)",
           image: _buildImage('HelpSettings2.png'),
-          decoration: pageDecoration,
+          decoration: isWebDesktop ? pageDecoration : pageDecorationMobile,
         ),
       ],
       onDone: () => _onIntroEnd(context),
@@ -125,9 +129,7 @@ class _IntroPagesState extends State<IntroPages> {
       showSkipButton: false,
       next: const Icon(Icons.arrow_forward),
       controlsMargin: const EdgeInsets.all(16),
-      controlsPadding: isWebDesktop
-          ? const EdgeInsets.all(12.0)
-          : const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
+      controlsPadding: isWebDesktop ? const EdgeInsets.all(12.0) : const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
       dotsDecorator: isWebDesktop
           ? const DotsDecorator(
               size: Size(10.0, 10.0),
