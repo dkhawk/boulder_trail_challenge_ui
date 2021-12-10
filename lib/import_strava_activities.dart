@@ -719,71 +719,75 @@ class _ImportStravaState extends State<_ImportStrava> {
 
         // keep track of how many activities so we can move to the next Strava page
         // and get more if necessary
-        int _nbActivity = 0;
+        int _nbActivityThisPage = 0;
+        int _nbActivitySkippedThisPage = 0;
         if (tokenIsValid) {
           // decode the activities
           var jsonActivities = json.decode(activities);
-          jsonActivities.forEach((activitySummary) {
-            // what kind of activity is this
-            String activityType = activitySummary['type'];
-            print('Activity type <<>> $activityType');
-            if ((activityType == 'Run') || (activityType == 'Hike') || (activityType == 'Walk')) {
-              // the encoded polyline for this activity
+          jsonActivities.forEach(
+            (activitySummary) {
+              // what kind of activity is this
+              String activityType = activitySummary['type'];
+              // the map that includes the encoded polyline for this activity
               Map<String, dynamic> theActivityMap = activitySummary['map'];
+              String summaryPolyline = theActivityMap['summary_polyline'];
 
-              // interpolate between the 'summary_polyline' points that Strava gives us
-              // - the 'summary_polyline' does not contain all the gpx data points; for example
-              //   a long straight segment is given as only the start/stop locations and this
-              //   causes the route matching routine to fail
-              String interpolatedLocations = _interpolateLocations(theActivityMap['summary_polyline']);
-
-              // a map for the Cloud storage data
-              String uploadDateTime = DateTime.now().toUtc().toString();
-              Map<String, dynamic> importedTrackMap = {
-                'originalFileName': activitySummary['external_id'],
-                'gpxDateTime': activitySummary['start_date_local'],
-                'uploadDateTime': uploadDateTime,
-                'userName': userName,
-                //'encodedLocation': theActivityMap['summary_polyline'],
-                'encodedLocation': interpolatedLocations,
-                'processed': false,
-              };
-
-              // do not upload empty polylines - this causes cloud function to crash
-              // TEMP REMOVE THIS CHECK SO THAT WE CAN SEE WHETHER STRAVA
-              // SERVES UP EMPTY POLYLINES
-//            if (theActivityMap['summary_polyline'].toString().isNotEmpty) {
-              // do the actual upload to the cloud/firestore
-              String encodedTrackUploadLocation = activitySummary['external_id'] + '.gencoded';
-              numFilesUploaded++;
               print(
-                  'Uploading file: = $numFilesUploaded <> ${activitySummary['start_date_local']} <> $encodedTrackUploadLocation');
+                  'Activity type <<>> $activityType :: numFilesUploaded = $numFilesUploaded numSkippedActivities = $numSkippedActivities');
+              if (((activityType == 'Run') || (activityType == 'Hike') || (activityType == 'Walk')) &&
+                  (summaryPolyline != null) &&
+                  summaryPolyline.isNotEmpty) {
+                // interpolate between the 'summary_polyline' points that Strava gives us
+                // - the 'summary_polyline' does not contain all the gpx data points; for example
+                //   a long straight segment is given as only the start/stop locations and this
+                //   causes the route matching routine to fail
+                String interpolatedLocations = _interpolateLocations(summaryPolyline);
 
-              FirebaseFirestore.instance
-                  .collection('athletes')
-                  .doc(userName)
-                  .collection('importedData')
-                  .doc(encodedTrackUploadLocation)
-                  .set(importedTrackMap);
+                // a map for the Cloud storage data
+                String uploadDateTime = DateTime.now().toUtc().toString();
+                Map<String, dynamic> importedTrackMap = {
+                  'originalFileName': activitySummary['external_id'],
+                  'gpxDateTime': activitySummary['start_date_local'],
+                  'uploadDateTime': uploadDateTime,
+                  'userName': userName,
+                  //'encodedLocation': theActivityMap['summary_polyline'],
+                  'encodedLocation': interpolatedLocations,
+                  'processed': false,
+                };
 
-              _nbActivity++;
-              // } else {
-              //   print(
-              //       'Uploading Strava activity failed: = <> ${activitySummary['start_date_local']} <> encodedTrackUploadLocation is EMPTY');
-              // }
-            } else {
-              print('Skipping $activityType activity! <>');
-              numSkippedActivities++;
-            }
-          });
+                // do the actual upload to the cloud/firestore
+                String encodedTrackUploadLocation = activitySummary['external_id'] + '.gencoded';
+                numFilesUploaded++;
+                print(
+                    'Uploading file: = $numFilesUploaded <> ${activitySummary['start_date_local']} <> $encodedTrackUploadLocation');
+
+                FirebaseFirestore.instance
+                    .collection('athletes')
+                    .doc(userName)
+                    .collection('importedData')
+                    .doc(encodedTrackUploadLocation)
+                    .set(importedTrackMap);
+
+                _nbActivityThisPage++;
+              } else {
+                if ((summaryPolyline == null) || summaryPolyline.isEmpty)
+                  print('Skipping empty/null summaryPolyline! <>');
+                else
+                  print('Skipping $activityType activity! <>');
+                _nbActivitySkippedThisPage++;
+
+                numSkippedActivities++;
+              }
+            },
+          );
 
           // are we done with all the pages?
-          if (_nbActivity < _perPage) {
+          if ((_nbActivityThisPage + _nbActivitySkippedThisPage) < _perPage) {
             print('Pulling Strava data <> isRetrieveDone');
             isRetrieveDone = true;
           } else {
             // Move to the next page
-            print('next page');
+            print('next page: $_pageNumber');
             _pageNumber++;
           }
         }
