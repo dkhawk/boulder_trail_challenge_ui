@@ -15,8 +15,7 @@ class SettingsPage extends StatefulWidget {
   SettingsPage(this.settingsOptions);
   final SettingsOptions settingsOptions;
 
-  static const TextStyle optionStyle =
-      TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
+  static const TextStyle optionStyle = TextStyle(fontSize: 30, fontWeight: FontWeight.bold);
 
   @override
   _SettingsPageState createState() => _SettingsPageState(settingsOptions);
@@ -73,9 +72,17 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           Text(
+            "Using OSMP trail data from 30-Nov-2021; 08:30",
+            style: TextStyle(
+              fontWeight: FontWeight.bold,
+              backgroundColor: Colors.white,
+            ),
+          ),
+          Text(
             // Note that version and buildNumber are taken from pubspec.yaml
             "Build: ${_packageInfo.version}.${_packageInfo.buildNumber}",
             style: TextStyle(
+              fontSize: 12,
               fontWeight: FontWeight.bold,
               backgroundColor: Colors.white,
             ),
@@ -123,26 +130,20 @@ class _SettingsPageState extends State<SettingsPage> {
           ElevatedButton(
             child: Padding(
               padding: const EdgeInsets.all(10.0),
-              child: settingsOptions.displayTrailNames
-                  ? Text('Disable Trail Name Display')
-                  : Text('Enable Trail Name Display'),
+              child: settingsOptions.displayTrailNames ? Text('Disable Trail Name Display') : Text('Enable Trail Name Display'),
             ),
             onPressed: () {
-              setState(() => settingsOptions.displayTrailNames =
-                  !settingsOptions.displayTrailNames);
+              setState(() => settingsOptions.displayTrailNames = !settingsOptions.displayTrailNames);
             },
           ),
           Spacer(),
           ElevatedButton(
             child: Padding(
               padding: const EdgeInsets.all(10.0),
-              child: settingsOptions.useTopoMaps
-                  ? Text('Disable Topo Map Display')
-                  : Text('Enable Topo Map Display'),
+              child: settingsOptions.useTopoMaps ? Text('Disable Topo Map Display') : Text('Enable Topo Map Display'),
             ),
             onPressed: () {
-              setState(() =>
-                  settingsOptions.useTopoMaps = !settingsOptions.useTopoMaps);
+              setState(() => settingsOptions.useTopoMaps = !settingsOptions.useTopoMaps);
             },
           ),
           Spacer(),
@@ -160,14 +161,11 @@ class _SettingsPageState extends State<SettingsPage> {
                 context,
                 MaterialPageRoute(builder: (context) {
                   return AlertDialog(
-                    title: Text('Delete all activities?',
-                        style: TextStyle(color: Colors.white)),
-                    content: Text(
-                        'This will remove all your activities from the database',
-                        style: TextStyle(color: Colors.white)),
+                    title: Text('Delete all activities?', style: TextStyle(color: Colors.white)),
+                    content:
+                        Text('This will remove all your activities from the database', style: TextStyle(color: Colors.white)),
                     backgroundColor: Colors.deepPurple,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: new BorderRadius.circular(15)),
+                    shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -175,21 +173,18 @@ class _SettingsPageState extends State<SettingsPage> {
                             context,
                             MaterialPageRoute(builder: (context) {
                               return Scaffold(
-                                body: LoadSegmentsData(firebaseUser.email, '',
-                                    true /*reset trail data*/),
+                                body: LoadSegmentsData(firebaseUser.email, '', true /*reset trail data*/),
                               );
                             }),
                           ).whenComplete(() => Navigator.of(context).pop());
                         },
-                        child:
-                            Text('OK', style: TextStyle(color: Colors.white)),
+                        child: Text('OK', style: TextStyle(color: Colors.white)),
                       ),
                       TextButton(
                         onPressed: () {
                           Navigator.of(context).pop();
                         },
-                        child: Text('Cancel',
-                            style: TextStyle(color: Colors.white)),
+                        child: Text('Cancel', style: TextStyle(color: Colors.white)),
                       )
                     ],
                   );

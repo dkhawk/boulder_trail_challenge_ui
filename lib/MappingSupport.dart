@@ -251,8 +251,10 @@ Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputM
       inputMapData.completedSegs.add(segment);
     else if (List.castFrom(trail.remainingSegs).contains(segmentNameId))
       inputMapData.remainingSegs.add(segment);
-    else
-      assert("No segment data" != null);
+    else {
+      inputMapData.remainingSegs.add(segment);
+      print('No segment data <<>> ${segment.name} ${segment.segmentNameId} <> considered not completed');
+    }
   });
 
   return _CreateFlutterMap(inputMapData, settingsOptions);
