@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 
 import 'package:path/path.dart' as path;
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
-//import 'dart:math' as math show pow;
+import 'dart:math' as math show pow;
 
 import 'dart:convert';
 //
@@ -126,6 +126,74 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
             List<String> encodedTrackStrings = [];
             encodedTrackStrings = _gpxToGoogleEncodedTrack(xmlGpx);
 
+            //=============================
+            // grid
+            Map coordinatesToSegmentsMap = Map<String, dynamic>();
+
+            double minLatitude = 39.9139860039965;
+            double minLongitude = -105.406643752203;
+            double maxLatitude = 40.1164546952824;
+            double maxLongitude = -105.131874521385;
+
+            double latDegrees = maxLatitude - minLatitude;
+            double lngDegrees = maxLongitude - minLongitude;
+
+            int width = 235;
+            int height = 225;
+            // loop over all separate track and track segments
+            for (int iTrack = 0; iTrack < xmlGpx.trks.length; iTrack++) {
+              Trk theTrack = xmlGpx.trks[iTrack];
+              for (int iSeg = 0; iSeg < theTrack.trksegs.length; iSeg++) {
+                Trkseg trackSeg = theTrack.trksegs[iSeg];
+
+                trackSeg.trkpts.forEach((waypoint) {
+                  // grid map
+                  int gridx =
+                  (((waypoint.lon - minLongitude) / lngDegrees) * width)
+                      .toInt();
+                  int gridy =
+                  (((waypoint.lat - minLatitude) / latDegrees) * height)
+                      .toInt();
+
+                  String segID = '';
+                  if (theTrack.extensions
+                      .containsKey('ogr:GISPROD3OSMPTrailsOSMPSEGMENTID')) {
+                    segID = theTrack
+                        .extensions['ogr:GISPROD3OSMPTrailsOSMPSEGMENTID']
+                        .toString();
+                  }
+
+                  String key = '${gridx},${gridy}';
+
+                  List segmentsList = [];
+                  if (coordinatesToSegmentsMap.containsKey(key)) {
+                    segmentsList = coordinatesToSegmentsMap[key];
+                  }
+                  if (segmentsList.contains(segID) == false) {
+                    segmentsList.add(segID);
+                  }
+
+                  coordinatesToSegmentsMap[key] = segmentsList;
+                });
+              }
+            }
+
+            Map gridMap = Map<String, dynamic>();
+            Map boundsMap = Map<String, dynamic>();
+            boundsMap['minLatitude'] = minLatitude;
+            boundsMap['minLongitude'] = minLongitude;
+            boundsMap['maxLatitude'] = maxLatitude;
+            boundsMap['maxLongitude'] = maxLongitude;
+
+            gridMap['bounds'] = boundsMap;
+            gridMap['width'] = width;
+            gridMap['height'] = height;
+            gridMap['coordinatesToSegments'] = coordinatesToSegmentsMap;
+            String jsonStringGridMap = jsonEncode(gridMap);
+            print('jsonStringGridMap');
+            print(jsonStringGridMap);
+            //=============================
+
             // base name for the document in firestore
             String baseTrackName = path.basenameWithoutExtension(file.name);
 
@@ -149,17 +217,17 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
               };
 
               // do the actual upload if not empty
-              if (encodedTrackStrings[iTrack].isNotEmpty) {
-                FirebaseFirestore.instance
-                    .collection('athletes')
-                    .doc(userName)
-                    .collection('importedData')
-                    .doc(encodedTrackUploadLocation)
-                    .set(importedTrackMap);
-              } else {
-                print(
-                    'Uploading GPX activity failed: = <> $uploadDateTime <> encodedTrackUploadLocation is EMPTY');
-              }
+              // if (encodedTrackStrings[iTrack].isNotEmpty) {
+              //   FirebaseFirestore.instance
+              //       .collection('athletes')
+              //       .doc(userName)
+              //       .collection('importedData')
+              //       .doc(encodedTrackUploadLocation)
+              //       .set(importedTrackMap);
+              // } else {
+              //   print(
+              //       'Uploading GPX activity failed: = <> $uploadDateTime <> encodedTrackUploadLocation is EMPTY');
+              // }
             }
 
             fileNameString = path.basenameWithoutExtension(file.name);
@@ -279,18 +347,32 @@ List<String> _gpxToGoogleEncodedTrack(Gpx xmlGpx) {
   String numtrks = 'number of trks = ' + xmlGpx.trks.length.toString();
   print(numtrks);
 
+  Map encodedTheSegmentsMap = Map<String, dynamic>();
+
   // loop over all separate track and track segments
   for (int iTrack = 0; iTrack < xmlGpx.trks.length; iTrack++) {
     Trk theTrack = xmlGpx.trks[iTrack];
-    String numtrksegs =
-        'number of trksegs = ' + theTrack.trksegs.length.toString();
-    print(numtrksegs);
+    // String numtrksegs =
+    //     'number of trksegs = ' + theTrack.trksegs.length.toString();
+    //print(numtrksegs);
 
     for (int iSeg = 0; iSeg < theTrack.trksegs.length; iSeg++) {
       Trkseg trackSeg = theTrack.trksegs[iSeg];
 
+      double minLatitude = double.infinity;
+      double minLongitude = double.infinity;
+      double maxLatitude = -double.infinity;
+      double maxLongitude = -double.infinity;
+
       List<List<num>> trackPoints = [];
       trackSeg.trkpts.forEach((waypoint) {
+
+        if (waypoint.lat > maxLatitude) maxLatitude = waypoint.lat;
+        if (waypoint.lon > maxLongitude) maxLongitude = waypoint.lon;
+
+        if (waypoint.lat < minLatitude) minLatitude = waypoint.lat;
+        if (waypoint.lon < minLongitude) minLongitude = waypoint.lon;
+
         trackPoints.add([waypoint.lat, waypoint.lon]);
       });
 
@@ -309,8 +391,75 @@ List<String> _gpxToGoogleEncodedTrack(Gpx xmlGpx) {
       //
       // List<List<num>> testReturn = decodePolyline_local(encodedTrack);
       // print(testReturn.toString());
+
+
+      //=============================
+      // To update the encoded-locations.json & grid-data.json:
+      //
+      // 1) Get latest OSMP trails data in geoJson format from https://open-data.bouldercolorado.gov/datasets; drive down to the
+      // download options and grab geoJson file
+      // 2) Convert the geoJson file to gpx using https://mygeodata.cloud/converter/geojson-to-gpx  This site preserves comments
+      // in the extensions while some others do not. This step costs a few dollars!
+      // 3) Run code. Import the gpx file. The encoded-locations.json & grid-data.json will be printed into the logs. Copy/paste
+      // these into appropriate files.
+
+
+      //=============================
+      // map for encoded_locations
+      //if (theTrack.extensions.isNotEmpty) {
+
+      //print('extensions ${theTrack.extensions}');
+      if (theTrack.extensions.isNotEmpty) {
+        //print('extracting extensions');
+
+        //Map<String,String> extensions = jsonDecode(theTrack.desc);
+
+        // length: in meters
+        int length = 0;
+        if (theTrack.extensions
+            .containsKey('ogr:GISPROD3OSMPTrailsOSMPMEASUREDFEET')) {
+          length = (double.parse(theTrack
+              .extensions['ogr:GISPROD3OSMPTrailsOSMPMEASUREDFEET']) ~/
+              3.2808);  // feet to meters
+        }
+        if ((length < 1) &&
+            (theTrack.extensions
+                .containsKey('ogr:GISPROD3OSMPTrailsOSMPMILEAGE'))) {
+          length = (double.parse(theTrack
+              .extensions['ogr:GISPROD3OSMPTrailsOSMPMILEAGE']) *
+              1609.34)
+              .toInt();  // miles to meters
+        }
+
+        //print(' segment length $length');
+
+        Map<String, dynamic> boundsMap = {
+          'minLatitude': minLatitude,
+          'minLongitude': minLongitude,
+          'maxLatitude': maxLatitude,
+          'maxLongitude': maxLongitude,
+        };
+        Map<String, dynamic> encodedSegmentMap = {
+          'trailId': theTrack.extensions['ogr:GISPROD3OSMPTrailsOSMPTRLID'],
+          'segmentId':
+          theTrack.extensions['ogr:GISPROD3OSMPTrailsOSMPSEGMENTID'],
+          'name': theTrack.extensions['ogr:GISPROD3OSMPTrailsOSMPTRAILNAME'],
+          'length': length,
+          'bounds': boundsMap,
+          'encodedLocations': encodedTrack,
+        };
+
+        encodedTheSegmentsMap[
+        theTrack.extensions['ogr:GISPROD3OSMPTrailsOSMPSEGMENTID']] =
+            encodedSegmentMap;
+      }
     }
   }
+
+  String jsonString = jsonEncode(encodedTheSegmentsMap);
+  print('jsonStringEncodedSegments');
+  print(jsonString);
+  //=============================
 
   return encodedTracks;
 }
@@ -320,55 +469,55 @@ List<String> _gpxToGoogleEncodedTrack(Gpx xmlGpx) {
 // -- the following is a hacked version
 // ----
 //
-// /// Decodes [polyline] `String` via inverted
-// /// [Encoded Polyline Algorithm](https://developers.google.com/maps/documentation/utilities/polylinealgorithm?hl=en)
-// List<List<num>> decodePolyline_local(String polyline, {int accuracyExponent = 5}) {
-//   final accuracyMultiplier = math.pow(10, accuracyExponent);
-//   final List<List<num>> coordinates = [];
-//
-//   int index = 0;
-//   int lat = 0;
-//   int lng = 0;
-//
-//   while (index < polyline.length) {
-//     int char;
-//     int shift = 0;
-//     int result = 0;
-//
-//     /// Method for getting **only** `1` coorditane `latitude` or `longitude` at a time
-//     int getCoordinate() {
-//       /// Iterating while value is grater or equal of `32-bits` size
-//       do {
-//         /// Substract `63` from `codeUnit`.
-//         char = polyline.codeUnitAt(index++) - 63;
-//
-//         /// `AND` each `char` with `0x1f` to get 5-bit chunks.
-//         /// Then `OR` each `char` with `result`.
-//         /// Then left-shift for `shift` bits
-//         result |= (char & 0x1f) << shift;
-//         shift += 5;
-//       } while (char >= 0x20);
-//
-//       /// Inversion of both:
-//       ///
-//       ///  * Left-shift the `value` for one bit
-//       ///  * Inversion `value` if it is negative
-//       final value = result >> 1;
-//       final coordinateChange =
-//       //(result & 1) != 0 ? ~(result >> 1) : (result >> 1);
-//       (result & 1) != 0 ? (~BigInt.from(value)).toInt() : value;
-//
-//       /// It is needed to clear `shift` and `result` for next coordinate.
-//       shift = result = 0;
-//
-//       return coordinateChange;
-//     }
-//
-//     lat += getCoordinate();
-//     lng += getCoordinate();
-//
-//     coordinates.add([lat / accuracyMultiplier, lng / accuracyMultiplier]);
-//   }
-//
-//   return coordinates;
-// }
+/// Decodes [polyline] `String` via inverted
+/// [Encoded Polyline Algorithm](https://developers.google.com/maps/documentation/utilities/polylinealgorithm?hl=en)
+List<List<num>> decodePolyline_local(String polyline, {int accuracyExponent = 5}) {
+  final accuracyMultiplier = math.pow(10, accuracyExponent);
+  final List<List<num>> coordinates = [];
+
+  int index = 0;
+  int lat = 0;
+  int lng = 0;
+
+  while (index < polyline.length) {
+    int char;
+    int shift = 0;
+    int result = 0;
+
+    /// Method for getting **only** `1` coorditane `latitude` or `longitude` at a time
+    int getCoordinate() {
+      /// Iterating while value is grater or equal of `32-bits` size
+      do {
+        /// Substract `63` from `codeUnit`.
+        char = polyline.codeUnitAt(index++) - 63;
+
+        /// `AND` each `char` with `0x1f` to get 5-bit chunks.
+        /// Then `OR` each `char` with `result`.
+        /// Then left-shift for `shift` bits
+        result |= (char & 0x1f) << shift;
+        shift += 5;
+      } while (char >= 0x20);
+
+      /// Inversion of both:
+      ///
+      ///  * Left-shift the `value` for one bit
+      ///  * Inversion `value` if it is negative
+      final value = result >> 1;
+      final coordinateChange =
+      //(result & 1) != 0 ? ~(result >> 1) : (result >> 1);
+      (result & 1) != 0 ? (~BigInt.from(value)).toInt() : value;
+
+      /// It is needed to clear `shift` and `result` for next coordinate.
+      shift = result = 0;
+
+      return coordinateChange;
+    }
+
+    lat += getCoordinate();
+    lng += getCoordinate();
+
+    coordinates.add([lat / accuracyMultiplier, lng / accuracyMultiplier]);
+  }
+
+  return coordinates;
+}
