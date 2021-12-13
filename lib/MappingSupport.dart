@@ -46,7 +46,7 @@ Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions sett
                 ],
               ),
               actions: <Widget>[
-                if (trail.percentDone < 0.995)
+                //if (trail.percentDone < 0.995)
                   TextButton(
                     onPressed: () {
                       // confirm that this is what the user wants to do
@@ -246,6 +246,7 @@ Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputM
     String encodedLocations = segment.encodedLocations;
     segment.latLong = _buildPolyLineForMap(encodedLocations);
 
+
     // is this segment completed or remaining
     if (List.castFrom(trail.completedSegs).contains(segmentNameId))
       inputMapData.completedSegs.add(segment);
@@ -254,6 +255,8 @@ Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputM
     else {
       inputMapData.remainingSegs.add(segment);
       print('No segment data <<>> ${segment.name} ${segment.segmentNameId} <> considered not completed');
+
+      //print(' percent done ${trail.percentDone} ${inputMapData.percentComplete}');
     }
   });
 
