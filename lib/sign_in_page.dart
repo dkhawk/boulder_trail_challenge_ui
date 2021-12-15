@@ -14,6 +14,8 @@ class SignInPage extends StatelessWidget {
       appBar: AppBar(
         title: Text('Boulder Trails Challenge'),
       ),
+      // don't resize when keyboard comes up on mobile
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
@@ -112,27 +114,31 @@ class SignInPage extends StatelessWidget {
                 ],
               ),
             ),
-            Expanded(
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 30, 8, 0),
+              child: Text(
+                'Welcome to the Boulder Trails Challenge!\n',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            Text(
+              'Boulder OSMP challenges visitors to run or hike all of the OSMP trails.',
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              'This application uses imported Strava or GPX data to help you map & track your progress.',
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              'Happy Running!',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Flexible(
               child: Padding(
-                padding: const EdgeInsets.fromLTRB(8.0, 16.0, 8.0, 8.0),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    Text(
-                      'Welcome to the Boulder Trails Challenge!\n',
-                      style: TextStyle(fontWeight: FontWeight.bold),
-                    ),
-                    Text('Boulder OSMP challenges visitors to run or hike all of the OSMP trails.'),
-                    Text('This application uses imported Strava or GPX data to help you map & track your progress. Happy Running!'),
-                    Flexible(
-                      child: Padding(
-                        padding: const EdgeInsets.all(40.0),
-                        child: Image(
-                          image: AssetImage('assets/images/FlatIrons.jpg'),
-                        ),
-                      ),
-                    ),
-                  ],
+                padding: const EdgeInsets.all(40.0),
+                child: Image(
+                  image: AssetImage('assets/images/FlatIrons.jpg'),
                 ),
               ),
             ),
