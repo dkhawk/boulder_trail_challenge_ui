@@ -415,23 +415,27 @@ List<String> _gpxToGoogleEncodedTrack(Gpx xmlGpx) {
         //Map<String,String> extensions = jsonDecode(theTrack.desc);
 
         // length: in meters
-        int length = 0;
+        // OSMP data is inconsistent:: should we use the feet data or miles data???
+        int length_fromFeet = 0;
+        int length_fromMiles = 0;
         if (theTrack.extensions
             .containsKey('ogr:GISPROD3OSMPTrailsOSMPMEASUREDFEET')) {
-          length = (double.parse(theTrack
+          length_fromFeet = (double.parse(theTrack
               .extensions['ogr:GISPROD3OSMPTrailsOSMPMEASUREDFEET']) ~/
               3.2808);  // feet to meters
         }
-        if ((length < 1) &&
-            (theTrack.extensions
-                .containsKey('ogr:GISPROD3OSMPTrailsOSMPMILEAGE'))) {
-          length = (double.parse(theTrack
+        if(length_fromFeet < 0)
+          length_fromFeet = 0;
+
+        if (theTrack.extensions
+                .containsKey('ogr:GISPROD3OSMPTrailsOSMPMILEAGE')) {
+          length_fromMiles = (double.parse(theTrack
               .extensions['ogr:GISPROD3OSMPTrailsOSMPMILEAGE']) *
               1609.34)
               .toInt();  // miles to meters
         }
 
-        //print(' segment length $length');
+        print(' segment length::   $length_fromMiles (fromMiles) $length_fromFeet (fromFeet)');
 
         Map<String, dynamic> boundsMap = {
           'minLatitude': minLatitude,
@@ -444,7 +448,7 @@ List<String> _gpxToGoogleEncodedTrack(Gpx xmlGpx) {
           'segmentId':
           theTrack.extensions['ogr:GISPROD3OSMPTrailsOSMPSEGMENTID'],
           'name': theTrack.extensions['ogr:GISPROD3OSMPTrailsOSMPTRAILNAME'],
-          'length': length,
+          'length': length_fromMiles,
           'bounds': boundsMap,
           'encodedLocations': encodedTrack,
         };
