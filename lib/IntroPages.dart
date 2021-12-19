@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:introduction_screen/introduction_screen.dart';
+import 'package:marquee/marquee.dart';
 
 class IntroPages extends StatefulWidget {
   @override
@@ -24,6 +25,72 @@ class _IntroPagesState extends State<IntroPages> {
 
   Widget _buildImage(String imageName, [double width = 1000]) {
     return Image.asset('assets/images/$imageName', width: width);
+  }
+
+  Widget finePrintItem(String aString) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 10),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          if (aString.isNotEmpty)
+            Icon(
+              Icons.wb_sunny_rounded,
+              color: Colors.blueAccent,
+            ),
+          Text('   '),
+          Flexible(
+            child: Text(
+              aString,
+              textAlign: TextAlign.left,
+              softWrap: true,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _finePrintWidget() {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.black12,
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(15.0),
+        child: Column(
+          textDirection: TextDirection.ltr,
+          children: [
+            finePrintItem(
+                'The trail matching algorithm is somewhat generous: If you\'ve come within roughly 20 meters of 80% of the trail you\'ll get credit for finishing the trail.'),
+            finePrintItem(
+                'The algorithm will sometimes give you credit for very short nearby trails that you didn\'t run because you came within 20 meters of 80% of the nearby short trail.'),
+            finePrintItem(
+                'And sometimes the algorithm will miss segments and not give you credit. There\'s a little bit of rocket science baked in that occasionally misfires.'),
+            finePrintItem(
+                'Also, OSMP moves and renames trails periodically causing the trail matching algorithm to make mistakes. Given all this you may sometimes have to manually mark a trail complete, or backdate and reload your Strava/GPX data.'),
+            finePrintItem(
+                'Disclaimer: This app is not associated with OSMP, Strava, Boulder Trail Runners or any other entity'),
+            finePrintItem(''),
+            finePrintItem('Good luck, have fun and be safe! Click "Trails" or "Import Data/Settings" below to continue...'),
+            finePrintItem(''),
+            SizedBox(
+              height: 30,
+              child: Marquee(
+                text: 'Credits: Boulder Trail Runners; DaleH; NateS; LeahW; MaryH & RichH',
+                style: TextStyle(fontSize: 10, fontStyle: FontStyle.italic),
+                scrollAxis: Axis.horizontal,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                blankSpace: 20.0,
+                velocity: 50.0,
+                startPadding: 10.0,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
   }
 
   @override
@@ -123,12 +190,21 @@ class _IntroPagesState extends State<IntroPages> {
           image: _buildImage('HelpSettings2.png'),
           decoration: isWebDesktop ? pageDecoration : pageDecorationMobile,
         ),
+        PageViewModel(
+          title: "The Fine Print",
+          bodyWidget: _finePrintWidget(),
+          // decoration: pageDecoration.copyWith(
+          //   titlePadding: EdgeInsets.only(top: 30, bottom: 20),
+          //   descriptionPadding: EdgeInsets.fromLTRB(16.0, 30.0, 16.0, 20.0),
+          // ),
+          decoration: isWebDesktop ? pageDecoration : pageDecorationMobile,
+        ),
       ],
       onDone: () => _onIntroEnd(context),
       onSkip: () => _onIntroEnd(context),
       showSkipButton: false,
       next: const Icon(Icons.arrow_forward),
-      controlsMargin: const EdgeInsets.all(16),
+      controlsMargin: const EdgeInsets.all(2),
       controlsPadding: isWebDesktop ? const EdgeInsets.all(12.0) : const EdgeInsets.fromLTRB(8.0, 4.0, 8.0, 4.0),
       dotsDecorator: isWebDesktop
           ? const DotsDecorator(
