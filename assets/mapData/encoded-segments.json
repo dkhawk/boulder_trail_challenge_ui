@@ -172,7 +172,7 @@
         "trailId": "420",
         "segmentId": "420-657-658",
         "name": "Joder Ranch",
-        "length": 3187,
+        "length": 3143,
         "bounds": {
             "minLatitude": 40.108992836737436,
             "minLongitude": -105.3027212650202,
@@ -198,7 +198,7 @@
         "trailId": "417",
         "segmentId": "417-662-663",
         "name": "Buckingham Park",
-        "length": 63,
+        "length": 62,
         "bounds": {
             "minLatitude": 40.11117813524102,
             "minLongitude": -105.30701500401065,
@@ -211,7 +211,7 @@
         "trailId": "417",
         "segmentId": "417-663-664",
         "name": "Buckingham Park",
-        "length": 76,
+        "length": 75,
         "bounds": {
             "minLatitude": 40.11158292125364,
             "minLongitude": -105.30697390234666,
@@ -224,7 +224,7 @@
         "trailId": "417",
         "segmentId": "417-664-665",
         "name": "Buckingham Park",
-        "length": 15,
+        "length": 16,
         "bounds": {
             "minLatitude": 40.111466896785245,
             "minLongitude": -105.30666110785232,
@@ -237,7 +237,7 @@
         "trailId": "417",
         "segmentId": "417-666-665",
         "name": "Buckingham Park",
-        "length": 5,
+        "length": 6,
         "bounds": {
             "minLatitude": 40.11143074475419,
             "minLongitude": -105.30666110785232,
@@ -250,7 +250,7 @@
         "trailId": "417",
         "segmentId": "417-665-663",
         "name": "Buckingham Park",
-        "length": 33,
+        "length": 35,
         "bounds": {
             "minLatitude": 40.111466896785245,
             "minLongitude": -105.30695055988923,
@@ -263,7 +263,7 @@
         "trailId": "417",
         "segmentId": "417-665-662",
         "name": "Buckingham Park",
-        "length": 35,
+        "length": 38,
         "bounds": {
             "minLatitude": 40.11117813524102,
             "minLongitude": -105.30686196754283,
@@ -276,7 +276,7 @@
         "trailId": "417",
         "segmentId": "417-664-667",
         "name": "Buckingham Park",
-        "length": 15,
+        "length": 14,
         "bounds": {
             "minLatitude": 40.11146156611545,
             "minLongitude": -105.30656232565453,
@@ -289,7 +289,7 @@
         "trailId": "408",
         "segmentId": "408-652-675",
         "name": "Left Hand",
-        "length": 4503,
+        "length": 4472,
         "bounds": {
             "minLatitude": 40.080065821213395,
             "minLongitude": -105.27573151255524,
@@ -302,7 +302,7 @@
         "trailId": "409",
         "segmentId": "409-652-650",
         "name": "Sage",
-        "length": 1018,
+        "length": 1012,
         "bounds": {
             "minLatitude": 40.080113077731475,
             "minLongitude": -105.26274563710497,
@@ -315,7 +315,7 @@
         "trailId": "411",
         "segmentId": "411-650-651",
         "name": "North Rim",
-        "length": 379,
+        "length": 387,
         "bounds": {
             "minLatitude": 40.08378136832645,
             "minLongitude": -105.25377841404361,
@@ -328,7 +328,7 @@
         "trailId": "409",
         "segmentId": "409-650-648",
         "name": "Sage",
-        "length": 862,
+        "length": 851,
         "bounds": {
             "minLatitude": 40.08098328509996,
             "minLongitude": -105.25356220002935,
@@ -341,7 +341,7 @@
         "trailId": "410",
         "segmentId": "410-649-648",
         "name": "Eagle",
-        "length": 779,
+        "length": 774,
         "bounds": {
             "minLatitude": 40.08021485183698,
             "minLongitude": -105.24479438165362,
@@ -354,7 +354,7 @@
         "trailId": "410",
         "segmentId": "410-648-673",
         "name": "Eagle",
-        "length": 1533,
+        "length": 1512,
         "bounds": {
             "minLatitude": 40.07293275807146,
             "minLongitude": -105.25398722759934,
@@ -367,7 +367,7 @@
         "trailId": "408",
         "segmentId": "408-675-655",
         "name": "Left Hand",
-        "length": 227,
+        "length": 234,
         "bounds": {
             "minLatitude": 40.10459839969483,
             "minLongitude": -105.26615869092451,
@@ -380,7 +380,7 @@
         "trailId": "410",
         "segmentId": "410-647-673",
         "name": "Eagle",
-        "length": 863,
+        "length": 878,
         "bounds": {
             "minLatitude": 40.072978559183795,
             "minLongitude": -105.26353025706167,
@@ -393,7 +393,7 @@
         "trailId": "415",
         "segmentId": "415-647-672",
         "name": "Mesa Reservoir",
-        "length": 370,
+        "length": 378,
         "bounds": {
             "minLatitude": 40.07256528726257,
             "minLongitude": -105.26353025706167,
@@ -419,7 +419,7 @@
         "trailId": "416",
         "segmentId": "416-646-671",
         "name": "Degge",
-        "length": 438,
+        "length": 440,
         "bounds": {
             "minLatitude": 40.074675890020835,
             "minLongitude": -105.27067842078826,
@@ -432,7 +432,7 @@
         "trailId": "410",
         "segmentId": "410-644-643",
         "name": "Eagle",
-        "length": 121,
+        "length": 127,
         "bounds": {
             "minLatitude": 40.07635907500572,
             "minLongitude": -105.27756408488308,
@@ -458,7 +458,7 @@
         "trailId": "410",
         "segmentId": "410-643-646",
         "name": "Eagle",
-        "length": 839,
+        "length": 840,
         "bounds": {
             "minLatitude": 40.07603795703121,
             "minLongitude": -105.27623624107623,
@@ -471,7 +471,7 @@
         "trailId": "412",
         "segmentId": "412-643-654",
         "name": "Cobalt",
-        "length": 1442,
+        "length": 1433,
         "bounds": {
             "minLatitude": 40.076809059578885,
             "minLongitude": -105.27667713661977,
@@ -510,7 +510,7 @@
         "trailId": "414",
         "segmentId": "414-670-672",
         "name": "Hidden Valley",
-        "length": 1620,
+        "length": 1628,
         "bounds": {
             "minLatitude": 40.06879614252067,
             "minLongitude": -105.2746693487921,
@@ -549,7 +549,7 @@
         "trailId": "410",
         "segmentId": "410-640-641",
         "name": "Eagle",
-        "length": 18,
+        "length": 14,
         "bounds": {
             "minLatitude": 40.07280414598662,
             "minLongitude": -105.2819189734904,
@@ -562,7 +562,7 @@
         "trailId": "414",
         "segmentId": "414-642-670",
         "name": "Hidden Valley",
-        "length": 373,
+        "length": 376,
         "bounds": {
             "minLatitude": 40.07373490232101,
             "minLongitude": -105.27619369175808,
@@ -575,7 +575,7 @@
         "trailId": "410",
         "segmentId": "410-641-642",
         "name": "Eagle",
-        "length": 655,
+        "length": 659,
         "bounds": {
             "minLatitude": 40.0728118280364,
             "minLongitude": -105.28174096689605,
@@ -588,7 +588,7 @@
         "trailId": "401",
         "segmentId": "401-634-635",
         "name": "Foothills North",
-        "length": 846,
+        "length": 836,
         "bounds": {
             "minLatitude": 40.06934839273492,
             "minLongitude": -105.29165142177064,
@@ -601,7 +601,7 @@
         "trailId": "402",
         "segmentId": "402-636-636",
         "name": "Hogback Ridge",
-        "length": 2963,
+        "length": 2835,
         "bounds": {
             "minLatitude": 40.06810331783668,
             "minLongitude": -105.29842620326764,
@@ -614,7 +614,7 @@
         "trailId": "402",
         "segmentId": "402-636-633",
         "name": "Hogback Ridge",
-        "length": 59,
+        "length": 61,
         "bounds": {
             "minLatitude": 40.06917947438123,
             "minLongitude": -105.29254010492453,
@@ -627,7 +627,7 @@
         "trailId": "401",
         "segmentId": "401-637-638",
         "name": "Foothills North",
-        "length": 158,
+        "length": 156,
         "bounds": {
             "minLatitude": 40.0687379161784,
             "minLongitude": -105.29143709685987,
@@ -640,7 +640,7 @@
         "trailId": "401",
         "segmentId": "401-637-634",
         "name": "Foothills North",
-        "length": 16,
+        "length": 20,
         "bounds": {
             "minLatitude": 40.06926933512253,
             "minLongitude": -105.29165142177064,
@@ -666,7 +666,7 @@
         "trailId": "401",
         "segmentId": "401-633-637",
         "name": "Foothills North",
-        "length": 32,
+        "length": 35,
         "bounds": {
             "minLatitude": 40.06921011419113,
             "minLongitude": -105.29183679123702,
@@ -679,7 +679,7 @@
         "trailId": "401",
         "segmentId": "401-632-633",
         "name": "Foothills North",
-        "length": 470,
+        "length": 465,
         "bounds": {
             "minLatitude": 40.06531079545439,
             "minLongitude": -105.29183679123702,
@@ -692,7 +692,7 @@
         "trailId": "401",
         "segmentId": "401-630-631",
         "name": "Foothills North",
-        "length": 16,
+        "length": 17,
         "bounds": {
             "minLatitude": 40.065169720437495,
             "minLongitude": -105.28869746858521,
@@ -705,7 +705,7 @@
         "trailId": "401",
         "segmentId": "401-631-632",
         "name": "Foothills North",
-        "length": 224,
+        "length": 220,
         "bounds": {
             "minLatitude": 40.065274886387186,
             "minLongitude": -105.29128227793348,
@@ -718,7 +718,7 @@
         "trailId": "401",
         "segmentId": "401-629-630",
         "name": "Foothills North",
-        "length": 233,
+        "length": 234,
         "bounds": {
             "minLatitude": 40.063073968290475,
             "minLongitude": -105.28858984264109,
@@ -796,7 +796,7 @@
         "trailId": "404",
         "segmentId": "404-618-619",
         "name": "Old Kiln",
-        "length": 796,
+        "length": 790,
         "bounds": {
             "minLatitude": 40.06011772588892,
             "minLongitude": -105.29492167556411,
@@ -809,7 +809,7 @@
         "trailId": "405",
         "segmentId": "405-620-619",
         "name": "Old Kiln Spur",
-        "length": 604,
+        "length": 595,
         "bounds": {
             "minLatitude": 40.061742524736594,
             "minLongitude": -105.30080862038734,
@@ -822,7 +822,7 @@
         "trailId": "404",
         "segmentId": "404-619-617",
         "name": "Old Kiln",
-        "length": 498,
+        "length": 500,
         "bounds": {
             "minLatitude": 40.05897215647086,
             "minLongitude": -105.29461913808329,
@@ -835,7 +835,7 @@
         "trailId": "418",
         "segmentId": "418-626-622",
         "name": "Foothills Spur",
-        "length": 10,
+        "length": 11,
         "bounds": {
             "minLatitude": 40.06240079311983,
             "minLongitude": -105.28895205624858,
@@ -861,7 +861,7 @@
         "trailId": "403",
         "segmentId": "403-621-622",
         "name": "Foothills South",
-        "length": 18,
+        "length": 16,
         "bounds": {
             "minLatitude": 40.06231134171973,
             "minLongitude": -105.28898229954889,
@@ -874,7 +874,7 @@
         "trailId": "403",
         "segmentId": "403-622-674",
         "name": "Foothills South",
-        "length": 42,
+        "length": 51,
         "bounds": {
             "minLatitude": 40.06240079311983,
             "minLongitude": -105.28883215486628,
@@ -926,7 +926,7 @@
         "trailId": "403",
         "segmentId": "403-609-611",
         "name": "Foothills South",
-        "length": 170,
+        "length": 165,
         "bounds": {
             "minLatitude": 40.05177616381538,
             "minLongitude": -105.29292034650207,
@@ -939,7 +939,7 @@
         "trailId": "407",
         "segmentId": "407-608-609",
         "name": "Wonderland Lake",
-        "length": 419,
+        "length": 413,
         "bounds": {
             "minLatitude": 40.04833330123892,
             "minLongitude": -105.29258815206607,
@@ -952,7 +952,7 @@
         "trailId": "407",
         "segmentId": "407-602-603",
         "name": "Wonderland Lake",
-        "length": 115,
+        "length": 114,
         "bounds": {
             "minLatitude": 40.051397004410056,
             "minLongitude": -105.28768712691013,
@@ -965,7 +965,7 @@
         "trailId": "407",
         "segmentId": "407-600-601",
         "name": "Wonderland Lake",
-        "length": 382,
+        "length": 383,
         "bounds": {
             "minLatitude": 40.050668378246456,
             "minLongitude": -105.28672420731132,
@@ -978,7 +978,7 @@
         "trailId": "407",
         "segmentId": "407-606-607",
         "name": "Wonderland Lake",
-        "length": 256,
+        "length": 254,
         "bounds": {
             "minLatitude": 40.04853750933096,
             "minLongitude": -105.28684689395018,
@@ -1004,7 +1004,7 @@
         "trailId": "407",
         "segmentId": "407-606-605",
         "name": "Wonderland Lake",
-        "length": 153,
+        "length": 148,
         "bounds": {
             "minLatitude": 40.05070698657789,
             "minLongitude": -105.28737980366361,
@@ -1017,7 +1017,7 @@
         "trailId": "407",
         "segmentId": "407-605-606",
         "name": "Wonderland Lake",
-        "length": 34,
+        "length": 35,
         "bounds": {
             "minLatitude": 40.050797188043624,
             "minLongitude": -105.2867135771386,
@@ -1043,7 +1043,7 @@
         "trailId": "407",
         "segmentId": "407-601-604",
         "name": "Wonderland Lake",
-        "length": 11,
+        "length": 12,
         "bounds": {
             "minLatitude": 40.05123541180863,
             "minLongitude": -105.2867349587211,
@@ -1069,7 +1069,7 @@
         "trailId": "407",
         "segmentId": "407-610-609",
         "name": "Wonderland Lake",
-        "length": 313,
+        "length": 317,
         "bounds": {
             "minLatitude": 40.05149783403894,
             "minLongitude": -105.2919371731184,
@@ -1134,7 +1134,7 @@
         "trailId": "415",
         "segmentId": "415-672-671",
         "name": "Mesa Reservoir",
-        "length": 727,
+        "length": 724,
         "bounds": {
             "minLatitude": 40.07249428858988,
             "minLongitude": -105.27067842078826,
@@ -1147,7 +1147,7 @@
         "trailId": "415",
         "segmentId": "415-671-642",
         "name": "Mesa Reservoir",
-        "length": 532,
+        "length": 531,
         "bounds": {
             "minLatitude": 40.074675890020835,
             "minLongitude": -105.27619369175808,
@@ -1160,7 +1160,7 @@
         "trailId": "506",
         "segmentId": "506-552-553",
         "name": "Cottontail",
-        "length": 1916,
+        "length": 1878,
         "bounds": {
             "minLatitude": 40.07280871829369,
             "minLongitude": -105.17865890721656,
@@ -1173,7 +1173,7 @@
         "trailId": "503",
         "segmentId": "503-534-536",
         "name": "East Boulder - Teller Farm",
-        "length": 32,
+        "length": 41,
         "bounds": {
             "minLatitude": 40.039667419514295,
             "minLongitude": -105.14219108566367,
@@ -1186,7 +1186,7 @@
         "trailId": "515",
         "segmentId": "515-534-535",
         "name": "East Boulder - Teller Lake #5",
-        "length": 233,
+        "length": 238,
         "bounds": {
             "minLatitude": 40.039289706540735,
             "minLongitude": -105.14218661890494,
@@ -1199,7 +1199,7 @@
         "trailId": "503",
         "segmentId": "503-530-534",
         "name": "East Boulder - Teller Farm",
-        "length": 2877,
+        "length": 2800,
         "bounds": {
             "minLatitude": 40.022146077990335,
             "minLongitude": -105.15294541295727,
@@ -1212,7 +1212,7 @@
         "trailId": "503",
         "segmentId": "503-530-528",
         "name": "East Boulder - Teller Farm",
-        "length": 342,
+        "length": 339,
         "bounds": {
             "minLatitude": 40.02189051592646,
             "minLongitude": -105.15468080197968,
@@ -1225,7 +1225,7 @@
         "trailId": "503",
         "segmentId": "503-527-528",
         "name": "East Boulder - Teller Farm",
-        "length": 340,
+        "length": 339,
         "bounds": {
             "minLatitude": 40.02176342552164,
             "minLongitude": -105.15856188023437,
@@ -1251,7 +1251,7 @@
         "trailId": "503",
         "segmentId": "503-529-530",
         "name": "East Boulder - Teller Farm",
-        "length": 93,
+        "length": 94,
         "bounds": {
             "minLatitude": 40.02175353034155,
             "minLongitude": -105.15368966561927,
@@ -1264,7 +1264,7 @@
         "trailId": "516",
         "segmentId": "516-529-531",
         "name": "East Boulder - Teller Farm Spur",
-        "length": 150,
+        "length": 149,
         "bounds": {
             "minLatitude": 40.02174724444272,
             "minLongitude": -105.15368966561927,
@@ -1290,7 +1290,7 @@
         "trailId": "516",
         "segmentId": "516-531-533",
         "name": "East Boulder - Teller Farm Spur",
-        "length": 124,
+        "length": 123,
         "bounds": {
             "minLatitude": 40.02194858809029,
             "minLongitude": -105.1519708207549,
@@ -1303,7 +1303,7 @@
         "trailId": "505",
         "segmentId": "505-525-526",
         "name": "East Boulder - Teller Spur",
-        "length": 414,
+        "length": 415,
         "bounds": {
             "minLatitude": 40.01819618158905,
             "minLongitude": -105.16427692766518,
@@ -1316,7 +1316,7 @@
         "trailId": "508",
         "segmentId": "508-542-544",
         "name": "Sawhill Ponds",
-        "length": 2094,
+        "length": 2056,
         "bounds": {
             "minLatitude": 40.039395980670655,
             "minLongitude": -105.19638893133856,
@@ -1329,7 +1329,7 @@
         "trailId": "508",
         "segmentId": "508-544-545",
         "name": "Sawhill Ponds",
-        "length": 91,
+        "length": 90,
         "bounds": {
             "minLatitude": 40.040722836495185,
             "minLongitude": -105.18925268247501,
@@ -1342,7 +1342,7 @@
         "trailId": "508",
         "segmentId": "508-544-543",
         "name": "Sawhill Ponds",
-        "length": 58,
+        "length": 53,
         "bounds": {
             "minLatitude": 40.0402459191156,
             "minLongitude": -105.18843483680389,
@@ -1355,7 +1355,7 @@
         "trailId": "508",
         "segmentId": "508-543-542",
         "name": "Sawhill Ponds",
-        "length": 47,
+        "length": 51,
         "bounds": {
             "minLatitude": 40.04012799195935,
             "minLongitude": -105.18896792145121,
@@ -1368,7 +1368,7 @@
         "trailId": "508",
         "segmentId": "508-543-541",
         "name": "Sawhill Ponds",
-        "length": 29,
+        "length": 37,
         "bounds": {
             "minLatitude": 40.03992477954012,
             "minLongitude": -105.18845998386472,
@@ -1381,7 +1381,7 @@
         "trailId": "508",
         "segmentId": "508-541-542",
         "name": "Sawhill Ponds",
-        "length": 47,
+        "length": 51,
         "bounds": {
             "minLatitude": 40.03992477954012,
             "minLongitude": -105.18896792145121,
@@ -1394,7 +1394,7 @@
         "trailId": "508",
         "segmentId": "508-540-541",
         "name": "Sawhill Ponds",
-        "length": 289,
+        "length": 292,
         "bounds": {
             "minLatitude": 40.039273669138275,
             "minLongitude": -105.18843549457421,
@@ -1407,7 +1407,7 @@
         "trailId": "507",
         "segmentId": "507-547-549",
         "name": "Cottonwood",
-        "length": 1929,
+        "length": 1908,
         "bounds": {
             "minLatitude": 40.04035061846995,
             "minLongitude": -105.23856670060513,
@@ -1420,7 +1420,7 @@
         "trailId": "507",
         "segmentId": "507-546-547",
         "name": "Cottonwood",
-        "length": 97,
+        "length": 99,
         "bounds": {
             "minLatitude": 40.040173035628996,
             "minLongitude": -105.2367489456939,
@@ -1433,7 +1433,7 @@
         "trailId": "507",
         "segmentId": "507-548-547",
         "name": "Cottonwood",
-        "length": 14,
+        "length": 20,
         "bounds": {
             "minLatitude": 40.040171316169996,
             "minLongitude": -105.23573880365522,
@@ -1446,7 +1446,7 @@
         "trailId": "509",
         "segmentId": "509-524-523",
         "name": "Sombrero Marsh",
-        "length": 26,
+        "length": 17,
         "bounds": {
             "minLatitude": 40.01184033221917,
             "minLongitude": -105.2027363888683,
@@ -1459,7 +1459,7 @@
         "trailId": "509",
         "segmentId": "509-523-521",
         "name": "Sombrero Marsh",
-        "length": 208,
+        "length": 202,
         "bounds": {
             "minLatitude": 40.0113387805944,
             "minLongitude": -105.20405741488796,
@@ -1472,7 +1472,7 @@
         "trailId": "509",
         "segmentId": "509-523-522",
         "name": "Sombrero Marsh",
-        "length": 33,
+        "length": 37,
         "bounds": {
             "minLatitude": 40.01153059792229,
             "minLongitude": -105.20279116634262,
@@ -1485,7 +1485,7 @@
         "trailId": "509",
         "segmentId": "509-521-522",
         "name": "Sombrero Marsh",
-        "length": 53,
+        "length": 59,
         "bounds": {
             "minLatitude": 40.0113387805944,
             "minLongitude": -105.20341366903882,
@@ -1498,7 +1498,7 @@
         "trailId": "509",
         "segmentId": "509-520-521",
         "name": "Sombrero Marsh",
-        "length": 79,
+        "length": 72,
         "bounds": {
             "minLatitude": 40.010779696372005,
             "minLongitude": -105.20365914548647,
@@ -1524,7 +1524,7 @@
         "trailId": "509",
         "segmentId": "509-520-519",
         "name": "Sombrero Marsh",
-        "length": 15,
+        "length": 16,
         "bounds": {
             "minLatitude": 40.0106658637615,
             "minLongitude": -105.20365601717451,
@@ -1537,7 +1537,7 @@
         "trailId": "514",
         "segmentId": "514-515-516",
         "name": "Dry Creek",
-        "length": 233,
+        "length": 226,
         "bounds": {
             "minLatitude": 39.99893854628571,
             "minLongitude": -105.19326852803569,
@@ -1550,7 +1550,7 @@
         "trailId": "514",
         "segmentId": "514-516-517",
         "name": "Dry Creek",
-        "length": 122,
+        "length": 127,
         "bounds": {
             "minLatitude": 39.99897442348026,
             "minLongitude": -105.19417747349281,
@@ -1563,7 +1563,7 @@
         "trailId": "514",
         "segmentId": "514-517-518",
         "name": "Dry Creek",
-        "length": 327,
+        "length": 333,
         "bounds": {
             "minLatitude": 39.99692794413581,
             "minLongitude": -105.196248335121,
@@ -1576,7 +1576,7 @@
         "trailId": "514",
         "segmentId": "514-518-518",
         "name": "Dry Creek",
-        "length": 911,
+        "length": 936,
         "bounds": {
             "minLatitude": 39.9943914422109,
             "minLongitude": -105.19985727480625,
@@ -1589,7 +1589,7 @@
         "trailId": "502",
         "segmentId": "502-539-555",
         "name": "East Boulder - Gunbarrel",
-        "length": 762,
+        "length": 748,
         "bounds": {
             "minLatitude": 40.06206571713181,
             "minLongitude": -105.14053144434824,
@@ -1615,7 +1615,7 @@
         "trailId": "517",
         "segmentId": "517-676-677",
         "name": "KOA Lake",
-        "length": 103,
+        "length": 112,
         "bounds": {
             "minLatitude": 40.02752756571208,
             "minLongitude": -105.22074064447435,
@@ -1628,7 +1628,7 @@
         "trailId": "510",
         "segmentId": "510-514-513",
         "name": "Centennial - Equestrian",
-        "length": 345,
+        "length": 373,
         "bounds": {
             "minLatitude": 40.003615944016985,
             "minLongitude": -105.2163417853273,
@@ -1641,7 +1641,7 @@
         "trailId": "511",
         "segmentId": "511-512-510",
         "name": "South Boulder Creek",
-        "length": 16,
+        "length": 25,
         "bounds": {
             "minLatitude": 39.99957077559983,
             "minLongitude": -105.21521021086967,
@@ -1654,7 +1654,7 @@
         "trailId": "511",
         "segmentId": "511-510-511",
         "name": "South Boulder Creek",
-        "length": 18,
+        "length": 22,
         "bounds": {
             "minLatitude": 39.999474236755866,
             "minLongitude": -105.21541944816708,
@@ -1667,7 +1667,7 @@
         "trailId": "511",
         "segmentId": "511-508-509",
         "name": "South Boulder Creek",
-        "length": 53,
+        "length": 57,
         "bounds": {
             "minLatitude": 39.99180026414667,
             "minLongitude": -105.21714963375217,
@@ -1680,7 +1680,7 @@
         "trailId": "511",
         "segmentId": "511-510-508",
         "name": "South Boulder Creek",
-        "length": 973,
+        "length": 972,
         "bounds": {
             "minLatitude": 39.99180026414667,
             "minLongitude": -105.21698665011596,
@@ -1693,7 +1693,7 @@
         "trailId": "511",
         "segmentId": "511-508-504",
         "name": "South Boulder Creek",
-        "length": 1229,
+        "length": 1213,
         "bounds": {
             "minLatitude": 39.98567911136799,
             "minLongitude": -105.220161198846,
@@ -1706,7 +1706,7 @@
         "trailId": "513",
         "segmentId": "513-502-503",
         "name": "Cherryvale",
-        "length": 429,
+        "length": 437,
         "bounds": {
             "minLatitude": 39.98563787177774,
             "minLongitude": -105.22645121488458,
@@ -1719,7 +1719,7 @@
         "trailId": "511",
         "segmentId": "511-502-504",
         "name": "South Boulder Creek",
-        "length": 296,
+        "length": 294,
         "bounds": {
             "minLatitude": 39.98566655678102,
             "minLongitude": -105.22137254800332,
@@ -1732,7 +1732,7 @@
         "trailId": "513",
         "segmentId": "513-504-505",
         "name": "Cherryvale",
-        "length": 418,
+        "length": 416,
         "bounds": {
             "minLatitude": 39.98561875435196,
             "minLongitude": -105.21792597048936,
@@ -1745,7 +1745,7 @@
         "trailId": "513",
         "segmentId": "513-505-506",
         "name": "Cherryvale",
-        "length": 13,
+        "length": 14,
         "bounds": {
             "minLatitude": 39.985859613960926,
             "minLongitude": -105.21308433989597,
@@ -1758,7 +1758,7 @@
         "trailId": "513",
         "segmentId": "513-505-507",
         "name": "Cherryvale",
-        "length": 706,
+        "length": 727,
         "bounds": {
             "minLatitude": 39.982376832321194,
             "minLongitude": -105.21766507771054,
@@ -1771,7 +1771,7 @@
         "trailId": "511",
         "segmentId": "511-501-502",
         "name": "South Boulder Creek",
-        "length": 2860,
+        "length": 2883,
         "bounds": {
             "minLatitude": 39.96776379828542,
             "minLongitude": -105.23645867983153,
@@ -1810,7 +1810,7 @@
         "trailId": "334",
         "segmentId": "334-338-335",
         "name": "Lion's Lair",
-        "length": 1113,
+        "length": 1100,
         "bounds": {
             "minLatitude": 40.02743650015766,
             "minLongitude": -105.31497510883294,
@@ -1823,7 +1823,7 @@
         "trailId": "334",
         "segmentId": "334-335-334",
         "name": "Lion's Lair",
-        "length": 3240,
+        "length": 3194,
         "bounds": {
             "minLatitude": 40.03254316947646,
             "minLongitude": -105.3157932103294,
@@ -1836,7 +1836,7 @@
         "trailId": "335",
         "segmentId": "335-336-335",
         "name": "Lion's Lair Spur",
-        "length": 405,
+        "length": 373,
         "bounds": {
             "minLatitude": 40.03254316947646,
             "minLongitude": -105.31580587097326,
@@ -1849,7 +1849,7 @@
         "trailId": "288",
         "segmentId": "288-343-341",
         "name": "Sanitas Valley",
-        "length": 127,
+        "length": 123,
         "bounds": {
             "minLatitude": 40.03535993016027,
             "minLongitude": -105.29886805721382,
@@ -1862,7 +1862,7 @@
         "trailId": "288",
         "segmentId": "288-341-342",
         "name": "Sanitas Valley",
-        "length": 72,
+        "length": 74,
         "bounds": {
             "minLatitude": 40.03586008155212,
             "minLongitude": -105.29934369135754,
@@ -1875,7 +1875,7 @@
         "trailId": "293",
         "segmentId": "293-339-341",
         "name": "East Ridge",
-        "length": 356,
+        "length": 349,
         "bounds": {
             "minLatitude": 40.03422466308728,
             "minLongitude": -105.30073226713174,
@@ -1888,7 +1888,7 @@
         "trailId": "293",
         "segmentId": "293-334-339",
         "name": "East Ridge",
-        "length": 911,
+        "length": 864,
         "bounds": {
             "minLatitude": 40.03418563850614,
             "minLongitude": -105.30544377586854,
@@ -1914,7 +1914,7 @@
         "trailId": "290",
         "segmentId": "290-350-349",
         "name": "Dakota Ridge",
-        "length": 126,
+        "length": 122,
         "bounds": {
             "minLatitude": 40.02328057638953,
             "minLongitude": -105.29619625708608,
@@ -1927,7 +1927,7 @@
         "trailId": "290",
         "segmentId": "290-660-351",
         "name": "Dakota Ridge",
-        "length": 191,
+        "length": 186,
         "bounds": {
             "minLatitude": 40.02385828260345,
             "minLongitude": -105.293819532317,
@@ -1940,7 +1940,7 @@
         "trailId": "290",
         "segmentId": "290-348-350",
         "name": "Dakota Ridge",
-        "length": 218,
+        "length": 215,
         "bounds": {
             "minLatitude": 40.02328057638953,
             "minLongitude": -105.29613442570816,
@@ -1953,7 +1953,7 @@
         "trailId": "290",
         "segmentId": "290-348-347",
         "name": "Dakota Ridge",
-        "length": 154,
+        "length": 156,
         "bounds": {
             "minLatitude": 40.0249577539585,
             "minLongitude": -105.29705716178535,
@@ -1966,7 +1966,7 @@
         "trailId": "290",
         "segmentId": "290-346-348",
         "name": "Dakota Ridge",
-        "length": 309,
+        "length": 296,
         "bounds": {
             "minLatitude": 40.0249577539585,
             "minLongitude": -105.2962337613164,
@@ -1979,7 +1979,7 @@
         "trailId": "290",
         "segmentId": "290-346-345",
         "name": "Dakota Ridge",
-        "length": 251,
+        "length": 247,
         "bounds": {
             "minLatitude": 40.02745115939715,
             "minLongitude": -105.2973710953081,
@@ -1992,7 +1992,7 @@
         "trailId": "288",
         "segmentId": "288-347-345",
         "name": "Sanitas Valley",
-        "length": 306,
+        "length": 307,
         "bounds": {
             "minLatitude": 40.02609427972159,
             "minLongitude": -105.2974089202918,
@@ -2005,7 +2005,7 @@
         "trailId": "288",
         "segmentId": "288-349-347",
         "name": "Sanitas Valley",
-        "length": 296,
+        "length": 291,
         "bounds": {
             "minLatitude": 40.02364891833247,
             "minLongitude": -105.29711085340764,
@@ -2018,7 +2018,7 @@
         "trailId": "288",
         "segmentId": "288-345-344",
         "name": "Sanitas Valley",
-        "length": 709,
+        "length": 700,
         "bounds": {
             "minLatitude": 40.02875212483406,
             "minLongitude": -105.29740203679219,
@@ -2031,7 +2031,7 @@
         "trailId": "290",
         "segmentId": "290-344-346",
         "name": "Dakota Ridge",
-        "length": 887,
+        "length": 885,
         "bounds": {
             "minLatitude": 40.02745115939715,
             "minLongitude": -105.29739436385525,
@@ -2044,7 +2044,7 @@
         "trailId": "288",
         "segmentId": "288-344-343",
         "name": "Sanitas Valley",
-        "length": 52,
+        "length": 51,
         "bounds": {
             "minLatitude": 40.034958697124786,
             "minLongitude": -105.29767870845393,
@@ -2057,7 +2057,7 @@
         "trailId": "291",
         "segmentId": "291-362-361",
         "name": "Goat",
-        "length": 254,
+        "length": 246,
         "bounds": {
             "minLatitude": 40.03286000976951,
             "minLongitude": -105.29413909812533,
@@ -2070,7 +2070,7 @@
         "trailId": "291",
         "segmentId": "291-362-360",
         "name": "Goat",
-        "length": 95,
+        "length": 93,
         "bounds": {
             "minLatitude": 40.034350849871025,
             "minLongitude": -105.29422663544919,
@@ -2083,7 +2083,7 @@
         "trailId": "291",
         "segmentId": "291-343-362",
         "name": "Goat",
-        "length": 665,
+        "length": 650,
         "bounds": {
             "minLatitude": 40.03388625460716,
             "minLongitude": -105.29780427357088,
@@ -2096,7 +2096,7 @@
         "trailId": "290",
         "segmentId": "290-350-660",
         "name": "Dakota Ridge",
-        "length": 156,
+        "length": 157,
         "bounds": {
             "minLatitude": 40.023185705555235,
             "minLongitude": -105.2951026705662,
@@ -2174,7 +2174,7 @@
         "trailId": "297",
         "segmentId": "297-352-327",
         "name": "Sanitas Spur",
-        "length": 73,
+        "length": 69,
         "bounds": {
             "minLatitude": 40.02098584425982,
             "minLongitude": -105.29625799327914,
@@ -2187,7 +2187,7 @@
         "trailId": "288",
         "segmentId": "288-353-352",
         "name": "Sanitas Valley",
-        "length": 48,
+        "length": 46,
         "bounds": {
             "minLatitude": 40.02127260984068,
             "minLongitude": -105.2957621733094,
@@ -2200,7 +2200,7 @@
         "trailId": "288",
         "segmentId": "288-355-353",
         "name": "Sanitas Valley",
-        "length": 85,
+        "length": 88,
         "bounds": {
             "minLatitude": 40.020735667944315,
             "minLongitude": -105.29527291250615,
@@ -2213,7 +2213,7 @@
         "trailId": "288",
         "segmentId": "288-352-349",
         "name": "Sanitas Valley",
-        "length": 252,
+        "length": 254,
         "bounds": {
             "minLatitude": 40.02146649029556,
             "minLongitude": -105.29619625708608,
@@ -2226,7 +2226,7 @@
         "trailId": "323",
         "segmentId": "323-322-323",
         "name": "Sunshine Canyon",
-        "length": 1756,
+        "length": 1746,
         "bounds": {
             "minLatitude": 40.019605727297886,
             "minLongitude": -105.3122587858857,
@@ -2239,7 +2239,7 @@
         "trailId": "309",
         "segmentId": "309-326-324",
         "name": "Sanitas Connector",
-        "length": 51,
+        "length": 54,
         "bounds": {
             "minLatitude": 40.02046267401349,
             "minLongitude": -105.29683222610667,
@@ -2252,7 +2252,7 @@
         "trailId": "308",
         "segmentId": "308-300-303",
         "name": "Red Rocks Spur",
-        "length": 45,
+        "length": 78,
         "bounds": {
             "minLatitude": 40.017241520704246,
             "minLongitude": -105.29684876475349,
@@ -2265,7 +2265,7 @@
         "trailId": "286",
         "segmentId": "286-319-318",
         "name": "Red Rocks",
-        "length": 22,
+        "length": 24,
         "bounds": {
             "minLatitude": 40.02024859753762,
             "minLongitude": -105.2970696543493,
@@ -2278,7 +2278,7 @@
         "trailId": "308",
         "segmentId": "308-320-318",
         "name": "Red Rocks Spur",
-        "length": 39,
+        "length": 37,
         "bounds": {
             "minLatitude": 40.02019865008813,
             "minLongitude": -105.29749989510125,
@@ -2291,7 +2291,7 @@
         "trailId": "308",
         "segmentId": "308-321-320",
         "name": "Red Rocks Spur",
-        "length": 83,
+        "length": 82,
         "bounds": {
             "minLatitude": 40.01984930919155,
             "minLongitude": -105.29811884311418,
@@ -2304,7 +2304,7 @@
         "trailId": "286",
         "segmentId": "286-322-321",
         "name": "Red Rocks",
-        "length": 50,
+        "length": 56,
         "bounds": {
             "minLatitude": 40.019668316969835,
             "minLongitude": -105.2982468776793,
@@ -2317,7 +2317,7 @@
         "trailId": "286",
         "segmentId": "286-318-322",
         "name": "Red Rocks",
-        "length": 106,
+        "length": 104,
         "bounds": {
             "minLatitude": 40.019668316969835,
             "minLongitude": -105.29797908458231,
@@ -2330,7 +2330,7 @@
         "trailId": "308",
         "segmentId": "308-316-318",
         "name": "Red Rocks Spur",
-        "length": 47,
+        "length": 46,
         "bounds": {
             "minLatitude": 40.020145879904526,
             "minLongitude": -105.2970696543493,
@@ -2343,7 +2343,7 @@
         "trailId": "308",
         "segmentId": "308-316-317",
         "name": "Red Rocks Spur",
-        "length": 48,
+        "length": 45,
         "bounds": {
             "minLatitude": 40.02019807756619,
             "minLongitude": -105.29659735491838,
@@ -2356,7 +2356,7 @@
         "trailId": "308",
         "segmentId": "308-315-316",
         "name": "Red Rocks Spur",
-        "length": 50,
+        "length": 64,
         "bounds": {
             "minLatitude": 40.01979899776367,
             "minLongitude": -105.29671920483241,
@@ -2382,7 +2382,7 @@
         "trailId": "308",
         "segmentId": "308-310-315",
         "name": "Red Rocks Spur",
-        "length": 148,
+        "length": 140,
         "bounds": {
             "minLatitude": 40.018691188751404,
             "minLongitude": -105.29678101332857,
@@ -2395,7 +2395,7 @@
         "trailId": "308",
         "segmentId": "308-310-311",
         "name": "Red Rocks Spur",
-        "length": 65,
+        "length": 77,
         "bounds": {
             "minLatitude": 40.01865079478207,
             "minLongitude": -105.29698290158872,
@@ -2408,7 +2408,7 @@
         "trailId": "308",
         "segmentId": "308-309-310",
         "name": "Red Rocks Spur",
-        "length": 96,
+        "length": 94,
         "bounds": {
             "minLatitude": 40.01791571646528,
             "minLongitude": -105.29639061054681,
@@ -2421,7 +2421,7 @@
         "trailId": "286",
         "segmentId": "286-313-306",
         "name": "Red Rocks",
-        "length": 198,
+        "length": 196,
         "bounds": {
             "minLatitude": 40.01773370779998,
             "minLongitude": -105.29858133417065,
@@ -2434,7 +2434,7 @@
         "trailId": "308",
         "segmentId": "308-308-309",
         "name": "Red Rocks Spur",
-        "length": 44,
+        "length": 45,
         "bounds": {
             "minLatitude": 40.01791571646528,
             "minLongitude": -105.2967587832922,
@@ -2447,7 +2447,7 @@
         "trailId": "308",
         "segmentId": "308-304-308",
         "name": "Red Rocks Spur",
-        "length": 75,
+        "length": 74,
         "bounds": {
             "minLatitude": 40.01743811182517,
             "minLongitude": -105.29720409968297,
@@ -2460,7 +2460,7 @@
         "trailId": "308",
         "segmentId": "308-303-308",
         "name": "Red Rocks Spur",
-        "length": 83,
+        "length": 75,
         "bounds": {
             "minLatitude": 40.01727940313362,
             "minLongitude": -105.29684876475349,
@@ -2473,7 +2473,7 @@
         "trailId": "308",
         "segmentId": "308-309-300",
         "name": "Red Rocks Spur",
-        "length": 78,
+        "length": 77,
         "bounds": {
             "minLatitude": 40.01728904752383,
             "minLongitude": -105.29627577990983,
@@ -2486,7 +2486,7 @@
         "trailId": "308",
         "segmentId": "308-303-304",
         "name": "Red Rocks Spur",
-        "length": 32,
+        "length": 37,
         "bounds": {
             "minLatitude": 40.01724521641671,
             "minLongitude": -105.29714734563558,
@@ -2499,7 +2499,7 @@
         "trailId": "308",
         "segmentId": "308-304-305",
         "name": "Red Rocks Spur",
-        "length": 53,
+        "length": 49,
         "bounds": {
             "minLatitude": 40.01743811182517,
             "minLongitude": -105.29766002321679,
@@ -2525,7 +2525,7 @@
         "trailId": "308",
         "segmentId": "308-305-302",
         "name": "Red Rocks Spur",
-        "length": 107,
+        "length": 104,
         "bounds": {
             "minLatitude": 40.01686461891082,
             "minLongitude": -105.29766002321679,
@@ -2538,7 +2538,7 @@
         "trailId": "308",
         "segmentId": "308-302-304",
         "name": "Red Rocks Spur",
-        "length": 71,
+        "length": 65,
         "bounds": {
             "minLatitude": 40.01686461891082,
             "minLongitude": -105.29715649193065,
@@ -2551,7 +2551,7 @@
         "trailId": "308",
         "segmentId": "308-302-297",
         "name": "Red Rocks Spur",
-        "length": 94,
+        "length": 93,
         "bounds": {
             "minLatitude": 40.01616599640315,
             "minLongitude": -105.29705327313636,
@@ -2564,7 +2564,7 @@
         "trailId": "308",
         "segmentId": "308-301-300",
         "name": "Red Rocks Spur",
-        "length": 87,
+        "length": 85,
         "bounds": {
             "minLatitude": 40.016628058121,
             "minLongitude": -105.29624528058555,
@@ -2577,7 +2577,7 @@
         "trailId": "308",
         "segmentId": "308-301-297",
         "name": "Red Rocks Spur",
-        "length": 68,
+        "length": 65,
         "bounds": {
             "minLatitude": 40.01616599640315,
             "minLongitude": -105.29654971673662,
@@ -2590,7 +2590,7 @@
         "trailId": "308",
         "segmentId": "308-299-301",
         "name": "Red Rocks Spur",
-        "length": 36,
+        "length": 35,
         "bounds": {
             "minLatitude": 40.01658501872436,
             "minLongitude": -105.29606668129014,
@@ -2603,7 +2603,7 @@
         "trailId": "308",
         "segmentId": "308-300-299",
         "name": "Red Rocks Spur",
-        "length": 89,
+        "length": 85,
         "bounds": {
             "minLatitude": 40.01659662361896,
             "minLongitude": -105.29601105482229,
@@ -2616,7 +2616,7 @@
         "trailId": "308",
         "segmentId": "308-298-299",
         "name": "Red Rocks Spur",
-        "length": 269,
+        "length": 267,
         "bounds": {
             "minLatitude": 40.015431080336015,
             "minLongitude": -105.29648053335958,
@@ -2642,7 +2642,7 @@
         "trailId": "308",
         "segmentId": "308-298-293",
         "name": "Red Rocks Spur",
-        "length": 199,
+        "length": 178,
         "bounds": {
             "minLatitude": 40.01468301963485,
             "minLongitude": -105.29648053335958,
@@ -2655,7 +2655,7 @@
         "trailId": "286",
         "segmentId": "286-292-296",
         "name": "Red Rocks",
-        "length": 357,
+        "length": 336,
         "bounds": {
             "minLatitude": 40.01438570892623,
             "minLongitude": -105.29765866305705,
@@ -2668,7 +2668,7 @@
         "trailId": "308",
         "segmentId": "308-294-293",
         "name": "Red Rocks Spur",
-        "length": 51,
+        "length": 54,
         "bounds": {
             "minLatitude": 40.014472029410655,
             "minLongitude": -105.29591273993609,
@@ -2681,7 +2681,7 @@
         "trailId": "308",
         "segmentId": "308-293-294",
         "name": "Red Rocks Spur",
-        "length": 180,
+        "length": 186,
         "bounds": {
             "minLatitude": 40.014472029410655,
             "minLongitude": -105.29591273993609,
@@ -2694,7 +2694,7 @@
         "trailId": "308",
         "segmentId": "308-294-295",
         "name": "Red Rocks Spur",
-        "length": 6,
+        "length": 8,
         "bounds": {
             "minLatitude": 40.01442247883499,
             "minLongitude": -105.2953485675652,
@@ -2707,7 +2707,7 @@
         "trailId": "308",
         "segmentId": "308-293-292",
         "name": "Red Rocks Spur",
-        "length": 32,
+        "length": 33,
         "bounds": {
             "minLatitude": 40.01438570892623,
             "minLongitude": -105.29594092610992,
@@ -2720,7 +2720,7 @@
         "trailId": "286",
         "segmentId": "286-292-291",
         "name": "Red Rocks",
-        "length": 37,
+        "length": 40,
         "bounds": {
             "minLatitude": 40.01417474937795,
             "minLongitude": -105.29593546352152,
@@ -2746,7 +2746,7 @@
         "trailId": "308",
         "segmentId": "308-314-315",
         "name": "Red Rocks Spur",
-        "length": 78,
+        "length": 75,
         "bounds": {
             "minLatitude": 40.01927393859786,
             "minLongitude": -105.29702160223486,
@@ -2759,7 +2759,7 @@
         "trailId": "308",
         "segmentId": "308-311-314",
         "name": "Red Rocks Spur",
-        "length": 37,
+        "length": 35,
         "bounds": {
             "minLatitude": 40.01896493399948,
             "minLongitude": -105.29702160223486,
@@ -2772,7 +2772,7 @@
         "trailId": "308",
         "segmentId": "308-311-312",
         "name": "Red Rocks Spur",
-        "length": 26,
+        "length": 27,
         "bounds": {
             "minLatitude": 40.01896493399948,
             "minLongitude": -105.29715976008792,
@@ -2785,7 +2785,7 @@
         "trailId": "308",
         "segmentId": "308-312-313",
         "name": "Red Rocks Spur",
-        "length": 104,
+        "length": 101,
         "bounds": {
             "minLatitude": 40.019169716976094,
             "minLongitude": -105.29832917742407,
@@ -2824,7 +2824,7 @@
         "trailId": "280",
         "segmentId": "280-193-205",
         "name": "Flagstaff",
-        "length": 325,
+        "length": 318,
         "bounds": {
             "minLatitude": 40.00237201949274,
             "minLongitude": -105.29546008811394,
@@ -2837,7 +2837,7 @@
         "trailId": "284",
         "segmentId": "284-201-202",
         "name": "Halfway House",
-        "length": 108,
+        "length": 106,
         "bounds": {
             "minLatitude": 40.00521860753017,
             "minLongitude": -105.2940834853632,
@@ -2850,7 +2850,7 @@
         "trailId": "284",
         "segmentId": "284-204-201",
         "name": "Halfway House",
-        "length": 156,
+        "length": 159,
         "bounds": {
             "minLatitude": 40.00491115394104,
             "minLongitude": -105.29478816963754,
@@ -2863,7 +2863,7 @@
         "trailId": "283",
         "segmentId": "283-202-204",
         "name": "Panorama",
-        "length": 129,
+        "length": 125,
         "bounds": {
             "minLatitude": 40.004807566227946,
             "minLongitude": -105.29478816963754,
@@ -2876,7 +2876,7 @@
         "trailId": "283",
         "segmentId": "283-204-205",
         "name": "Panorama",
-        "length": 167,
+        "length": 164,
         "bounds": {
             "minLatitude": 40.00379162089661,
             "minLongitude": -105.29534967841327,
@@ -2889,7 +2889,7 @@
         "trailId": "283",
         "segmentId": "283-202-048",
         "name": "Panorama",
-        "length": 149,
+        "length": 144,
         "bounds": {
             "minLatitude": 40.00521860753017,
             "minLongitude": -105.2937602314711,
@@ -2902,7 +2902,7 @@
         "trailId": "285",
         "segmentId": "285-048-049",
         "name": "Viewpoint",
-        "length": 1139,
+        "length": 1126,
         "bounds": {
             "minLatitude": 40.0059789851016,
             "minLongitude": -105.29465184022752,
@@ -2915,7 +2915,7 @@
         "trailId": "285",
         "segmentId": "285-049-050",
         "name": "Viewpoint",
-        "length": 190,
+        "length": 181,
         "bounds": {
             "minLatitude": 40.01069969980876,
             "minLongitude": -105.29413293182414,
@@ -2928,7 +2928,7 @@
         "trailId": "285",
         "segmentId": "285-050-051",
         "name": "Viewpoint",
-        "length": 8,
+        "length": 11,
         "bounds": {
             "minLatitude": 40.011318894814686,
             "minLongitude": -105.29343866776036,
@@ -2954,7 +2954,7 @@
         "trailId": "285",
         "segmentId": "285-051-052",
         "name": "Viewpoint",
-        "length": 12,
+        "length": 9,
         "bounds": {
             "minLatitude": 40.0113462137253,
             "minLongitude": -105.29337040760139,
@@ -2967,7 +2967,7 @@
         "trailId": "285",
         "segmentId": "285-052-054",
         "name": "Viewpoint",
-        "length": 135,
+        "length": 136,
         "bounds": {
             "minLatitude": 40.010878241560036,
             "minLongitude": -105.2932996264641,
@@ -2980,7 +2980,7 @@
         "trailId": "285",
         "segmentId": "285-054-055",
         "name": "Viewpoint",
-        "length": 177,
+        "length": 178,
         "bounds": {
             "minLatitude": 40.010385590937204,
             "minLongitude": -105.29190350455298,
@@ -3006,7 +3006,7 @@
         "trailId": "284",
         "segmentId": "284-200-225",
         "name": "Halfway House",
-        "length": 35,
+        "length": 37,
         "bounds": {
             "minLatitude": 40.00648239350802,
             "minLongitude": -105.29452679396393,
@@ -3019,7 +3019,7 @@
         "trailId": "284",
         "segmentId": "284-225-201",
         "name": "Halfway House",
-        "length": 55,
+        "length": 53,
         "bounds": {
             "minLatitude": 40.00608949587285,
             "minLongitude": -105.29413064705012,
@@ -3032,7 +3032,7 @@
         "trailId": "279",
         "segmentId": "279-185-184",
         "name": "Artist Point",
-        "length": 111,
+        "length": 128,
         "bounds": {
             "minLatitude": 40.00502775710411,
             "minLongitude": -105.30790653386329,
@@ -3045,7 +3045,7 @@
         "trailId": "278",
         "segmentId": "278-181-182",
         "name": "May's Point",
-        "length": 109,
+        "length": 175,
         "bounds": {
             "minLatitude": 40.005746772274954,
             "minLongitude": -105.31046777576022,
@@ -3058,7 +3058,7 @@
         "trailId": "277",
         "segmentId": "277-180-181",
         "name": "Boy Scout",
-        "length": 436,
+        "length": 421,
         "bounds": {
             "minLatitude": 40.004228422901406,
             "minLongitude": -105.30945273180404,
@@ -3071,7 +3071,7 @@
         "trailId": "277",
         "segmentId": "277-181-183",
         "name": "Boy Scout",
-        "length": 706,
+        "length": 687,
         "bounds": {
             "minLatitude": 40.00398880911851,
             "minLongitude": -105.30901577218873,
@@ -3084,7 +3084,7 @@
         "trailId": "272",
         "segmentId": "272-168-169",
         "name": "Chapman Drive",
-        "length": 2253,
+        "length": 2217,
         "bounds": {
             "minLatitude": 39.9970971723643,
             "minLongitude": -105.31522042266307,
@@ -3097,7 +3097,7 @@
         "trailId": "272",
         "segmentId": "272-169-170",
         "name": "Chapman Drive",
-        "length": 1964,
+        "length": 1934,
         "bounds": {
             "minLatitude": 40.00160234977054,
             "minLongitude": -105.32512688280839,
@@ -3123,7 +3123,7 @@
         "trailId": "280",
         "segmentId": "280-186-188",
         "name": "Flagstaff",
-        "length": 32,
+        "length": 30,
         "bounds": {
             "minLatitude": 40.00254417112053,
             "minLongitude": -105.30326047932508,
@@ -3136,7 +3136,7 @@
         "trailId": "280",
         "segmentId": "280-188-189",
         "name": "Flagstaff",
-        "length": 1033,
+        "length": 1023,
         "bounds": {
             "minLatitude": 40.00031231876903,
             "minLongitude": -105.30303979934915,
@@ -3149,7 +3149,7 @@
         "trailId": "281",
         "segmentId": "281-188-186",
         "name": "Plains Overlook",
-        "length": 397,
+        "length": 410,
         "bounds": {
             "minLatitude": 40.00176295046903,
             "minLongitude": -105.30326047932508,
@@ -3162,7 +3162,7 @@
         "trailId": "321",
         "segmentId": "321-180-179",
         "name": "Sensory",
-        "length": 76,
+        "length": 78,
         "bounds": {
             "minLatitude": 40.003834458585544,
             "minLongitude": -105.30611083710676,
@@ -3175,7 +3175,7 @@
         "trailId": "321",
         "segmentId": "321-178-179",
         "name": "Sensory",
-        "length": 27,
+        "length": 20,
         "bounds": {
             "minLatitude": 40.00372608910708,
             "minLongitude": -105.30608550081568,
@@ -3188,7 +3188,7 @@
         "trailId": "321",
         "segmentId": "321-179-178",
         "name": "Sensory",
-        "length": 53,
+        "length": 56,
         "bounds": {
             "minLatitude": 40.00363312279937,
             "minLongitude": -105.30624363195285,
@@ -3201,7 +3201,7 @@
         "trailId": "273",
         "segmentId": "273-173-171",
         "name": "Tenderfoot",
-        "length": 1098,
+        "length": 1052,
         "bounds": {
             "minLatitude": 39.997672890693316,
             "minLongitude": -105.31467398922331,
@@ -3214,7 +3214,7 @@
         "trailId": "273",
         "segmentId": "273-171-172",
         "name": "Tenderfoot",
-        "length": 171,
+        "length": 172,
         "bounds": {
             "minLatitude": 40.0044941814265,
             "minLongitude": -105.31648748601313,
@@ -3227,7 +3227,7 @@
         "trailId": "273",
         "segmentId": "273-171-169",
         "name": "Tenderfoot",
-        "length": 344,
+        "length": 333,
         "bounds": {
             "minLatitude": 40.00210122789934,
             "minLongitude": -105.31530637449237,
@@ -3240,7 +3240,7 @@
         "trailId": "275",
         "segmentId": "275-174-175",
         "name": "Ute",
-        "length": 573,
+        "length": 568,
         "bounds": {
             "minLatitude": 39.99756533781631,
             "minLongitude": -105.3090080490382,
@@ -3253,7 +3253,7 @@
         "trailId": "275",
         "segmentId": "275-176-175",
         "name": "Ute",
-        "length": 185,
+        "length": 178,
         "bounds": {
             "minLatitude": 40.00044435204201,
             "minLongitude": -105.30813104335688,
@@ -3266,7 +3266,7 @@
         "trailId": "275",
         "segmentId": "275-175-177",
         "name": "Ute",
-        "length": 293,
+        "length": 286,
         "bounds": {
             "minLatitude": 40.00098163646099,
             "minLongitude": -105.30625897956718,
@@ -3279,7 +3279,7 @@
         "trailId": "275",
         "segmentId": "275-177-178",
         "name": "Ute",
-        "length": 66,
+        "length": 72,
         "bounds": {
             "minLatitude": 40.003175730269405,
             "minLongitude": -105.3061977469766,
@@ -3292,7 +3292,7 @@
         "trailId": "275",
         "segmentId": "275-180-177",
         "name": "Ute",
-        "length": 154,
+        "length": 143,
         "bounds": {
             "minLatitude": 40.003175730269405,
             "minLongitude": -105.30633869423806,
@@ -3305,7 +3305,7 @@
         "trailId": "274",
         "segmentId": "274-177-173",
         "name": "Range View",
-        "length": 1048,
+        "length": 1018,
         "bounds": {
             "minLatitude": 39.997672890693316,
             "minLongitude": -105.3099184710565,
@@ -3331,7 +3331,7 @@
         "trailId": "327",
         "segmentId": "327-276-277",
         "name": "Crown Rock Picnic Loop",
-        "length": 22,
+        "length": 24,
         "bounds": {
             "minLatitude": 40.0011730301162,
             "minLongitude": -105.29663018594334,
@@ -3344,7 +3344,7 @@
         "trailId": "282",
         "segmentId": "282-279-280",
         "name": "Crown Rock",
-        "length": 21,
+        "length": 24,
         "bounds": {
             "minLatitude": 40.00157273473681,
             "minLongitude": -105.29699134528468,
@@ -3357,7 +3357,7 @@
         "trailId": "282",
         "segmentId": "282-280-275",
         "name": "Crown Rock",
-        "length": 77,
+        "length": 72,
         "bounds": {
             "minLatitude": 40.00096696371256,
             "minLongitude": -105.29697737875418,
@@ -3370,7 +3370,7 @@
         "trailId": "282",
         "segmentId": "282-275-273",
         "name": "Crown Rock",
-        "length": 97,
+        "length": 102,
         "bounds": {
             "minLatitude": 40.00012512394356,
             "minLongitude": -105.29689382374399,
@@ -3383,7 +3383,7 @@
         "trailId": "282",
         "segmentId": "282-273-151",
         "name": "Crown Rock",
-        "length": 466,
+        "length": 439,
         "bounds": {
             "minLatitude": 39.99816229631963,
             "minLongitude": -105.29661641335429,
@@ -3396,7 +3396,7 @@
         "trailId": "280",
         "segmentId": "280-192-193",
         "name": "Flagstaff",
-        "length": 387,
+        "length": 384,
         "bounds": {
             "minLatitude": 40.001609557768624,
             "minLongitude": -105.29705522186138,
@@ -3409,7 +3409,7 @@
         "trailId": "280",
         "segmentId": "280-193-194",
         "name": "Flagstaff",
-        "length": 143,
+        "length": 136,
         "bounds": {
             "minLatitude": 40.002131460794686,
             "minLongitude": -105.2950189383087,
@@ -3422,7 +3422,7 @@
         "trailId": "280",
         "segmentId": "280-194-195",
         "name": "Flagstaff",
-        "length": 767,
+        "length": 737,
         "bounds": {
             "minLatitude": 39.99940814183806,
             "minLongitude": -105.29366748613798,
@@ -3435,7 +3435,7 @@
         "trailId": "280",
         "segmentId": "280-189-190",
         "name": "Flagstaff",
-        "length": 52,
+        "length": 49,
         "bounds": {
             "minLatitude": 40.002137069122774,
             "minLongitude": -105.29758201804307,
@@ -3448,7 +3448,7 @@
         "trailId": "280",
         "segmentId": "280-190-191",
         "name": "Flagstaff",
-        "length": 44,
+        "length": 43,
         "bounds": {
             "minLatitude": 40.00213604383166,
             "minLongitude": -105.29752439097025,
@@ -3474,7 +3474,7 @@
         "trailId": "327",
         "segmentId": "327-277-278",
         "name": "Crown Rock Picnic Loop",
-        "length": 91,
+        "length": 82,
         "bounds": {
             "minLatitude": 40.001246743631704,
             "minLongitude": -105.29683491234023,
@@ -3487,7 +3487,7 @@
         "trailId": "327",
         "segmentId": "327-278-276",
         "name": "Crown Rock Picnic Loop",
-        "length": 57,
+        "length": 53,
         "bounds": {
             "minLatitude": 40.00122384694207,
             "minLongitude": -105.29683491234023,
@@ -3500,7 +3500,7 @@
         "trailId": "327",
         "segmentId": "327-279-278",
         "name": "Crown Rock Picnic Loop",
-        "length": 4,
+        "length": 6,
         "bounds": {
             "minLatitude": 40.00167540950335,
             "minLongitude": -105.29686802852503,
@@ -3539,7 +3539,7 @@
         "trailId": "224",
         "segmentId": "224-138-154",
         "name": "Bear Peak",
-        "length": 511,
+        "length": 484,
         "bounds": {
             "minLatitude": 39.956685054765416,
             "minLongitude": -105.29718741825333,
@@ -3552,7 +3552,7 @@
         "trailId": "225",
         "segmentId": "225-138-139",
         "name": "Bear Peak West Ridge",
-        "length": 3220,
+        "length": 3091,
         "bounds": {
             "minLatitude": 39.96025355038046,
             "minLongitude": -105.31034078001304,
@@ -3565,7 +3565,7 @@
         "trailId": "223",
         "segmentId": "223-137-153",
         "name": "Fern Canyon",
-        "length": 1912,
+        "length": 1718,
         "bounds": {
             "minLatitude": 39.96055611111504,
             "minLongitude": -105.29504533401614,
@@ -3578,7 +3578,7 @@
         "trailId": "227",
         "segmentId": "227-139-140",
         "name": "Green Bear",
-        "length": 2418,
+        "length": 2389,
         "bounds": {
             "minLatitude": 39.97334147610491,
             "minLongitude": -105.30879146856815,
@@ -3591,7 +3591,7 @@
         "trailId": "228",
         "segmentId": "228-146-147",
         "name": "Green Mountain West Ridge",
-        "length": 153,
+        "length": 157,
         "bounds": {
             "minLatitude": 39.98208183231292,
             "minLongitude": -105.30383778849242,
@@ -3604,7 +3604,7 @@
         "trailId": "266",
         "segmentId": "266-143-151",
         "name": "Gregory Canyon",
-        "length": 1809,
+        "length": 1744,
         "bounds": {
             "minLatitude": 39.99600800750799,
             "minLongitude": -105.30932774120858,
@@ -3617,7 +3617,7 @@
         "trailId": "271",
         "segmentId": "271-141-142",
         "name": "Long Canyon",
-        "length": 2502,
+        "length": 2491,
         "bounds": {
             "minLatitude": 39.986270465245916,
             "minLongitude": -105.31980139129388,
@@ -3630,7 +3630,7 @@
         "trailId": "310",
         "segmentId": "310-206-208",
         "name": "Lost Gulch",
-        "length": 149,
+        "length": 148,
         "bounds": {
             "minLatitude": 39.99092020315747,
             "minLongitude": -105.31960559344111,
@@ -3643,7 +3643,7 @@
         "trailId": "269",
         "segmentId": "269-146-150",
         "name": "Ranger",
-        "length": 1535,
+        "length": 1512,
         "bounds": {
             "minLatitude": 39.98284613421544,
             "minLongitude": -105.30712378557743,
@@ -3656,7 +3656,7 @@
         "trailId": "269",
         "segmentId": "269-150-142",
         "name": "Ranger",
-        "length": 515,
+        "length": 508,
         "bounds": {
             "minLatitude": 39.99015443486936,
             "minLongitude": -105.3081339098407,
@@ -3669,7 +3669,7 @@
         "trailId": "269",
         "segmentId": "269-142-143",
         "name": "Ranger",
-        "length": 356,
+        "length": 365,
         "bounds": {
             "minLatitude": 39.9935708098109,
             "minLongitude": -105.30932774120858,
@@ -3682,7 +3682,7 @@
         "trailId": "207",
         "segmentId": "207-154-161",
         "name": "Shadow Canyon",
-        "length": 2207,
+        "length": 2068,
         "bounds": {
             "minLatitude": 39.94604092661475,
             "minLongitude": -105.29718741825333,
@@ -3695,7 +3695,7 @@
         "trailId": "208",
         "segmentId": "208-155-154",
         "name": "South Boulder Peak",
-        "length": 491,
+        "length": 465,
         "bounds": {
             "minLatitude": 39.95383964046278,
             "minLongitude": -105.29935883540612,
@@ -3708,7 +3708,7 @@
         "trailId": "267",
         "segmentId": "267-149-167",
         "name": "Saddle Rock",
-        "length": 1250,
+        "length": 1198,
         "bounds": {
             "minLatitude": 39.98960617214373,
             "minLongitude": -105.30074542705185,
@@ -3721,7 +3721,7 @@
         "trailId": "268",
         "segmentId": "268-150-149",
         "name": "E.M. Greenman",
-        "length": 980,
+        "length": 988,
         "bounds": {
             "minLatitude": 39.9871793500295,
             "minLongitude": -105.30513338025001,
@@ -3734,7 +3734,7 @@
         "trailId": "268",
         "segmentId": "268-679-149",
         "name": "E.M. Greenman",
-        "length": 1773,
+        "length": 1673,
         "bounds": {
             "minLatitude": 39.9821286988274,
             "minLongitude": -105.30217400530145,
@@ -3747,7 +3747,7 @@
         "trailId": "224",
         "segmentId": "224-137-138",
         "name": "Bear Peak",
-        "length": 54,
+        "length": 49,
         "bounds": {
             "minLatitude": 39.96025355038046,
             "minLongitude": -105.2953476157508,
@@ -3773,7 +3773,7 @@
         "trailId": "206",
         "segmentId": "206-158-161",
         "name": "Shadow Canyon North",
-        "length": 1068,
+        "length": 1023,
         "bounds": {
             "minLatitude": 39.94566486402475,
             "minLongitude": -105.28696464331169,
@@ -3786,7 +3786,7 @@
         "trailId": "223",
         "segmentId": "223-153-116",
         "name": "Fern Canyon",
-        "length": 635,
+        "length": 619,
         "bounds": {
             "minLatitude": 39.96546340383924,
             "minLongitude": -105.28546035299847,
@@ -3864,7 +3864,7 @@
         "trailId": "236",
         "segmentId": "236-113-244",
         "name": "Mallory Cave",
-        "length": 837,
+        "length": 819,
         "bounds": {
             "minLatitude": 39.97371012539964,
             "minLongitude": -105.28751138318357,
@@ -3877,7 +3877,7 @@
         "trailId": "257",
         "segmentId": "257-254-255",
         "name": "Royal Arch",
-        "length": 1368,
+        "length": 1298,
         "bounds": {
             "minLatitude": 39.98196965708088,
             "minLongitude": -105.29216268574152,
@@ -3890,7 +3890,7 @@
         "trailId": "245",
         "segmentId": "245-060-061",
         "name": "Enchanted Mesa",
-        "length": 517,
+        "length": 527,
         "bounds": {
             "minLatitude": 39.98856767327558,
             "minLongitude": -105.28236636098636,
@@ -3903,7 +3903,7 @@
         "trailId": "245",
         "segmentId": "245-061-062",
         "name": "Enchanted Mesa",
-        "length": 318,
+        "length": 326,
         "bounds": {
             "minLatitude": 39.98755012286904,
             "minLongitude": -105.28566179371674,
@@ -3916,7 +3916,7 @@
         "trailId": "243",
         "segmentId": "243-134-061",
         "name": "Enchanted-Kohler Spur",
-        "length": 253,
+        "length": 254,
         "bounds": {
             "minLatitude": 39.98784865462727,
             "minLongitude": -105.28236636098636,
@@ -3929,7 +3929,7 @@
         "trailId": "248",
         "segmentId": "248-060-064",
         "name": "Enchanted - McClintock Spur",
-        "length": 116,
+        "length": 127,
         "bounds": {
             "minLatitude": 39.992825530383385,
             "minLongitude": -105.28233818960857,
@@ -3942,7 +3942,7 @@
         "trailId": "292",
         "segmentId": "292-017-012",
         "name": "Four Pines",
-        "length": 207,
+        "length": 199,
         "bounds": {
             "minLatitude": 39.992878438950136,
             "minLongitude": -105.27102957533525,
@@ -3955,7 +3955,7 @@
         "trailId": "245",
         "segmentId": "245-058-059",
         "name": "Enchanted Mesa",
-        "length": 292,
+        "length": 315,
         "bounds": {
             "minLatitude": 39.99496675276985,
             "minLongitude": -105.28175042303336,
@@ -3968,7 +3968,7 @@
         "trailId": "247",
         "segmentId": "247-063-064",
         "name": "McClintock Upper",
-        "length": 477,
+        "length": 476,
         "bounds": {
             "minLatitude": 39.990314490596774,
             "minLongitude": -105.28629641895355,
@@ -3981,7 +3981,7 @@
         "trailId": "247",
         "segmentId": "247-064-059",
         "name": "McClintock Upper",
-        "length": 250,
+        "length": 249,
         "bounds": {
             "minLatitude": 39.9928510525584,
             "minLongitude": -105.28233818960857,
@@ -3994,7 +3994,7 @@
         "trailId": "201",
         "segmentId": "201-063-062",
         "name": "Mesa",
-        "length": 397,
+        "length": 407,
         "bounds": {
             "minLatitude": 39.987549972376414,
             "minLongitude": -105.28629611042201,
@@ -4007,7 +4007,7 @@
         "trailId": "201",
         "segmentId": "201-126-063",
         "name": "Mesa",
-        "length": 332,
+        "length": 328,
         "bounds": {
             "minLatitude": 39.99014403976833,
             "minLongitude": -105.28716837411666,
@@ -4020,7 +4020,7 @@
         "trailId": "201",
         "segmentId": "201-127-128",
         "name": "Mesa",
-        "length": 238,
+        "length": 239,
         "bounds": {
             "minLatitude": 39.98557167654933,
             "minLongitude": -105.28616966434754,
@@ -4033,7 +4033,7 @@
         "trailId": "244",
         "segmentId": "244-128-130",
         "name": "Wood's Quarry",
-        "length": 232,
+        "length": 218,
         "bounds": {
             "minLatitude": 39.985211662844264,
             "minLongitude": -105.28815575854367,
@@ -4046,7 +4046,7 @@
         "trailId": "244",
         "segmentId": "244-131-130",
         "name": "Wood's Quarry",
-        "length": 12,
+        "length": 17,
         "bounds": {
             "minLatitude": 39.98531831067913,
             "minLongitude": -105.28819175126459,
@@ -4059,7 +4059,7 @@
         "trailId": "244",
         "segmentId": "244-130-127",
         "name": "Wood's Quarry",
-        "length": 412,
+        "length": 405,
         "bounds": {
             "minLatitude": 39.985455226662815,
             "minLongitude": -105.28815575854367,
@@ -4085,7 +4085,7 @@
         "trailId": "201",
         "segmentId": "201-062-127",
         "name": "Mesa",
-        "length": 14,
+        "length": 9,
         "bounds": {
             "minLatitude": 39.98750800127464,
             "minLongitude": -105.28575540504474,
@@ -4111,7 +4111,7 @@
         "trailId": "256",
         "segmentId": "256-260-029",
         "name": "Flatirons Loop",
-        "length": 164,
+        "length": 165,
         "bounds": {
             "minLatitude": 39.99173726233141,
             "minLongitude": -105.28930125937785,
@@ -4124,7 +4124,7 @@
         "trailId": "256",
         "segmentId": "256-256-260",
         "name": "Flatirons Loop",
-        "length": 375,
+        "length": 363,
         "bounds": {
             "minLatitude": 39.98949349952553,
             "minLongitude": -105.29109337445257,
@@ -4137,7 +4137,7 @@
         "trailId": "259",
         "segmentId": "259-265-263",
         "name": "1st/2nd Flatiron",
-        "length": 1065,
+        "length": 1026,
         "bounds": {
             "minLatitude": 39.98968364665314,
             "minLongitude": -105.29506237537284,
@@ -4150,7 +4150,7 @@
         "trailId": "259",
         "segmentId": "259-261-260",
         "name": "1st/2nd Flatiron",
-        "length": 301,
+        "length": 325,
         "bounds": {
             "minLatitude": 39.991405319297165,
             "minLongitude": -105.29194186628446,
@@ -4163,7 +4163,7 @@
         "trailId": "259",
         "segmentId": "259-263-261",
         "name": "1st/2nd Flatiron",
-        "length": 49,
+        "length": 19,
         "bounds": {
             "minLatitude": 39.99141432328483,
             "minLongitude": -105.29212436649159,
@@ -4176,7 +4176,7 @@
         "trailId": "256",
         "segmentId": "256-255-256",
         "name": "Flatirons Loop",
-        "length": 359,
+        "length": 349,
         "bounds": {
             "minLatitude": 39.98922328724428,
             "minLongitude": -105.29056693354623,
@@ -4189,7 +4189,7 @@
         "trailId": "266",
         "segmentId": "266-151-152",
         "name": "Gregory Canyon",
-        "length": 242,
+        "length": 234,
         "bounds": {
             "minLatitude": 39.99734443386611,
             "minLongitude": -105.29567497013318,
@@ -4202,7 +4202,7 @@
         "trailId": "266",
         "segmentId": "266-152-363",
         "name": "Gregory Canyon",
-        "length": 53,
+        "length": 43,
         "bounds": {
             "minLatitude": 39.99733484910796,
             "minLongitude": -105.29325823986416,
@@ -4215,7 +4215,7 @@
         "trailId": "267",
         "segmentId": "267-152-167",
         "name": "Saddle Rock",
-        "length": 901,
+        "length": 881,
         "bounds": {
             "minLatitude": 39.99412075288907,
             "minLongitude": -105.29732655247989,
@@ -4228,7 +4228,7 @@
         "trailId": "263",
         "segmentId": "263-167-266",
         "name": "Amphitheater",
-        "length": 312,
+        "length": 288,
         "bounds": {
             "minLatitude": 39.99412075288907,
             "minLongitude": -105.29561023661222,
@@ -4241,7 +4241,7 @@
         "trailId": "263",
         "segmentId": "263-266-267",
         "name": "Amphitheater",
-        "length": 47,
+        "length": 56,
         "bounds": {
             "minLatitude": 39.99529216156342,
             "minLongitude": -105.2930923722143,
@@ -4254,7 +4254,7 @@
         "trailId": "263",
         "segmentId": "263-267-269",
         "name": "Amphitheater",
-        "length": 131,
+        "length": 112,
         "bounds": {
             "minLatitude": 39.995564392621766,
             "minLongitude": -105.29266671607155,
@@ -4267,7 +4267,7 @@
         "trailId": "263",
         "segmentId": "263-269-122",
         "name": "Amphitheater",
-        "length": 201,
+        "length": 189,
         "bounds": {
             "minLatitude": 39.99591713282575,
             "minLongitude": -105.29235471961816,
@@ -4280,7 +4280,7 @@
         "trailId": "339",
         "segmentId": "339-019-020",
         "name": "6th Street Connector",
-        "length": 166,
+        "length": 170,
         "bounds": {
             "minLatitude": 39.99725066571678,
             "minLongitude": -105.28415216172908,
@@ -4293,7 +4293,7 @@
         "trailId": "252",
         "segmentId": "252-033-122",
         "name": "Bluebell-Baird",
-        "length": 42,
+        "length": 38,
         "bounds": {
             "minLatitude": 39.9973524246587,
             "minLongitude": -105.29235471961816,
@@ -4306,7 +4306,7 @@
         "trailId": "263",
         "segmentId": "263-122-075",
         "name": "Amphitheater",
-        "length": 26,
+        "length": 22,
         "bounds": {
             "minLatitude": 39.9973524246587,
             "minLongitude": -105.2925821250571,
@@ -4319,7 +4319,7 @@
         "trailId": "253",
         "segmentId": "253-270-024",
         "name": "Ski Jump",
-        "length": 380,
+        "length": 370,
         "bounds": {
             "minLatitude": 39.996384115218255,
             "minLongitude": -105.28928419792655,
@@ -4332,7 +4332,7 @@
         "trailId": "252",
         "segmentId": "252-123-030",
         "name": "Bluebell-Baird",
-        "length": 147,
+        "length": 146,
         "bounds": {
             "minLatitude": 39.99105971469385,
             "minLongitude": -105.28776707249651,
@@ -4358,7 +4358,7 @@
         "trailId": "273",
         "segmentId": "273-174-173",
         "name": "Tenderfoot",
-        "length": 32,
+        "length": 28,
         "bounds": {
             "minLatitude": 39.99756533781631,
             "minLongitude": -105.309274775329,
@@ -4371,7 +4371,7 @@
         "trailId": "201",
         "segmentId": "201-086-112",
         "name": "Mesa",
-        "length": 538,
+        "length": 545,
         "bounds": {
             "minLatitude": 39.97908643360281,
             "minLongitude": -105.28529024565455,
@@ -4384,7 +4384,7 @@
         "trailId": "250",
         "segmentId": "250-028-029",
         "name": "Chautauqua",
-        "length": 498,
+        "length": 495,
         "bounds": {
             "minLatitude": 39.99285625622958,
             "minLongitude": -105.2893154286053,
@@ -4397,7 +4397,7 @@
         "trailId": "250",
         "segmentId": "250-024-028",
         "name": "Chautauqua",
-        "length": 188,
+        "length": 191,
         "bounds": {
             "minLatitude": 39.99562205521776,
             "minLongitude": -105.28626464001673,
@@ -4410,7 +4410,7 @@
         "trailId": "250",
         "segmentId": "250-020-024",
         "name": "Chautauqua",
-        "length": 244,
+        "length": 241,
         "bounds": {
             "minLatitude": 39.99714018526383,
             "minLongitude": -105.28591964074185,
@@ -4423,7 +4423,7 @@
         "trailId": "250",
         "segmentId": "250-018-020",
         "name": "Chautauqua",
-        "length": 128,
+        "length": 127,
         "bounds": {
             "minLatitude": 39.99829739788734,
             "minLongitude": -105.28415216172908,
@@ -4436,7 +4436,7 @@
         "trailId": "403",
         "segmentId": "403-618-621",
         "name": "Foothills South",
-        "length": 343,
+        "length": 352,
         "bounds": {
             "minLatitude": 40.06011772588892,
             "minLongitude": -105.2914041216548,
@@ -4449,7 +4449,7 @@
         "trailId": "403",
         "segmentId": "403-617-618",
         "name": "Foothills South",
-        "length": 106,
+        "length": 115,
         "bounds": {
             "minLatitude": 40.05908093038962,
             "minLongitude": -105.29144226301169,
@@ -4462,7 +4462,7 @@
         "trailId": "403",
         "segmentId": "403-615-617",
         "name": "Foothills South",
-        "length": 722,
+        "length": 727,
         "bounds": {
             "minLatitude": 40.053005740208924,
             "minLongitude": -105.29262131231654,
@@ -4475,7 +4475,7 @@
         "trailId": "204",
         "segmentId": "204-159-164",
         "name": "Shadow Canyon South",
-        "length": 644,
+        "length": 646,
         "bounds": {
             "minLatitude": 39.94337845515677,
             "minLongitude": -105.28354716458107,
@@ -4501,7 +4501,7 @@
         "trailId": "204",
         "segmentId": "204-163-161",
         "name": "Shadow Canyon South",
-        "length": 590,
+        "length": 589,
         "bounds": {
             "minLatitude": 39.94318935334042,
             "minLongitude": -105.28698548988181,
@@ -4514,7 +4514,7 @@
         "trailId": "201",
         "segmentId": "201-072-065",
         "name": "Mesa",
-        "length": 229,
+        "length": 233,
         "bounds": {
             "minLatitude": 39.939771765227874,
             "minLongitude": -105.26089325552829,
@@ -4527,7 +4527,7 @@
         "trailId": "201",
         "segmentId": "201-065-073",
         "name": "Mesa",
-        "length": 130,
+        "length": 125,
         "bounds": {
             "minLatitude": 39.94155806736924,
             "minLongitude": -105.26187615564837,
@@ -4540,7 +4540,7 @@
         "trailId": "201",
         "segmentId": "201-068-074",
         "name": "Mesa",
-        "length": 194,
+        "length": 197,
         "bounds": {
             "minLatitude": 39.94301837313299,
             "minLongitude": -105.26427161896376,
@@ -4553,7 +4553,7 @@
         "trailId": "201",
         "segmentId": "201-073-068",
         "name": "Mesa",
-        "length": 235,
+        "length": 241,
         "bounds": {
             "minLatitude": 39.94216487057267,
             "minLongitude": -105.26426464495569,
@@ -4579,7 +4579,7 @@
         "trailId": "201",
         "segmentId": "201-007-005",
         "name": "Mesa",
-        "length": 364,
+        "length": 360,
         "bounds": {
             "minLatitude": 39.9453244497926,
             "minLongitude": -105.26600450594131,
@@ -4592,7 +4592,7 @@
         "trailId": "201",
         "segmentId": "201-005-067",
         "name": "Mesa",
-        "length": 482,
+        "length": 487,
         "bounds": {
             "minLatitude": 39.94556937477025,
             "minLongitude": -105.27108235584899,
@@ -4605,7 +4605,7 @@
         "trailId": "201",
         "segmentId": "201-067-066",
         "name": "Mesa",
-        "length": 348,
+        "length": 349,
         "bounds": {
             "minLatitude": 39.94462849718762,
             "minLongitude": -105.27458485423173,
@@ -4618,7 +4618,7 @@
         "trailId": "201",
         "segmentId": "201-066-159",
         "name": "Mesa",
-        "length": 277,
+        "length": 281,
         "bounds": {
             "minLatitude": 39.94453004410091,
             "minLongitude": -105.27670320958237,
@@ -4631,7 +4631,7 @@
         "trailId": "300",
         "segmentId": "300-072-372",
         "name": "Dunn House Loop",
-        "length": 64,
+        "length": 70,
         "bounds": {
             "minLatitude": 39.93949553929202,
             "minLongitude": -105.26024198184643,
@@ -4644,7 +4644,7 @@
         "trailId": "201",
         "segmentId": "201-069-070",
         "name": "Mesa",
-        "length": 37,
+        "length": 35,
         "bounds": {
             "minLatitude": 39.938793109081416,
             "minLongitude": -105.25848009877372,
@@ -4657,7 +4657,7 @@
         "trailId": "201",
         "segmentId": "201-070-071",
         "name": "Mesa",
-        "length": 59,
+        "length": 61,
         "bounds": {
             "minLatitude": 39.93901732825992,
             "minLongitude": -105.2590877631951,
@@ -4670,7 +4670,7 @@
         "trailId": "201",
         "segmentId": "201-071-372",
         "name": "Mesa",
-        "length": 80,
+        "length": 78,
         "bounds": {
             "minLatitude": 39.93930219456869,
             "minLongitude": -105.2599302577417,
@@ -4683,7 +4683,7 @@
         "trailId": "201",
         "segmentId": "201-372-072",
         "name": "Mesa",
-        "length": 21,
+        "length": 20,
         "bounds": {
             "minLatitude": 39.939583291664825,
             "minLongitude": -105.25995754288245,
@@ -4696,7 +4696,7 @@
         "trailId": "201",
         "segmentId": "201-159-160",
         "name": "Mesa",
-        "length": 485,
+        "length": 494,
         "bounds": {
             "minLatitude": 39.94443513088735,
             "minLongitude": -105.2795904537759,
@@ -4709,7 +4709,7 @@
         "trailId": "232",
         "segmentId": "232-102-098",
         "name": "NCAR - Bear Connector",
-        "length": 822,
+        "length": 840,
         "bounds": {
             "minLatitude": 39.974840973202994,
             "minLongitude": -105.27660794345474,
@@ -4722,7 +4722,7 @@
         "trailId": "112",
         "segmentId": "112-434-433",
         "name": "High Plains",
-        "length": 4271,
+        "length": 4292,
         "bounds": {
             "minLatitude": 39.914306599018154,
             "minLongitude": -105.23294559545842,
@@ -4735,7 +4735,7 @@
         "trailId": "292",
         "segmentId": "292-010-011",
         "name": "Four Pines",
-        "length": 133,
+        "length": 127,
         "bounds": {
             "minLatitude": 39.99521565569795,
             "minLongitude": -105.27362172739912,
@@ -4748,7 +4748,7 @@
         "trailId": "292",
         "segmentId": "292-011-364",
         "name": "Four Pines",
-        "length": 221,
+        "length": 218,
         "bounds": {
             "minLatitude": 39.99521144641892,
             "minLongitude": -105.2727379934096,
@@ -4761,7 +4761,7 @@
         "trailId": "292",
         "segmentId": "292-365-364",
         "name": "Four Pines",
-        "length": 5,
+        "length": 6,
         "bounds": {
             "minLatitude": 39.996039207676525,
             "minLongitude": -105.27109895880018,
@@ -4774,7 +4774,7 @@
         "trailId": "292",
         "segmentId": "292-364-017",
         "name": "Four Pines",
-        "length": 174,
+        "length": 181,
         "bounds": {
             "minLatitude": 39.99450679782699,
             "minLongitude": -105.27109182739488,
@@ -4800,7 +4800,7 @@
         "trailId": "292",
         "segmentId": "292-013-011",
         "name": "Four Pines",
-        "length": 97,
+        "length": 99,
         "bounds": {
             "minLatitude": 39.994881089196916,
             "minLongitude": -105.27377247538222,
@@ -4813,7 +4813,7 @@
         "trailId": "292",
         "segmentId": "292-017-015",
         "name": "Four Pines",
-        "length": 206,
+        "length": 207,
         "bounds": {
             "minLatitude": 39.99397779564044,
             "minLongitude": -105.27301790968109,
@@ -4826,7 +4826,7 @@
         "trailId": "292",
         "segmentId": "292-135-015",
         "name": "Four Pines",
-        "length": 811,
+        "length": 804,
         "bounds": {
             "minLatitude": 39.9889883390541,
             "minLongitude": -105.27878334749016,
@@ -4839,7 +4839,7 @@
         "trailId": "238",
         "segmentId": "238-083-076",
         "name": "NCAR - Skunk Canyon",
-        "length": 780,
+        "length": 782,
         "bounds": {
             "minLatitude": 39.98548605917316,
             "minLongitude": -105.2778045590137,
@@ -4852,7 +4852,7 @@
         "trailId": "242",
         "segmentId": "242-134-135",
         "name": "Kohler Mesa",
-        "length": 167,
+        "length": 165,
         "bounds": {
             "minLatitude": 39.98796326654565,
             "minLongitude": -105.28012352612045,
@@ -4865,7 +4865,7 @@
         "trailId": "332",
         "segmentId": "332-077-078",
         "name": "Holly Berry",
-        "length": 84,
+        "length": 85,
         "bounds": {
             "minLatitude": 39.98608973859036,
             "minLongitude": -105.27316080910776,
@@ -4878,7 +4878,7 @@
         "trailId": "332",
         "segmentId": "332-078-079",
         "name": "Holly Berry",
-        "length": 403,
+        "length": 394,
         "bounds": {
             "minLatitude": 39.986340250484524,
             "minLongitude": -105.27401870281795,
@@ -4917,7 +4917,7 @@
         "trailId": "239",
         "segmentId": "239-082-083",
         "name": "Skunk Canyon",
-        "length": 195,
+        "length": 197,
         "bounds": {
             "minLatitude": 39.986157136532945,
             "minLongitude": -105.27736957670467,
@@ -4930,7 +4930,7 @@
         "trailId": "239",
         "segmentId": "239-083-085",
         "name": "Skunk Canyon",
-        "length": 498,
+        "length": 497,
         "bounds": {
             "minLatitude": 39.98579765316946,
             "minLongitude": -105.27986993222623,
@@ -4956,7 +4956,7 @@
         "trailId": "336",
         "segmentId": "336-088-089",
         "name": "NIST Service Rd Connector",
-        "length": 37,
+        "length": 41,
         "bounds": {
             "minLatitude": 39.989581724948295,
             "minLongitude": -105.27151241623956,
@@ -4969,7 +4969,7 @@
         "trailId": "336",
         "segmentId": "336-089-092",
         "name": "NIST Service Rd Connector",
-        "length": 75,
+        "length": 77,
         "bounds": {
             "minLatitude": 39.989944486629284,
             "minLongitude": -105.2714291638982,
@@ -4982,7 +4982,7 @@
         "trailId": "336",
         "segmentId": "336-090-089",
         "name": "NIST Service Rd Connector",
-        "length": 54,
+        "length": 61,
         "bounds": {
             "minLatitude": 39.989784453202866,
             "minLongitude": -105.27187743694812,
@@ -4995,7 +4995,7 @@
         "trailId": "336",
         "segmentId": "336-091-093",
         "name": "NIST Service Rd Connector",
-        "length": 40,
+        "length": 43,
         "bounds": {
             "minLatitude": 39.990238423113574,
             "minLongitude": -105.2705969100993,
@@ -5008,7 +5008,7 @@
         "trailId": "298",
         "segmentId": "298-094-093",
         "name": "NIST Service Rd",
-        "length": 311,
+        "length": 312,
         "bounds": {
             "minLatitude": 39.99062539112302,
             "minLongitude": -105.27055916096346,
@@ -5021,7 +5021,7 @@
         "trailId": "298",
         "segmentId": "298-093-090",
         "name": "NIST Service Rd",
-        "length": 127,
+        "length": 130,
         "bounds": {
             "minLatitude": 39.98994185761755,
             "minLongitude": -105.2717892197031,
@@ -5034,7 +5034,7 @@
         "trailId": "298",
         "segmentId": "298-090-087",
         "name": "NIST Service Rd",
-        "length": 165,
+        "length": 172,
         "bounds": {
             "minLatitude": 39.989433216709784,
             "minLongitude": -105.2736107916917,
@@ -5047,7 +5047,7 @@
         "trailId": "298",
         "segmentId": "298-087-095",
         "name": "NIST Service Rd",
-        "length": 781,
+        "length": 790,
         "bounds": {
             "minLatitude": 39.989311526516126,
             "minLongitude": -105.27725879735264,
@@ -5060,7 +5060,7 @@
         "trailId": "242",
         "segmentId": "242-135-095",
         "name": "Kohler Mesa",
-        "length": 138,
+        "length": 143,
         "bounds": {
             "minLatitude": 39.988982377541745,
             "minLongitude": -105.2787787398342,
@@ -5073,7 +5073,7 @@
         "trailId": "241",
         "segmentId": "241-095-132",
         "name": "Kohler Spur",
-        "length": 300,
+        "length": 302,
         "bounds": {
             "minLatitude": 39.986975988985606,
             "minLongitude": -105.27894588060002,
@@ -5086,7 +5086,7 @@
         "trailId": "240",
         "segmentId": "240-085-132",
         "name": "Skunk Canyon Spur",
-        "length": 155,
+        "length": 157,
         "bounds": {
             "minLatitude": 39.98622935763277,
             "minLongitude": -105.27999839290985,
@@ -5099,7 +5099,7 @@
         "trailId": "240",
         "segmentId": "240-132-133",
         "name": "Skunk Canyon Spur",
-        "length": 136,
+        "length": 140,
         "bounds": {
             "minLatitude": 39.98696885260404,
             "minLongitude": -105.28019485908501,
@@ -5112,7 +5112,7 @@
         "trailId": "242",
         "segmentId": "242-133-134",
         "name": "Kohler Mesa",
-        "length": 46,
+        "length": 51,
         "bounds": {
             "minLatitude": 39.98751108873041,
             "minLongitude": -105.28020759792633,
@@ -5138,7 +5138,7 @@
         "trailId": "201",
         "segmentId": "201-128-129",
         "name": "Mesa",
-        "length": 15,
+        "length": 17,
         "bounds": {
             "minLatitude": 39.98542993722372,
             "minLongitude": -105.28595637521184,
@@ -5151,7 +5151,7 @@
         "trailId": "201",
         "segmentId": "201-129-086",
         "name": "Mesa",
-        "length": 607,
+        "length": 614,
         "bounds": {
             "minLatitude": 39.982274014017456,
             "minLongitude": -105.28798013836472,
@@ -5164,7 +5164,7 @@
         "trailId": "239",
         "segmentId": "239-087-079",
         "name": "Skunk Canyon",
-        "length": 124,
+        "length": 135,
         "bounds": {
             "minLatitude": 39.98843166908794,
             "minLongitude": -105.27409417563553,
@@ -5177,7 +5177,7 @@
         "trailId": "239",
         "segmentId": "239-079-080",
         "name": "Skunk Canyon",
-        "length": 150,
+        "length": 152,
         "bounds": {
             "minLatitude": 39.98725594062018,
             "minLongitude": -105.27481258319943,
@@ -5190,7 +5190,7 @@
         "trailId": "239",
         "segmentId": "239-080-082",
         "name": "Skunk Canyon",
-        "length": 56,
+        "length": 57,
         "bounds": {
             "minLatitude": 39.98691940561165,
             "minLongitude": -105.27532717501899,
@@ -5203,7 +5203,7 @@
         "trailId": "333",
         "segmentId": "333-080-081",
         "name": "Skunk Connector",
-        "length": 34,
+        "length": 35,
         "bounds": {
             "minLatitude": 39.98697826008184,
             "minLongitude": -105.27499336341319,
@@ -5216,7 +5216,7 @@
         "trailId": "230",
         "segmentId": "230-100-099",
         "name": "NCAR - Bear Canyon",
-        "length": 37,
+        "length": 41,
         "bounds": {
             "minLatitude": 39.97667934648054,
             "minLongitude": -105.26743656618689,
@@ -5229,7 +5229,7 @@
         "trailId": "230",
         "segmentId": "230-099-101",
         "name": "NCAR - Bear Canyon",
-        "length": 224,
+        "length": 233,
         "bounds": {
             "minLatitude": 39.97481194956393,
             "minLongitude": -105.2679454616466,
@@ -5242,7 +5242,7 @@
         "trailId": "231",
         "segmentId": "231-104-101",
         "name": "Devils Thumb Access",
-        "length": 121,
+        "length": 128,
         "bounds": {
             "minLatitude": 39.974375701499454,
             "minLongitude": -105.2679454616466,
@@ -5255,7 +5255,7 @@
         "trailId": "230",
         "segmentId": "230-101-102",
         "name": "NCAR - Bear Canyon",
-        "length": 868,
+        "length": 891,
         "bounds": {
             "minLatitude": 39.9730076140542,
             "minLongitude": -105.27660794345474,
@@ -5268,7 +5268,7 @@
         "trailId": "230",
         "segmentId": "230-102-103",
         "name": "NCAR - Bear Canyon",
-        "length": 715,
+        "length": 714,
         "bounds": {
             "minLatitude": 39.973602871237276,
             "minLongitude": -105.28373743263441,
@@ -5281,7 +5281,7 @@
         "trailId": "201",
         "segmentId": "201-103-115",
         "name": "Mesa",
-        "length": 543,
+        "length": 548,
         "bounds": {
             "minLatitude": 39.97058808493346,
             "minLongitude": -105.2842695934089,
@@ -5294,7 +5294,7 @@
         "trailId": "201",
         "segmentId": "201-115-119",
         "name": "Mesa",
-        "length": 53,
+        "length": 57,
         "bounds": {
             "minLatitude": 39.970818520173395,
             "minLongitude": -105.28367768555975,
@@ -5307,7 +5307,7 @@
         "trailId": "201",
         "segmentId": "201-119-116",
         "name": "Mesa",
-        "length": 138,
+        "length": 141,
         "bounds": {
             "minLatitude": 39.96960441802545,
             "minLongitude": -105.28360116367861,
@@ -5320,7 +5320,7 @@
         "trailId": "201",
         "segmentId": "201-116-117",
         "name": "Mesa",
-        "length": 116,
+        "length": 122,
         "bounds": {
             "minLatitude": 39.96938157354602,
             "minLongitude": -105.28335254151582,
@@ -5333,7 +5333,7 @@
         "trailId": "201",
         "segmentId": "201-117-118",
         "name": "Mesa",
-        "length": 115,
+        "length": 117,
         "bounds": {
             "minLatitude": 39.96942007776579,
             "minLongitude": -105.28202496060088,
@@ -5346,7 +5346,7 @@
         "trailId": "221",
         "segmentId": "221-041-040",
         "name": "Cragmoor Connector",
-        "length": 37,
+        "length": 32,
         "bounds": {
             "minLatitude": 39.968607155007795,
             "minLongitude": -105.26358918544929,
@@ -5359,7 +5359,7 @@
         "trailId": "221",
         "segmentId": "221-040-039",
         "name": "Cragmoor Connector",
-        "length": 336,
+        "length": 355,
         "bounds": {
             "minLatitude": 39.9676352463231,
             "minLongitude": -105.26753854181548,
@@ -5372,7 +5372,7 @@
         "trailId": "215",
         "segmentId": "215-045-046",
         "name": "South Fork Shanahan",
-        "length": 1033,
+        "length": 1178,
         "bounds": {
             "minLatitude": 39.95783865971868,
             "minLongitude": -105.2803625913432,
@@ -5385,7 +5385,7 @@
         "trailId": "216",
         "segmentId": "216-046-043",
         "name": "Shanahan Connector",
-        "length": 191,
+        "length": 651,
         "bounds": {
             "minLatitude": 39.96176935929682,
             "minLongitude": -105.27192165879623,
@@ -5411,7 +5411,7 @@
         "trailId": "217",
         "segmentId": "217-039-043",
         "name": "North Fork Shanahan",
-        "length": 303,
+        "length": 300,
         "bounds": {
             "minLatitude": 39.96630191423418,
             "minLongitude": -105.27037731844756,
@@ -5424,7 +5424,7 @@
         "trailId": "217",
         "segmentId": "217-037-039",
         "name": "North Fork Shanahan",
-        "length": 589,
+        "length": 601,
         "bounds": {
             "minLatitude": 39.966260823428726,
             "minLongitude": -105.26753854181548,
@@ -5437,7 +5437,7 @@
         "trailId": "217",
         "segmentId": "217-035-037",
         "name": "North Fork Shanahan",
-        "length": 258,
+        "length": 262,
         "bounds": {
             "minLatitude": 39.964547613589666,
             "minLongitude": -105.26106707464321,
@@ -5450,7 +5450,7 @@
         "trailId": "218",
         "segmentId": "218-036-035",
         "name": "Hardscrabble Connector",
-        "length": 139,
+        "length": 154,
         "bounds": {
             "minLatitude": 39.964547613589666,
             "minLongitude": -105.26013447724675,
@@ -5463,7 +5463,7 @@
         "trailId": "234",
         "segmentId": "234-096-097",
         "name": "NCAR - Table Mesa",
-        "length": 879,
+        "length": 860,
         "bounds": {
             "minLatitude": 39.979667896583834,
             "minLongitude": -105.27464073300999,
@@ -5476,7 +5476,7 @@
         "trailId": "233",
         "segmentId": "233-097-098",
         "name": "NCAR - Table Mesa Bear",
-        "length": 815,
+        "length": 827,
         "bounds": {
             "minLatitude": 39.976822566376896,
             "minLongitude": -105.26752660883652,
@@ -5489,7 +5489,7 @@
         "trailId": "232",
         "segmentId": "232-098-099",
         "name": "NCAR - Bear Connector",
-        "length": 19,
+        "length": 14,
         "bounds": {
             "minLatitude": 39.976702386509565,
             "minLongitude": -105.26749234424594,
@@ -5515,7 +5515,7 @@
         "trailId": "215",
         "segmentId": "215-035-009",
         "name": "South Fork Shanahan",
-        "length": 338,
+        "length": 341,
         "bounds": {
             "minLatitude": 39.96163142191571,
             "minLongitude": -105.26061219675839,
@@ -5528,7 +5528,7 @@
         "trailId": "215",
         "segmentId": "215-009-046",
         "name": "South Fork Shanahan",
-        "length": 1418,
+        "length": 1416,
         "bounds": {
             "minLatitude": 39.959788206912165,
             "minLongitude": -105.27203218602256,
@@ -5541,7 +5541,7 @@
         "trailId": "322",
         "segmentId": "322-040-042",
         "name": "Fern Meadow - Cragmoor",
-        "length": 526,
+        "length": 534,
         "bounds": {
             "minLatitude": 39.968607155007795,
             "minLongitude": -105.26816367319705,
@@ -5554,7 +5554,7 @@
         "trailId": "322",
         "segmentId": "322-042-047",
         "name": "Fern Meadow - Cragmoor",
-        "length": 20,
+        "length": 17,
         "bounds": {
             "minLatitude": 39.971301486726375,
             "minLongitude": -105.268316977293,
@@ -5567,7 +5567,7 @@
         "trailId": "307",
         "segmentId": "307-006-002",
         "name": "Greenbriar Connector",
-        "length": 1163,
+        "length": 1178,
         "bounds": {
             "minLatitude": 39.96036704383408,
             "minLongitude": -105.25296776423482,
@@ -5580,7 +5580,7 @@
         "trailId": "211",
         "segmentId": "211-001-002",
         "name": "Lower Big Bluestem",
-        "length": 301,
+        "length": 305,
         "bounds": {
             "minLatitude": 39.96046368374007,
             "minLongitude": -105.24610817890151,
@@ -5593,7 +5593,7 @@
         "trailId": "211",
         "segmentId": "211-002-003",
         "name": "Lower Big Bluestem",
-        "length": 1460,
+        "length": 1477,
         "bounds": {
             "minLatitude": 39.95504195171344,
             "minLongitude": -105.26025267247321,
@@ -5606,7 +5606,7 @@
         "trailId": "211",
         "segmentId": "211-003-004",
         "name": "Lower Big Bluestem",
-        "length": 891,
+        "length": 902,
         "bounds": {
             "minLatitude": 39.95001180586169,
             "minLongitude": -105.26702446669401,
@@ -5619,7 +5619,7 @@
         "trailId": "213",
         "segmentId": "213-004-157",
         "name": "Upper Big Bluestem",
-        "length": 1539,
+        "length": 1551,
         "bounds": {
             "minLatitude": 39.94989752224757,
             "minLongitude": -105.27981761938412,
@@ -5632,7 +5632,7 @@
         "trailId": "214",
         "segmentId": "214-009-003",
         "name": "Bluestem Connector",
-        "length": 752,
+        "length": 756,
         "bounds": {
             "minLatitude": 39.95504921612121,
             "minLongitude": -105.26061949906011,
@@ -5645,7 +5645,7 @@
         "trailId": "201",
         "segmentId": "201-160-158",
         "name": "Mesa",
-        "length": 637,
+        "length": 650,
         "bounds": {
             "minLatitude": 39.94676156280085,
             "minLongitude": -105.2820759432741,
@@ -5671,7 +5671,7 @@
         "trailId": "228",
         "segmentId": "228-145-140",
         "name": "Green Mountain West Ridge",
-        "length": 1520,
+        "length": 1548,
         "bounds": {
             "minLatitude": 39.98188911265848,
             "minLongitude": -105.32323398504208,
@@ -5684,7 +5684,7 @@
         "trailId": "228",
         "segmentId": "228-140-146",
         "name": "Green Mountain West Ridge",
-        "length": 1209,
+        "length": 1234,
         "bounds": {
             "minLatitude": 39.98001033719084,
             "minLongitude": -105.30874217330172,
@@ -5697,7 +5697,7 @@
         "trailId": "205",
         "segmentId": "205-164-160",
         "name": "Shadow Canyon South Spur",
-        "length": 480,
+        "length": 486,
         "bounds": {
             "minLatitude": 39.94424296465547,
             "minLongitude": -105.28354767724124,
@@ -5710,7 +5710,7 @@
         "trailId": "203",
         "segmentId": "203-065-066",
         "name": "Homestead",
-        "length": 2074,
+        "length": 2111,
         "bounds": {
             "minLatitude": 39.9394061404881,
             "minLongitude": -105.2762585165779,
@@ -5723,7 +5723,7 @@
         "trailId": "202",
         "segmentId": "202-067-068",
         "name": "Towhee",
-        "length": 1063,
+        "length": 1068,
         "bounds": {
             "minLatitude": 39.942673840302454,
             "minLongitude": -105.27112004442975,
@@ -5749,7 +5749,7 @@
         "trailId": "210",
         "segmentId": "210-008-007",
         "name": "South Boulder Creek West",
-        "length": 3107,
+        "length": 3130,
         "bounds": {
             "minLatitude": 39.94531332382951,
             "minLongitude": -105.26331139478542,
@@ -5762,7 +5762,7 @@
         "trailId": "201",
         "segmentId": "201-045-157",
         "name": "Mesa",
-        "length": 643,
+        "length": 645,
         "bounds": {
             "minLatitude": 39.953521616667466,
             "minLongitude": -105.28042643485374,
@@ -5775,7 +5775,7 @@
         "trailId": "220",
         "segmentId": "220-038-037",
         "name": "Lehigh Connector - North",
-        "length": 267,
+        "length": 270,
         "bounds": {
             "minLatitude": 39.96642508218119,
             "minLongitude": -105.26106707464321,
@@ -5788,7 +5788,7 @@
         "trailId": "212",
         "segmentId": "212-004-005",
         "name": "Big Bluestem West",
-        "length": 383,
+        "length": 389,
         "bounds": {
             "minLatitude": 39.94729561575108,
             "minLongitude": -105.26748907585194,
@@ -5801,7 +5801,7 @@
         "trailId": "299",
         "segmentId": "299-071-070",
         "name": "South Mesa Spur",
-        "length": 200,
+        "length": 202,
         "bounds": {
             "minLatitude": 39.93861507537,
             "minLongitude": -105.25963616832804,
@@ -5814,7 +5814,7 @@
         "trailId": "237",
         "segmentId": "237-110-114",
         "name": "NCAR Water Tank Rd",
-        "length": 450,
+        "length": 457,
         "bounds": {
             "minLatitude": 39.97747753512857,
             "minLongitude": -105.281017585249,
@@ -5827,7 +5827,7 @@
         "trailId": "235",
         "segmentId": "235-110-111",
         "name": "NCAR",
-        "length": 163,
+        "length": 162,
         "bounds": {
             "minLatitude": 39.97739622452908,
             "minLongitude": -105.28265970463265,
@@ -5840,7 +5840,7 @@
         "trailId": "235",
         "segmentId": "235-111-112",
         "name": "NCAR",
-        "length": 191,
+        "length": 189,
         "bounds": {
             "minLatitude": 39.97778090758964,
             "minLongitude": -105.28378591410345,
@@ -5879,7 +5879,7 @@
         "trailId": "235",
         "segmentId": "235-113-111",
         "name": "NCAR",
-        "length": 186,
+        "length": 185,
         "bounds": {
             "minLatitude": 39.97736978813207,
             "minLongitude": -105.28419972625989,
@@ -5892,7 +5892,7 @@
         "trailId": "235",
         "segmentId": "235-105-106",
         "name": "NCAR",
-        "length": 161,
+        "length": 160,
         "bounds": {
             "minLatitude": 39.977532941498204,
             "minLongitude": -105.27647502729323,
@@ -5905,7 +5905,7 @@
         "trailId": "235",
         "segmentId": "235-106-108",
         "name": "NCAR",
-        "length": 13,
+        "length": 14,
         "bounds": {
             "minLatitude": 39.97751195887963,
             "minLongitude": -105.27663177908384,
@@ -5918,7 +5918,7 @@
         "trailId": "235",
         "segmentId": "235-109-108",
         "name": "NCAR",
-        "length": 168,
+        "length": 165,
         "bounds": {
             "minLatitude": 39.97739889349376,
             "minLongitude": -105.27835006349787,
@@ -5931,7 +5931,7 @@
         "trailId": "235",
         "segmentId": "235-108-109",
         "name": "NCAR",
-        "length": 161,
+        "length": 159,
         "bounds": {
             "minLatitude": 39.97729367843353,
             "minLongitude": -105.27826243274204,
@@ -5944,7 +5944,7 @@
         "trailId": "235",
         "segmentId": "235-106-107",
         "name": "NCAR",
-        "length": 68,
+        "length": 70,
         "bounds": {
             "minLatitude": 39.977455833686385,
             "minLongitude": -105.27646509668243,
@@ -5957,7 +5957,7 @@
         "trailId": "235",
         "segmentId": "235-109-110",
         "name": "NCAR",
-        "length": 422,
+        "length": 420,
         "bounds": {
             "minLatitude": 39.97708381787533,
             "minLongitude": -105.28093283297183,
@@ -5970,7 +5970,7 @@
         "trailId": "246",
         "segmentId": "246-059-057",
         "name": "McClintock Lower",
-        "length": 212,
+        "length": 220,
         "bounds": {
             "minLatitude": 39.99496675276985,
             "minLongitude": -105.28155316925574,
@@ -5983,7 +5983,7 @@
         "trailId": "246",
         "segmentId": "246-057-058",
         "name": "McClintock Lower",
-        "length": 97,
+        "length": 99,
         "bounds": {
             "minLatitude": 39.996549850498425,
             "minLongitude": -105.2803314424309,
@@ -5996,7 +5996,7 @@
         "trailId": "246",
         "segmentId": "246-057-375",
         "name": "McClintock Lower",
-        "length": 202,
+        "length": 197,
         "bounds": {
             "minLatitude": 39.996549850498425,
             "minLongitude": -105.2801903117617,
@@ -6009,7 +6009,7 @@
         "trailId": "246",
         "segmentId": "246-375-056",
         "name": "McClintock Lower",
-        "length": 92,
+        "length": 90,
         "bounds": {
             "minLatitude": 39.997867876224326,
             "minLongitude": -105.27880839051582,
@@ -6022,7 +6022,7 @@
         "trailId": "246",
         "segmentId": "246-376-375",
         "name": "McClintock Lower",
-        "length": 58,
+        "length": 57,
         "bounds": {
             "minLatitude": 39.9978796446855,
             "minLongitude": -105.27933494618338,
@@ -6035,7 +6035,7 @@
         "trailId": "110",
         "segmentId": "110-452-453",
         "name": "Mayhoffer-Singletree",
-        "length": 559,
+        "length": 560,
         "bounds": {
             "minLatitude": 39.9574493237602,
             "minLongitude": -105.19951363067547,
@@ -6048,7 +6048,7 @@
         "trailId": "111",
         "segmentId": "111-451-446",
         "name": "Cowdrey Draw",
-        "length": 1183,
+        "length": 1306,
         "bounds": {
             "minLatitude": 39.955068823273145,
             "minLongitude": -105.21084932933796,
@@ -6061,7 +6061,7 @@
         "trailId": "106",
         "segmentId": "106-441-456",
         "name": "Marshall Valley - Accessible",
-        "length": 81,
+        "length": 80,
         "bounds": {
             "minLatitude": 39.95204747322643,
             "minLongitude": -105.23121553863564,
@@ -6074,7 +6074,7 @@
         "trailId": "114",
         "segmentId": "114-440-442",
         "name": "Marshall Valley",
-        "length": 1277,
+        "length": 1266,
         "bounds": {
             "minLatitude": 39.95134799952893,
             "minLongitude": -105.23112537956922,
@@ -6100,7 +6100,7 @@
         "trailId": "102",
         "segmentId": "102-442-444",
         "name": "Community Ditch",
-        "length": 50,
+        "length": 48,
         "bounds": {
             "minLatitude": 39.95427503258634,
             "minLongitude": -105.21810342916326,
@@ -6113,7 +6113,7 @@
         "trailId": "104",
         "segmentId": "104-444-450",
         "name": "Marshall Mesa",
-        "length": 1127,
+        "length": 1132,
         "bounds": {
             "minLatitude": 39.94858692737138,
             "minLongitude": -105.22786641798896,
@@ -6126,7 +6126,7 @@
         "trailId": "102",
         "segmentId": "102-448-450",
         "name": "Community Ditch",
-        "length": 1218,
+        "length": 1216,
         "bounds": {
             "minLatitude": 39.948539558056275,
             "minLongitude": -105.22786641798896,
@@ -6139,7 +6139,7 @@
         "trailId": "102",
         "segmentId": "102-450-436",
         "name": "Community Ditch",
-        "length": 226,
+        "length": 223,
         "bounds": {
             "minLatitude": 39.94808261047373,
             "minLongitude": -105.22995048453754,
@@ -6152,7 +6152,7 @@
         "trailId": "102",
         "segmentId": "102-436-437",
         "name": "Community Ditch",
-        "length": 610,
+        "length": 605,
         "bounds": {
             "minLatitude": 39.94616094049989,
             "minLongitude": -105.23628974017555,
@@ -6165,7 +6165,7 @@
         "trailId": "113",
         "segmentId": "113-437-440",
         "name": "Coal Seam",
-        "length": 861,
+        "length": 862,
         "bounds": {
             "minLatitude": 39.94616094049989,
             "minLongitude": -105.23630128257315,
@@ -6191,7 +6191,7 @@
         "trailId": "113",
         "segmentId": "113-456-441",
         "name": "Coal Seam",
-        "length": 65,
+        "length": 62,
         "bounds": {
             "minLatitude": 39.95204747322643,
             "minLongitude": -105.23121553863564,
@@ -6230,7 +6230,7 @@
         "trailId": "103",
         "segmentId": "103-433-436",
         "name": "Greenbelt Plateau",
-        "length": 2263,
+        "length": 2280,
         "bounds": {
             "minLatitude": 39.92906117214586,
             "minLongitude": -105.23292939726439,
@@ -6243,7 +6243,7 @@
         "trailId": "115",
         "segmentId": "115-432-431",
         "name": "Greenbelt Connector",
-        "length": 492,
+        "length": 498,
         "bounds": {
             "minLatitude": 39.9258457307766,
             "minLongitude": -105.23589901583435,
@@ -6295,7 +6295,7 @@
         "trailId": "109",
         "segmentId": "109-434-435",
         "name": "Coalton",
-        "length": 2928,
+        "length": 2982,
         "bounds": {
             "minLatitude": 39.91424899415825,
             "minLongitude": -105.2062386575616,
@@ -6334,7 +6334,7 @@
         "trailId": "116",
         "segmentId": "116-427-426",
         "name": "Flatirons Vista North",
-        "length": 102,
+        "length": 101,
         "bounds": {
             "minLatitude": 39.92438899703976,
             "minLongitude": -105.23601564175358,
@@ -6347,7 +6347,7 @@
         "trailId": "116",
         "segmentId": "116-425-424",
         "name": "Flatirons Vista North",
-        "length": 287,
+        "length": 286,
         "bounds": {
             "minLatitude": 39.923646104335226,
             "minLongitude": -105.2387797876679,
@@ -6360,7 +6360,7 @@
         "trailId": "116",
         "segmentId": "116-424-421",
         "name": "Flatirons Vista North",
-        "length": 1410,
+        "length": 1408,
         "bounds": {
             "minLatitude": 39.92298561938632,
             "minLongitude": -105.25507681331895,
@@ -6373,7 +6373,7 @@
         "trailId": "117",
         "segmentId": "117-429-428",
         "name": "Prairie Vista",
-        "length": 7,
+        "length": 6,
         "bounds": {
             "minLatitude": 39.92430260400196,
             "minLongitude": -105.23561589886106,
@@ -6399,7 +6399,7 @@
         "trailId": "117",
         "segmentId": "117-423-422",
         "name": "Prairie Vista",
-        "length": 1451,
+        "length": 1462,
         "bounds": {
             "minLatitude": 39.91648344618678,
             "minLongitude": -105.24953729722482,
@@ -6412,7 +6412,7 @@
         "trailId": "118",
         "segmentId": "118-421-422",
         "name": "Flatirons Vista South",
-        "length": 2190,
+        "length": 2220,
         "bounds": {
             "minLatitude": 39.91399009562263,
             "minLongitude": -105.259448635071,
@@ -6425,7 +6425,7 @@
         "trailId": "118",
         "segmentId": "118-423-424",
         "name": "Flatirons Vista South",
-        "length": 39,
+        "length": 43,
         "bounds": {
             "minLatitude": 39.923285489212546,
             "minLongitude": -105.23897250833586,
@@ -6438,7 +6438,7 @@
         "trailId": "118",
         "segmentId": "118-422-423",
         "name": "Flatirons Vista South",
-        "length": 1232,
+        "length": 1240,
         "bounds": {
             "minLatitude": 39.91648344618678,
             "minLongitude": -105.24816723083248,
@@ -6451,7 +6451,7 @@
         "trailId": "102",
         "segmentId": "102-437-439",
         "name": "Community Ditch",
-        "length": 259,
+        "length": 252,
         "bounds": {
             "minLatitude": 39.94408191285226,
             "minLongitude": -105.23667146716585,
@@ -6477,7 +6477,7 @@
         "trailId": "102",
         "segmentId": "102-439-405",
         "name": "Community Ditch",
-        "length": 2770,
+        "length": 2785,
         "bounds": {
             "minLatitude": 39.93134593036522,
             "minLongitude": -105.2567386561848,
@@ -6490,7 +6490,7 @@
         "trailId": "101",
         "segmentId": "101-401-402",
         "name": "Doudy Draw",
-        "length": 538,
+        "length": 539,
         "bounds": {
             "minLatitude": 39.93326201297012,
             "minLongitude": -105.25652733622033,
@@ -6503,7 +6503,7 @@
         "trailId": "101",
         "segmentId": "101-402-403",
         "name": "Doudy Draw",
-        "length": 36,
+        "length": 37,
         "bounds": {
             "minLatitude": 39.932954109940106,
             "minLongitude": -105.25602308347088,
@@ -6516,7 +6516,7 @@
         "trailId": "101",
         "segmentId": "101-403-405",
         "name": "Doudy Draw",
-        "length": 137,
+        "length": 136,
         "bounds": {
             "minLatitude": 39.93193732945071,
             "minLongitude": -105.2567386561848,
@@ -6529,7 +6529,7 @@
         "trailId": "101",
         "segmentId": "101-403-404",
         "name": "Doudy Draw",
-        "length": 10,
+        "length": 11,
         "bounds": {
             "minLatitude": 39.9328757620884,
             "minLongitude": -105.25602308347088,
@@ -6542,7 +6542,7 @@
         "trailId": "126",
         "segmentId": "126-404-402",
         "name": "Doudy Draw Picnic Area",
-        "length": 47,
+        "length": 48,
         "bounds": {
             "minLatitude": 39.9328757620884,
             "minLongitude": -105.25595357558883,
@@ -6555,7 +6555,7 @@
         "trailId": "101",
         "segmentId": "101-405-406",
         "name": "Doudy Draw",
-        "length": 1139,
+        "length": 1128,
         "bounds": {
             "minLatitude": 39.92399150062296,
             "minLongitude": -105.25963541560435,
@@ -6568,7 +6568,7 @@
         "trailId": "119",
         "segmentId": "119-406-407",
         "name": "Spring Brook Loop North",
-        "length": 436,
+        "length": 432,
         "bounds": {
             "minLatitude": 39.92310046145389,
             "minLongitude": -105.26311154078068,
@@ -6581,7 +6581,7 @@
         "trailId": "101",
         "segmentId": "101-406-421",
         "name": "Doudy Draw",
-        "length": 1632,
+        "length": 1631,
         "bounds": {
             "minLatitude": 39.916927883073036,
             "minLongitude": -105.26014215966639,
@@ -6594,7 +6594,7 @@
         "trailId": "119",
         "segmentId": "119-407-408",
         "name": "Spring Brook Loop North",
-        "length": 1834,
+        "length": 1808,
         "bounds": {
             "minLatitude": 39.919820651071525,
             "minLongitude": -105.26889409026995,
@@ -6607,7 +6607,7 @@
         "trailId": "119",
         "segmentId": "119-409-408",
         "name": "Spring Brook Loop North",
-        "length": 67,
+        "length": 69,
         "bounds": {
             "minLatitude": 39.91959906527961,
             "minLongitude": -105.26907116278693,
@@ -6620,7 +6620,7 @@
         "trailId": "120",
         "segmentId": "120-408-407",
         "name": "Spring Brook Loop South",
-        "length": 1789,
+        "length": 1781,
         "bounds": {
             "minLatitude": 39.91653647323399,
             "minLongitude": -105.2687539926496,
@@ -6633,7 +6633,7 @@
         "trailId": "108",
         "segmentId": "108-411-410",
         "name": "Fowler",
-        "length": 902,
+        "length": 909,
         "bounds": {
             "minLatitude": 39.92659354074685,
             "minLongitude": -105.27378961478264,
@@ -6646,7 +6646,7 @@
         "trailId": "119",
         "segmentId": "119-410-409",
         "name": "Spring Brook Loop North",
-        "length": 1225,
+        "length": 1221,
         "bounds": {
             "minLatitude": 39.91978150087318,
             "minLongitude": -105.27381941531127,
@@ -6659,7 +6659,7 @@
         "trailId": "108",
         "segmentId": "108-410-412",
         "name": "Fowler",
-        "length": 643,
+        "length": 642,
         "bounds": {
             "minLatitude": 39.92783855091714,
             "minLongitude": -105.27608678641612,
@@ -6672,7 +6672,7 @@
         "trailId": "108",
         "segmentId": "108-412-454",
         "name": "Fowler",
-        "length": 135,
+        "length": 133,
         "bounds": {
             "minLatitude": 39.926658388835854,
             "minLongitude": -105.27630826172826,
@@ -6685,7 +6685,7 @@
         "trailId": "121",
         "segmentId": "121-454-417",
         "name": "Goshawk Ridge",
-        "length": 579,
+        "length": 585,
         "bounds": {
             "minLatitude": 39.924463611283656,
             "minLongitude": -105.27855487303165,
@@ -6698,7 +6698,7 @@
         "trailId": "108",
         "segmentId": "108-454-415",
         "name": "Fowler",
-        "length": 277,
+        "length": 278,
         "bounds": {
             "minLatitude": 39.92632178033485,
             "minLongitude": -105.27828590675075,
@@ -6724,7 +6724,7 @@
         "trailId": "121",
         "segmentId": "121-417-419",
         "name": "Goshawk Ridge",
-        "length": 154,
+        "length": 143,
         "bounds": {
             "minLatitude": 39.923344525719926,
             "minLongitude": -105.27861125479704,
@@ -6737,7 +6737,7 @@
         "trailId": "121",
         "segmentId": "121-419-409",
         "name": "Goshawk Ridge",
-        "length": 2027,
+        "length": 2008,
         "bounds": {
             "minLatitude": 39.91567451233043,
             "minLongitude": -105.27834470206548,
@@ -6750,7 +6750,7 @@
         "trailId": "102",
         "segmentId": "102-444-445",
         "name": "Community Ditch",
-        "length": 620,
+        "length": 619,
         "bounds": {
             "minLatitude": 39.95427503258634,
             "minLongitude": -105.21760242806577,
@@ -6776,7 +6776,7 @@
         "trailId": "111",
         "segmentId": "111-446-445",
         "name": "Cowdrey Draw",
-        "length": 15,
+        "length": 12,
         "bounds": {
             "minLatitude": 39.955068823273145,
             "minLongitude": -105.2109873938747,
@@ -6789,7 +6789,7 @@
         "trailId": "111",
         "segmentId": "111-446-447",
         "name": "Cowdrey Draw",
-        "length": 18,
+        "length": 19,
         "bounds": {
             "minLatitude": 39.955068823273145,
             "minLongitude": -105.2110739237276,
@@ -6802,7 +6802,7 @@
         "trailId": "102",
         "segmentId": "102-447-448",
         "name": "Community Ditch",
-        "length": 447,
+        "length": 442,
         "bounds": {
             "minLatitude": 39.95306289657901,
             "minLongitude": -105.21527922406587,
@@ -6893,7 +6893,7 @@
         "trailId": "222",
         "segmentId": "222-044-153",
         "name": "Shanahan - Mesa",
-        "length": 801,
+        "length": 638,
         "bounds": {
             "minLatitude": 39.96391845269419,
             "minLongitude": -105.2855021214991,
@@ -6919,7 +6919,7 @@
         "trailId": "351",
         "segmentId": "351-377-378",
         "name": "Mattie Dean",
-        "length": 48,
+        "length": 46,
         "bounds": {
             "minLatitude": 40.00948414800984,
             "minLongitude": -105.28323272923335,
@@ -6932,7 +6932,7 @@
         "trailId": "296",
         "segmentId": "296-357-379",
         "name": "Boulder Falls",
-        "length": 125,
+        "length": 120,
         "bounds": {
             "minLatitude": 40.00460791992821,
             "minLongitude": -105.40661676684442,
@@ -6945,7 +6945,7 @@
         "trailId": "296",
         "segmentId": "296-379-381",
         "name": "Boulder Falls",
-        "length": 35,
+        "length": 37,
         "bounds": {
             "minLatitude": 40.00517330154291,
             "minLongitude": -105.40666976663691,
@@ -6958,7 +6958,7 @@
         "trailId": "296",
         "segmentId": "296-381-382",
         "name": "Boulder Falls",
-        "length": 7,
+        "length": 6,
         "bounds": {
             "minLatitude": 40.00548426022988,
             "minLongitude": -105.40664315858555,
@@ -6971,7 +6971,7 @@
         "trailId": "296",
         "segmentId": "296-381-356",
         "name": "Boulder Falls",
-        "length": 29,
+        "length": 28,
         "bounds": {
             "minLatitude": 40.0054478536659,
             "minLongitude": -105.40662224829978,
@@ -6984,7 +6984,7 @@
         "trailId": "350",
         "segmentId": "350-685-684",
         "name": "9th Street Connector",
-        "length": 23,
+        "length": 27,
         "bounds": {
             "minLatitude": 39.99971733575762,
             "minLongitude": -105.28316470419587,
@@ -6997,7 +6997,7 @@
         "trailId": "251",
         "segmentId": "251-032-685",
         "name": "Baseline",
-        "length": 15,
+        "length": 14,
         "bounds": {
             "minLatitude": 39.99971642109648,
             "minLongitude": -105.28314656775692,
@@ -7010,7 +7010,7 @@
         "trailId": "251",
         "segmentId": "251-685-023",
         "name": "Baseline",
-        "length": 11,
+        "length": 12,
         "bounds": {
             "minLatitude": 39.99971605370224,
             "minLongitude": -105.28329244654543,
@@ -7049,7 +7049,7 @@
         "trailId": "251",
         "segmentId": "251-686-687",
         "name": "Baseline",
-        "length": 82,
+        "length": 85,
         "bounds": {
             "minLatitude": 39.99977174922935,
             "minLongitude": -105.2852511836567,
@@ -7062,7 +7062,7 @@
         "trailId": "348",
         "segmentId": "348-687-682",
         "name": "7th Street Connector",
-        "length": 25,
+        "length": 27,
         "bounds": {
             "minLatitude": 39.99977744317193,
             "minLongitude": -105.28532895629469,
@@ -7075,7 +7075,7 @@
         "trailId": "251",
         "segmentId": "251-687-022",
         "name": "Baseline",
-        "length": 63,
+        "length": 62,
         "bounds": {
             "minLatitude": 39.999680746878354,
             "minLongitude": -105.28594261374961,
@@ -7088,7 +7088,7 @@
         "trailId": "339",
         "segmentId": "339-022-690",
         "name": "6th Street Connector",
-        "length": 63,
+        "length": 64,
         "bounds": {
             "minLatitude": 39.999680746878354,
             "minLongitude": -105.28657018353498,
@@ -7101,7 +7101,7 @@
         "trailId": "339",
         "segmentId": "339-690-120",
         "name": "6th Street Connector",
-        "length": 6,
+        "length": 4,
         "bounds": {
             "minLatitude": 39.999967242729106,
             "minLongitude": -105.28656384000534,
@@ -7114,7 +7114,7 @@
         "trailId": "251",
         "segmentId": "251-022-688",
         "name": "Baseline",
-        "length": 109,
+        "length": 112,
         "bounds": {
             "minLatitude": 39.999400144091624,
             "minLongitude": -105.28695948276417,
@@ -7127,7 +7127,7 @@
         "trailId": "346",
         "segmentId": "346-688-689",
         "name": "Baseline Connector",
-        "length": 7,
+        "length": 6,
         "bounds": {
             "minLatitude": 39.99955702969771,
             "minLongitude": -105.28695948276417,
@@ -7140,7 +7140,7 @@
         "trailId": "347",
         "segmentId": "347-689-690",
         "name": "6th Street Connector West",
-        "length": 49,
+        "length": 53,
         "bounds": {
             "minLatitude": 39.99961400429967,
             "minLongitude": -105.28695618151151,
@@ -7153,7 +7153,7 @@
         "trailId": "346",
         "segmentId": "346-689-681",
         "name": "Baseline Connector",
-        "length": 55,
+        "length": 59,
         "bounds": {
             "minLatitude": 39.99961400429967,
             "minLongitude": -105.28736968205446,
@@ -7166,7 +7166,7 @@
         "trailId": "251",
         "segmentId": "251-688-025",
         "name": "Baseline",
-        "length": 307,
+        "length": 317,
         "bounds": {
             "minLatitude": 39.9984634497495,
             "minLongitude": -105.29015963477624,
@@ -7179,7 +7179,7 @@
         "trailId": "251",
         "segmentId": "251-025-027",
         "name": "Baseline",
-        "length": 147,
+        "length": 144,
         "bounds": {
             "minLatitude": 39.99758323322799,
             "minLongitude": -105.2913903096468,
@@ -7192,7 +7192,7 @@
         "trailId": "251",
         "segmentId": "251-027-033",
         "name": "Baseline",
-        "length": 54,
+        "length": 51,
         "bounds": {
             "minLatitude": 39.99750457671887,
             "minLongitude": -105.29197065040107,
@@ -7205,7 +7205,7 @@
         "trailId": "338",
         "segmentId": "338-027-021",
         "name": "Meadow",
-        "length": 605,
+        "length": 613,
         "bounds": {
             "minLatitude": 39.99756699955158,
             "minLongitude": -105.2913903096468,
@@ -7218,7 +7218,7 @@
         "trailId": "338",
         "segmentId": "338-021-023",
         "name": "Meadow",
-        "length": 187,
+        "length": 188,
         "bounds": {
             "minLatitude": 39.99899964655685,
             "minLongitude": -105.28502841441222,
@@ -7244,7 +7244,7 @@
         "trailId": "339",
         "segmentId": "339-020-021",
         "name": "6th Street Connector",
-        "length": 106,
+        "length": 109,
         "bounds": {
             "minLatitude": 39.99829739788734,
             "minLongitude": -105.28502841441222,
@@ -7257,7 +7257,7 @@
         "trailId": "339",
         "segmentId": "339-021-022",
         "name": "6th Street Connector",
-        "length": 106,
+        "length": 107,
         "bounds": {
             "minLatitude": 39.99901097682731,
             "minLongitude": -105.28594261374961,
@@ -7270,7 +7270,7 @@
         "trailId": "252",
         "segmentId": "252-270-033",
         "name": "Bluebell-Baird",
-        "length": 338,
+        "length": 325,
         "bounds": {
             "minLatitude": 39.99630420300471,
             "minLongitude": -105.29197065040107,
@@ -7283,7 +7283,7 @@
         "trailId": "252",
         "segmentId": "252-029-270",
         "name": "Bluebell-Baird",
-        "length": 441,
+        "length": 431,
         "bounds": {
             "minLatitude": 39.99283786364787,
             "minLongitude": -105.2895922315803,
@@ -7296,7 +7296,7 @@
         "trailId": "249",
         "segmentId": "249-032-018",
         "name": "Bluebell Road",
-        "length": 108,
+        "length": 107,
         "bounds": {
             "minLatitude": 39.99880160309676,
             "minLongitude": -105.28302253778166,
@@ -7309,7 +7309,7 @@
         "trailId": "249",
         "segmentId": "249-018-019",
         "name": "Bluebell Road",
-        "length": 175,
+        "length": 172,
         "bounds": {
             "minLatitude": 39.99725066571678,
             "minLongitude": -105.28288886313597,
@@ -7322,7 +7322,7 @@
         "trailId": "249",
         "segmentId": "249-019-126",
         "name": "Bluebell Road",
-        "length": 703,
+        "length": 695,
         "bounds": {
             "minLatitude": 39.99168804520995,
             "minLongitude": -105.28538892716647,
@@ -7335,7 +7335,7 @@
         "trailId": "249",
         "segmentId": "249-126-125",
         "name": "Bluebell Road",
-        "length": 55,
+        "length": 57,
         "bounds": {
             "minLatitude": 39.99159388929898,
             "minLongitude": -105.28597123468256,
@@ -7348,7 +7348,7 @@
         "trailId": "249",
         "segmentId": "249-125-123",
         "name": "Bluebell Road",
-        "length": 193,
+        "length": 191,
         "bounds": {
             "minLatitude": 39.990882991182445,
             "minLongitude": -105.28748665071149,
@@ -7374,7 +7374,7 @@
         "trailId": "249",
         "segmentId": "249-124-125",
         "name": "Bluebell Road",
-        "length": 63,
+        "length": 64,
         "bounds": {
             "minLatitude": 39.99175996052968,
             "minLongitude": -105.28598263213738,
@@ -7387,7 +7387,7 @@
         "trailId": "255",
         "segmentId": "255-124-031",
         "name": "Bluebell Spur",
-        "length": 430,
+        "length": 420,
         "bounds": {
             "minLatitude": 39.99231839406536,
             "minLongitude": -105.28598263213738,
@@ -7400,7 +7400,7 @@
         "trailId": "252",
         "segmentId": "252-030-029",
         "name": "Bluebell-Baird",
-        "length": 147,
+        "length": 148,
         "bounds": {
             "minLatitude": 39.992295488596326,
             "minLongitude": -105.28926476212715,
@@ -7413,7 +7413,7 @@
         "trailId": "254",
         "segmentId": "254-030-031",
         "name": "Bluebell Mesa",
-        "length": 522,
+        "length": 508,
         "bounds": {
             "minLatitude": 39.992295488596326,
             "minLongitude": -105.28775742551045,
@@ -7426,7 +7426,7 @@
         "trailId": "254",
         "segmentId": "254-031-028",
         "name": "Bluebell Mesa",
-        "length": 190,
+        "length": 191,
         "bounds": {
             "minLatitude": 39.995594339342816,
             "minLongitude": -105.28626464001673,
