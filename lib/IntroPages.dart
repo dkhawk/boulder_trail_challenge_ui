@@ -71,7 +71,8 @@ class _IntroPagesState extends State<IntroPages> {
             finePrintItem(
                 'Also, OSMP moves and renames trails periodically causing the trail matching algorithm to make mistakes. Given all this you may sometimes have to manually mark a trail complete, or backdate and reload your Strava/GPX data.'),
             finePrintItem(
-                'Disclaimer: This app is not associated with OSMP, Strava, Boulder Trail Runners or any other entity'),
+                'Note that if you don\'t use this app over a period of six months we may delete your account without notice.'),
+            finePrintItem('Disclaimer: This app is not associated with OSMP, Strava, Boulder Trail Runners or any other entity'),
             finePrintItem(''),
             finePrintItem('Good luck, have fun and be safe! Click "Trails" or "Import Data/Settings" below to continue...'),
             finePrintItem(''),
