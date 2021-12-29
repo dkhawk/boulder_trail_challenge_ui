@@ -13,6 +13,7 @@ import 'package:osmp_project/settings_page.dart';
 import 'package:osmp_project/markTrailComplete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'overall_status_widget.dart';
 
 // ----
 Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions settingsOptions) {
@@ -163,19 +164,9 @@ class _LoadDisplayMapData extends StatelessWidget {
     // record the time the user displayed this map
     // - eventually want to delete inactive user accounts
     final firebaseUser = context.watch<User>();
-    Map<String, Object> lastAccessTime = {
-      'lastAccessTime': DateTime.now().toString(), // local time
-      'dateTime': DateTime.now().millisecondsSinceEpoch,
-      'action': 'map',
-    };
-    Map<String, Object> accessTime = {
-      'accessTime': lastAccessTime,
-    };
-    FirebaseFirestore.instance
-        .collection('athletes')
-        .doc(firebaseUser.email)
-        .set(accessTime, SetOptions(merge: true))
-        .whenComplete(() => {});
+
+    // keep track of when user accessed this data
+    setAccessTime(firebaseUser.email);
 
     if (inputMapData.useJsonForSegments) {
       // --

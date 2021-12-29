@@ -5,6 +5,24 @@ import 'package:osmp_project/MappingSupport.dart';
 import 'package:osmp_project/settings_page.dart';
 import 'package:provider/provider.dart';
 
+Future<void> setAccessTime(String email) async {
+  // ----
+  // record the time the user accessed this data
+  // - eventually want to delete inactive user accounts
+  Map<String, Object> lastAccessTime = {
+    'lastAccessTime': DateTime.now().toString(), // local time
+    'dateTime': DateTime.now().millisecondsSinceEpoch,
+  };
+  Map<String, Object> accessTime = {
+    'accessTime': lastAccessTime,
+  };
+  await FirebaseFirestore.instance
+      .collection('athletes')
+      .doc(email)
+      .set(accessTime, SetOptions(merge: true))
+      .whenComplete(() => {print('updating access time <>')});
+}
+
 class OverallStatusWidget extends StatelessWidget {
   final SettingsOptions settingsOptions;
 
@@ -13,26 +31,12 @@ class OverallStatusWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
-
-    // ----
-    // record the time the user accessed this data
-    // - eventually want to delete inactive user accounts
-    Map<String, Object> lastAccessTime = {
-      'lastAccessTime': DateTime.now().toString(), // local time
-      'dateTime': DateTime.now().millisecondsSinceEpoch,
-      'action': 'status',
-    };
-    Map<String, Object> accessTime = {
-      'accessTime': lastAccessTime,
-    };
-    FirebaseFirestore.instance
-        .collection('athletes')
-        .doc(firebaseUser.email)
-        .set(accessTime, SetOptions(merge: true))
-        .whenComplete(() => {});
+    setAccessTime(firebaseUser.email);
 
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email).snapshots(),
+      stream: FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email).snapshots().where(
+            (event) => event.data().containsKey('overallStats'),
+          ),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
         if (snapshot.hasError) return LinearProgressIndicator();
