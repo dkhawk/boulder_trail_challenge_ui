@@ -12,7 +12,7 @@ class SignInPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Boulder Trails Challenge'),
+        title: Text('Boulder Trails Challenge - 2022'),
       ),
       // don't resize when keyboard comes up on mobile
       resizeToAvoidBottomInset: false,
