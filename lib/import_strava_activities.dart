@@ -23,6 +23,9 @@ import 'package:universal_html/html.dart' as html;
 // Google polyline encode/decode
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 
+// count how many times someone has hit a peak
+import 'peakCounter.dart';
+
 // ----
 // globals
 
@@ -107,6 +110,10 @@ class _ListenWebAsync {
 Future<Pair<oauth2.Credentials, String>> _getCredentialsFromFirestore(String userName) async {
   // get the oauth2 credentials/tokens out of firestore
   DocumentSnapshot credentialsSnapshot = await FirebaseFirestore.instance.collection('athletes').doc(userName).get();
+
+  if (credentialsSnapshot.data().toString().contains('tokenInfo') == false) {
+    return Pair(null, 'Error: No strava tokenInfo');
+  }
 
   // token info from Firestore
   var tokenInfo = credentialsSnapshot["tokenInfo"];
@@ -214,8 +221,12 @@ Future<Pair<oauth2.Client, String>> _getAuthClient(
   String errorString = '';
   // reload Strava credentials from firestore if they're available
   // - will refresh credentials if necessary
+  print('_getCredentialsFromFirestore:');
   Pair<oauth2.Credentials, String> existingCredentials = await _getCredentialsFromFirestore(userName);
+  print('_getCredentialsFromFirestore: return error string: ${existingCredentials.b}');
+
   if (existingCredentials.a != null) {
+    print('strava existingCredentials.a != null');
     // create the Client
     oauth2.Client theClient;
     try {
@@ -237,6 +248,7 @@ Future<Pair<oauth2.Client, String>> _getAuthClient(
 
     // test whether the client is valid by accessing the athlete
     if (theClient != null) {
+      print('theClient != null');
       final String theAthlete = 'https://www.strava.com/api/v3/athlete';
       await theClient.read(Uri.parse(theAthlete)).catchError((e) {
         print('_getAuthClient: theClient.read could not get theAuthAthlete');
@@ -250,6 +262,8 @@ Future<Pair<oauth2.Client, String>> _getAuthClient(
       print('_getAuthClient: returning oauth2 client using firestore creds <>');
       return Pair(theClient, '');
     }
+  } else {
+    print('strava existingCredentials.a == null');
   }
 
   // Don't want to ask the user to log into Strava when deactivating an account
@@ -277,15 +291,17 @@ Future<Pair<oauth2.Client, String>> _getAuthClient(
     // print('oauth2.AuthorizationCodeGrant:');
     // print('   authorizeUrl ${authorizeUrlWeb.toString()}');
     // print('   tokenUrl     ${tokenUrlWeb.toString()}');
-
     // If we don't have OAuth2 credentials yet, we need to get the resource owner
     // to authorize us.
+
     var grant = oauth2.AuthorizationCodeGrant(
       clientId,
       authorizeUrlWeb,
       tokenUrlWeb,
       secret: secret,
     );
+
+    print('strava grant <> ${grant.toString()}');
 
     // the URL on the authorization server
     // (authorizationEndpoint with some additional query parameters)
@@ -296,6 +312,9 @@ Future<Pair<oauth2.Client, String>> _getAuthClient(
       redirectWebUrl,
       scopes: ['activity:read_all'],
     );
+
+    print('strava '
+        'authorizationUrl <> ${authorizationUrl.toString()}');
 
     // Launch a separate window for Strava and listen for the redirect that
     // contains the code; extract the code
@@ -592,7 +611,7 @@ class _ImportStravaState extends State<_ImportStrava> {
   String stravaErrorMsg = '';
 
   // ----
-  String _interpolateLocations(String summaryPolyline) {
+  String _interpolateLocations(String summaryPolyline, String dateTimeString, String userName) {
     // 1) take a Google encoded polyline 'summaryPolyline'
     // 2) expand to lat & longs
     // 3) do simple interpolation between points if distance is too large
@@ -645,6 +664,9 @@ class _ImportStravaState extends State<_ImportStrava> {
       }
     }
     interpolatedTrackPoints.add(trackPoints.last);
+
+    // count how many times the track crosses a peak
+    peakCounter(interpolatedTrackPoints, dateTimeString, userName);
 
     print('   trackPoints -> interpolatedTrackPoints lengths <> ${trackPoints.length} ${interpolatedTrackPoints.length}');
     String encodedLine = encodePolyline(interpolatedTrackPoints);
@@ -728,6 +750,12 @@ class _ImportStravaState extends State<_ImportStrava> {
             (activitySummary) {
               // what kind of activity is this
               String activityType = activitySummary['type'];
+              String activityDate = activitySummary['start_date']; // gmt
+
+              // parse & stringify activity date to move to standard format
+              String dateTimeString = DateTime.parse(activityDate).toString();
+              print(' strava activityDate <> $activityDate $dateTimeString');
+
               // the map that includes the encoded polyline for this activity
               Map<String, dynamic> theActivityMap = activitySummary['map'];
               String summaryPolyline = theActivityMap['summary_polyline'];
@@ -741,13 +769,13 @@ class _ImportStravaState extends State<_ImportStrava> {
                 // - the 'summary_polyline' does not contain all the gpx data points; for example
                 //   a long straight segment is given as only the start/stop locations and this
                 //   causes the route matching routine to fail
-                String interpolatedLocations = _interpolateLocations(summaryPolyline);
+                String interpolatedLocations = _interpolateLocations(summaryPolyline, dateTimeString, userName);
 
                 // a map for the Cloud storage data
                 String uploadDateTime = DateTime.now().toUtc().toString();
                 Map<String, dynamic> importedTrackMap = {
                   'originalFileName': activitySummary['external_id'],
-                  'gpxDateTime': activitySummary['start_date_local'],
+                  'gpxDateTime': activitySummary['start_date_local'], // local time
                   'uploadDateTime': uploadDateTime,
                   'userName': userName,
                   //'encodedLocation': theActivityMap['summary_polyline'],
@@ -876,7 +904,7 @@ class _ImportStravaState extends State<_ImportStrava> {
       future: _getActivities(userName),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         if (snapshot.hasData && (snapshot.data == 'done')) {
-          print('Strava activities: snapshot.hasData and done');
+          //print('Strava activities: snapshot.hasData and done');
           return _numFilesAlertWidget(context);
         } else {
           return Center(

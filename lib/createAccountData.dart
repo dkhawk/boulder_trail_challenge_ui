@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:osmp_project/MappingSupport.dart';
+import 'package:osmp_project/peakCounter.dart';
 
 import 'package:osmp_project/authentication_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -50,8 +51,7 @@ Future<String> registerNewAcct(
   // a secondary FirebaseApp that does not have a listener attached
   // - we do not want the primary FirebaseApp to trigger the trails progress
   //   widgets until the account data has been fully uploaded to Cloud Firestore
-  String secondaryFirebaseApp =
-      createUniqueFirebaseAppName(accountName, password);
+  String secondaryFirebaseApp = createUniqueFirebaseAppName(accountName, password);
   FirebaseApp app = await Firebase.initializeApp(
     name: secondaryFirebaseApp,
     options: Firebase.app().options,
@@ -89,8 +89,7 @@ Widget createNewAcct(
     MaterialPageRoute<void>(
       builder: (BuildContext context) {
         return Scaffold(
-          body: LoadSegmentsData(accountName, password,
-              false /*do not reset trail data instead create new user data*/),
+          body: LoadSegmentsData(accountName, password, false /*do not reset trail data instead create new user data*/),
         );
       },
     ),
@@ -150,8 +149,7 @@ class LoadSegmentsData extends StatelessWidget {
               }
             },
           );
-          return _UploadMapDataToAcct(
-              trails, accountName, password, resettingData);
+          return _UploadMapDataToAcct(trails, accountName, password, resettingData);
         }
         return Center(
           child: SizedBox(
@@ -170,8 +168,7 @@ class LoadSegmentsData extends StatelessWidget {
 //----
 // upload the trails and show a simple how-to dialog when finished
 class _UploadMapDataToAcct extends StatelessWidget {
-  _UploadMapDataToAcct(
-      this.trails, this.accountName, this.password, this.resettingData);
+  _UploadMapDataToAcct(this.trails, this.accountName, this.password, this.resettingData);
   final String accountName;
   final String password;
   final bool resettingData;
@@ -185,8 +182,7 @@ class _UploadMapDataToAcct extends StatelessWidget {
     return FutureBuilder<String>(
       future: _uploadTrailStats(trails, accountName, password, resettingData),
       builder: (BuildContext context, AsyncSnapshot<String> completedString) {
-        if (completedString.hasData &&
-            completedString.data.toString() == finishedUploadTrailStats) {
+        if (completedString.hasData && completedString.data.toString() == finishedUploadTrailStats) {
           // After all data has been uploaded to Cloud Firestore sign
           // into the user's account
 
@@ -248,8 +244,7 @@ Future<String> _uploadTrailStats(
     secondaryFirebaseApp = createUniqueFirebaseAppName(accountName, password);
     for (int iApp = 0; iApp < firebaseapps.length; iApp++) {
       if (firebaseapps[iApp].name == secondaryFirebaseApp)
-        firestoreSecondary =
-            FirebaseFirestore.instanceFor(app: firebaseapps[iApp]);
+        firestoreSecondary = FirebaseFirestore.instanceFor(app: firebaseapps[iApp]);
     }
   }
 
@@ -280,8 +275,7 @@ Future<String> _uploadTrailStats(
       .collection('athletes')
       .doc(accountName)
       .set(statsMap, SetOptions(merge: true))
-      .whenComplete(
-          () => print('_uploadTrailStats ==== overallStats whenComplete'));
+      .whenComplete(() => print('_uploadTrailStats ==== overallStats whenComplete'));
 
   // if creating a new user set up empty token info
   if (resettingData == false) {
@@ -299,9 +293,11 @@ Future<String> _uploadTrailStats(
         .collection('athletes')
         .doc(accountName)
         .set(tokensMap, SetOptions(merge: true))
-        .whenComplete(
-            () => print('_uploadTrailStats ==== tokenInfo whenComplete'));
+        .whenComplete(() => print('_uploadTrailStats ==== tokenInfo whenComplete'));
   }
+
+  // update the summit counts
+  await resetPeakCounts(accountName).whenComplete(() => print('_uploadTrailStats ==== resetPeakCounts whenComplete'));
 
   // upload the trail stats
   trails.forEach(
@@ -317,12 +313,7 @@ Future<String> _uploadTrailStats(
   );
   // print('_uploadTrailStats ==== trailStats finished');
 
-  await firestoreSecondary
-      .collection('athletes')
-      .doc(accountName)
-      .collection('completed')
-      .get()
-      .then((snapshot) {
+  await firestoreSecondary.collection('athletes').doc(accountName).collection('completed').get().then((snapshot) {
     for (DocumentSnapshot doc in snapshot.docs) {
       doc.reference.delete();
     }
@@ -354,8 +345,7 @@ Future<String> _uploadTrailStats(
 
     // Get rid of the Secondary FirebaseApp
     for (int iApp = 0; iApp < firebaseapps.length; iApp++) {
-      if (firebaseapps[iApp].name == secondaryFirebaseApp)
-        await firebaseapps[iApp].delete();
+      if (firebaseapps[iApp].name == secondaryFirebaseApp) await firebaseapps[iApp].delete();
     }
   }
 
@@ -372,21 +362,14 @@ class _WelcomePage extends StatelessWidget {
     // --
     // text for how-to dialog
     String welcomeString = 'Welcome to the Boulder Trails Challenge!';
-    if (resettingData)
-      welcomeString =
-          'Your Activity Data For The \nBoulder Trails Challenge Has Been Reset';
-    String introString1 =
-        'This app is designed to help you keep track of which \ntrails you have covered in the \n';
+    if (resettingData) welcomeString = 'Your Activity Data For The \nBoulder Trails Challenge Has Been Reset';
+    String introString1 = 'This app is designed to help you keep track of which \ntrails you have covered in the \n';
     String osmp = 'Boulder Open Space and Mountain Parks\n';
     String introString2 = ' trails challenge';
 
-    String howtoString1 =
-        'Go to the Settings Page to upload your tracks via \nStrava or ' +
-            'import them using GPX files. ';
-    String howtoString2 =
-        'Click on the blue \'runner\' icons on the Trails List \npage to see maps of your progress. ';
-    String howtoString3 =
-        'Be safe out there. \nThis app is not associated with Boulder OSMP or any other entity';
+    String howtoString1 = 'Go to the Settings Page to upload your tracks via \nStrava or ' + 'import them using GPX files. ';
+    String howtoString2 = 'Click on the blue \'runner\' icons on the Trails List \npage to see maps of your progress. ';
+    String howtoString3 = 'Be safe out there. \nThis app is not associated with Boulder OSMP or any other entity';
 
     //print('_WelcomePage ====');
     return SizedBox(
@@ -454,8 +437,7 @@ class _WelcomePage extends StatelessWidget {
           ),
           Text(
             howtoString3,
-            style: TextStyle(
-                fontSize: 15, color: Colors.black, fontStyle: FontStyle.italic),
+            style: TextStyle(fontSize: 15, color: Colors.black, fontStyle: FontStyle.italic),
             softWrap: true,
             textAlign: TextAlign.center,
           ),
@@ -489,7 +471,6 @@ class _WelcomePage extends StatelessWidget {
 
 // ----
 String createUniqueFirebaseAppName(String accountName, String password) {
-  String createUniqueFirebaseAppName =
-      'secondaryFirebaseApp' + accountName + password;
+  String createUniqueFirebaseAppName = 'secondaryFirebaseApp' + accountName + password;
   return createUniqueFirebaseAppName;
 }

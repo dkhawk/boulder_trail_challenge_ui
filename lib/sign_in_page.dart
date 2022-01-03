@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
 import 'package:provider/provider.dart';
@@ -10,6 +11,13 @@ class SignInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // are we in a web browser on a desktop device or a mobile device
+    // - controls padding and dot size changes for narrower screen
+    bool isWebDesktop = true;
+    if ((defaultTargetPlatform == TargetPlatform.android) || (defaultTargetPlatform == TargetPlatform.iOS)) {
+      isWebDesktop = false;
+    }
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Boulder Trails Challenge - 2022'),
@@ -121,14 +129,24 @@ class SignInPage extends StatelessWidget {
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
               ),
             ),
-            Text(
-              'Boulder OSMP challenges visitors to run or hike all of the OSMP trails.',
-              textAlign: TextAlign.center,
-            ),
-            Text(
-              'This application uses imported Strava or GPX data to help you map & track your progress.',
-              textAlign: TextAlign.center,
-            ),
+            isWebDesktop
+                ? Text(
+                    'Boulder OSMP challenges visitors to run or hike all of the OSMP trails.',
+                    textAlign: TextAlign.center,
+                  )
+                : Text(
+                    'Boulder OSMP challenges visitors \nto run or hike all of the OSMP trails.',
+                    textAlign: TextAlign.center,
+                  ),
+            isWebDesktop
+                ? Text(
+                    'This application uses imported Strava or GPX data to help you map & track your progress.',
+                    textAlign: TextAlign.center,
+                  )
+                : Text(
+                    'This application uses imported Strava or GPX data\n to help you map & track your progress.',
+                    textAlign: TextAlign.center,
+                  ),
             Text(
               'Happy Running!',
               textAlign: TextAlign.center,

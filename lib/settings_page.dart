@@ -4,6 +4,7 @@ import 'package:osmp_project/authentication_service.dart';
 import 'package:osmp_project/import_gpx_activities.dart';
 import 'package:osmp_project/import_strava_activities.dart';
 import 'package:osmp_project/createAccountData.dart';
+import 'package:osmp_project/peakCounter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'buildDate.dart';
@@ -122,6 +123,21 @@ class _SettingsPageState extends State<SettingsPage> {
                 context,
                 MaterialPageRoute(builder: (context) {
                   return ImportGPXActivities();
+                }),
+              );
+            },
+          ),
+          Spacer(),
+          ElevatedButton(
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Text('Number of times peaks have been summited'),
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) {
+                  return DisplayPeakCounts();
                 }),
               );
             },

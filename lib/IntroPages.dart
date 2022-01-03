@@ -65,11 +65,15 @@ class _IntroPagesState extends State<IntroPages> {
             finePrintItem(
                 'The trail matching algorithm is somewhat generous: If you\'ve come within roughly 20 meters of 80% of the trail you\'ll get credit for finishing the trail.'),
             finePrintItem(
+                'The matching algorithm runs in the background and may take a second or two to update the completion data.'),
+            finePrintItem(
                 'The algorithm will sometimes give you credit for very short nearby trails that you didn\'t run because you came within 20 meters of 80% of the nearby short trail.'),
             finePrintItem(
                 'And sometimes the algorithm will miss segments and not give you credit. There\'s a little bit of rocket science baked in that occasionally misfires.'),
             finePrintItem(
                 'Also, OSMP moves and renames trails periodically causing the trail matching algorithm to make mistakes. Given all this you may sometimes have to manually mark a trail complete, or backdate and reload your Strava/GPX data.'),
+            finePrintItem(
+                'Summiting a peak is counted if you come within about 20 meters of the peak. Moving about 1000 meters away will reset the counter.'),
             finePrintItem(
                 'Note that if you don\'t use this app over a period of six months we may delete your account without notice.'),
             finePrintItem('Disclaimer: This app is not associated with OSMP, Strava, Boulder Trail Runners or any other entity'),
@@ -121,6 +125,9 @@ class _IntroPagesState extends State<IntroPages> {
       isWebDesktop = false;
     }
 
+    String welcomePageBody = isWebDesktop
+        ? "This application uses imported Strava or GPX data to help you track \nyour progress on the Boulder Trails Challenge"
+        : "This application uses imported Strava \n or GPX data to help you track your progress\n on the Boulder Trails Challenge";
     String trailCompletionText =
         'Blue trails have been completed;\nRed trails have not been completed yet;\nClick on a segment to display the trail name & length\n\n';
     trailCompletionText =
@@ -135,8 +142,7 @@ class _IntroPagesState extends State<IntroPages> {
       pages: [
         PageViewModel(
           title: "Welcome to the Boulder Trails Challenge",
-          body:
-              "This application uses imported Strava or GPX data to help you track \nyour progress on the Boulder Trails Challenge",
+          body: welcomePageBody,
           image: _buildFullscreenImage('FlatIrons.jpg'),
           decoration: pageDecoration.copyWith(
             titleTextStyle: TextStyle(fontSize: 18.0, fontWeight: FontWeight.w700),
