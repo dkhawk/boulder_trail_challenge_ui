@@ -13,6 +13,7 @@ import 'package:osmp_project/settings_page.dart';
 import 'package:osmp_project/markTrailComplete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'overall_status_widget.dart';
 
 // ----
 Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions settingsOptions) {
@@ -47,20 +48,20 @@ Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions sett
               ),
               actions: <Widget>[
                 //if (trail.percentDone < 0.995)
-                  TextButton(
-                    onPressed: () {
-                      // confirm that this is what the user wants to do
-                      // and then mark the trail as completed
-                      return showCompleteTrailManuallyDialog(context, trail.name);
-                    },
-                    child: Column(
-                      children: [
-                        Text('Mark this', style: TextStyle(color: Colors.yellow)),
-                        Text('trail complete', style: TextStyle(color: Colors.yellow)),
-                      ],
-                      mainAxisAlignment: MainAxisAlignment.center,
-                    ),
-                  )
+                TextButton(
+                  onPressed: () {
+                    // confirm that this is what the user wants to do
+                    // and then mark the trail as completed
+                    return showCompleteTrailManuallyDialog(context, trail.name);
+                  },
+                  child: Column(
+                    children: [
+                      Text('Mark this', style: TextStyle(color: Colors.yellow)),
+                      Text('trail complete', style: TextStyle(color: Colors.yellow)),
+                    ],
+                    mainAxisAlignment: MainAxisAlignment.center,
+                  ),
+                )
               ],
             ),
             body: _LoadDisplayMapData(trail, inputMapData, settingsOptions),
@@ -159,6 +160,14 @@ class _LoadDisplayMapData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ----
+    // record the time the user displayed this map
+    // - eventually want to delete inactive user accounts
+    final firebaseUser = context.watch<User>();
+
+    // keep track of when user accessed this data
+    setAccessTime(firebaseUser.email);
+
     if (inputMapData.useJsonForSegments) {
       // --
       // Pull the trail segment data out of assets/MapData/encoded-segments.json
@@ -245,7 +254,6 @@ Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputM
     String segmentNameId = segment.segmentNameId;
     String encodedLocations = segment.encodedLocations;
     segment.latLong = _buildPolyLineForMap(encodedLocations);
-
 
     // is this segment completed or remaining
     if (List.castFrom(trail.completedSegs).contains(segmentNameId))

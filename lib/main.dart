@@ -26,7 +26,7 @@ class TopApp extends StatelessWidget {
                 context.read<AuthenticationService>().authStateChanges),
       ],
       child: MaterialApp(
-        title: 'Boulder Trails Challenge',
+        title: 'Boulder Trails Challenge - 2022',
         theme: ThemeData(
           buttonTheme: Theme.of(context).buttonTheme.copyWith(
                 highlightColor: Colors.deepPurple,
