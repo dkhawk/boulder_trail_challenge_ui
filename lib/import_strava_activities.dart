@@ -762,7 +762,7 @@ class _ImportStravaState extends State<_ImportStrava> {
 
               print(
                   'Activity type <<>> $activityType :: numFilesUploaded = $numFilesUploaded numSkippedActivities = $numSkippedActivities');
-              if (((activityType == 'Run') || (activityType == 'Hike') || (activityType == 'Walk')) &&
+              if (((activityType == 'Run') || (activityType == 'Hike') || (activityType == 'Walk') || (activityType == 'Ride')) &&
                   (summaryPolyline != null) &&
                   summaryPolyline.isNotEmpty) {
                 // interpolate between the 'summary_polyline' points that Strava gives us
@@ -861,7 +861,7 @@ class _ImportStravaState extends State<_ImportStrava> {
   // ----
   // Tell the user how many activities were uploaded
   Widget _numFilesAlertWidget(BuildContext context) {
-    String stravaText1 = numFilesUploaded.toString() + ' run, hike or walk activities synchronized\n';
+    String stravaText1 = numFilesUploaded.toString() + ' run, hike, walk or ride activities synchronized\n';
     stravaText1 = stravaText1 + numSkippedActivities.toString() + ' other activities skipped';
     if (tokenIsValid == false) {
       stravaText1 = 'Strava authorization failed or synchronization failed';

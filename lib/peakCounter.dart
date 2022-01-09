@@ -121,7 +121,7 @@ Map<String, Pair<double, double>> getStandardPeakLocations() {
   Map<String, Pair<double, double>> peakLocations = {};
   peakLocations['Green Mountain'] = Pair(39.982142, -105.301589);
   peakLocations['Mount Sanitas'] = Pair(40.03447091426174, -105.30517419412183);
-  peakLocations['Bear Peak'] = Pair(39.96031428910372, -105.29518390747742);
+  peakLocations['Bear Peak'] = Pair(39.960538, -105.295046);
   peakLocations['South Boulder Peak'] = Pair(39.954249, -105.298993);
   peakLocations['Flagstaff Trail (highest point)'] = Pair(40.00313869797883, -105.30619418430236);
   peakLocations['Woods Quarry'] = Pair(39.985138, -105.288258);
