@@ -74,7 +74,11 @@ var btcApi = {
         await batch.commit();
     },
     writeCompletedSegments: async(segments, athleteId) => {
-        const batch = db.batch();
+        const batchArray = [];
+        batchArray.push(db.batch());
+        let cnt = 0;
+        let batchIndex = 0;
+        
         const athleteRef = db.collection('athletes').doc(athleteId);
         const completedRef = athleteRef.collection('completed');
 
@@ -87,11 +91,19 @@ var btcApi = {
             };
 
             let compDoc = completedRef.doc(segment.segmentId);
-            batch.set(compDoc, completedSegment);
+            batchArray[batchIndex].set(compDoc, completedSegment);
+            cnt++;
+            
+            if(cnt > 400)
+            {
+                batchArray.push(db.batch());
+                batchIndex++;
+                cnt = 0;
+            }
 
             console.log(`writeCompletedSegments: ${segment.trailName} segID: ${segment.segmentId} length: ${segment.length}`);
         });
-        await batch.commit();
+        batchArray.forEach(async batch => await batch.commit());
     },
 }
 
@@ -161,16 +173,30 @@ exports.processGencodedFiles = functions.firestore
     await btcApi.updateStats(athleteId, updatedTrails, updatedStats);
 
     // Delete processed files
-    // const batch = db.batch();
-    // importedSegs.forEach((doc) => {
-    //     if (doc.id.endsWith('.gencoded') == true) {
-    //         var docName = `${doc.id}`;
-    //         console.log(`delete docName: ${docName}`);
-    //         const res = db.collection('athletes').doc(athleteId).collection('importedData').doc(docName);
-    //         batch.delete(res);
-    //     }
-    // })
-    // await batch.commit();
+    const batchArray = [];
+    batchArray.push(db.batch());
+    let cnt = 0;
+    let batchIndex = 0;
+    
+    importedSegs.forEach((doc) => {
+        if (doc.id.endsWith('.gencoded') == true) {
+            var docName = `${doc.id}`;
+            console.log(`delete docName: ${docName}`);
+            const res = db.collection('athletes').doc(athleteId).collection('importedData').doc(docName);
+            
+            batchArray[batchIndex].delete(res);
+            cnt++;
+            
+            if(cnt > 400)
+            {
+                batchArray.push(db.batch());
+                batchIndex++;
+                cnt = 0;
+            }
+        }
+    })
+
+    batchArray.forEach(async batch => await batch.commit());
 
     return filesProcessed;
 });
