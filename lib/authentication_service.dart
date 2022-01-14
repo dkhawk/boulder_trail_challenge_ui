@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 
+// maybe replace this with flutterfire_ui ....
 class AuthenticationService {
   final FirebaseAuth _firebaseAuth;
 

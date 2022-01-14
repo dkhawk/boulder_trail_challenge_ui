@@ -15,7 +15,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 # In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
 # Read more about iOS versioning at
 # https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
-version: 1.0.0+1
+version: 1.0.1+2
 
 environment:
   sdk: ">=2.9.0 <3.0.0"
@@ -40,14 +40,16 @@ dependencies:
   google_polyline_algorithm: ^3.1.0
   package_info_plus: ^1.0.3
   introduction_screen: ^2.1.0
+  marquee: ^2.2.0
 
   # strava lib
-  oauth2_client: ^2.1.0
+  oauth2_client: ^2.3.1
   uni_links: ^0.5.1
   shared_preferences: ^2.0.5
   universal_platform: ^1.0.0+1
   oauth2: ^2.0.0
   universal_html: ^2.0.8
+  web_browser_detect: ^2.0.2
 
   splashscreen: ^1.3.5
 

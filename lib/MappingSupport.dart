@@ -1,8 +1,6 @@
-import 'dart:ui';
 import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
@@ -12,8 +10,10 @@ import 'package:flutter_map_tappable_polyline/flutter_map_tappable_polyline.dart
 
 import 'package:osmp_project/trail_progress_list_widget.dart';
 import 'package:osmp_project/settings_page.dart';
+import 'package:osmp_project/markTrailComplete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
+import 'overall_status_widget.dart';
 
 // ----
 Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions settingsOptions) {
@@ -21,32 +21,53 @@ Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions sett
   inputMapData.mapName = Text(trail.name);
   inputMapData.percentComplete = trail.percentDone;
 
-  Navigator.push(context, MaterialPageRoute<void>(
-    builder: (BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text(trail.name),
-              Text((trail.percentDone * 100).toStringAsFixed(2) + '%',
-                  style: TextStyle(
-                    fontSize: 12.0,
-                  )),
-              LinearProgressIndicator(
-                value: trail.percentDone,
-                backgroundColor: inputMapData.remainingSegColor,
-                valueColor: AlwaysStoppedAnimation<Color>(inputMapData.completedSegColor),
-                minHeight: 3,
-              )
-            ],
-          ),
-        ),
-        body: _LoadDisplayMapData(trail, inputMapData, settingsOptions),
-      );
-    },
-  ));
+  // ----
+  Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        settings: RouteSettings(name: '/singleTrail'),
+        builder: (BuildContext context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text(trail.name),
+                  Text((trail.percentDone * 100).toStringAsFixed(2) + '%',
+                      style: TextStyle(
+                        fontSize: 12.0,
+                      )),
+                  LinearProgressIndicator(
+                    value: trail.percentDone,
+                    backgroundColor: inputMapData.remainingSegColor,
+                    valueColor: AlwaysStoppedAnimation<Color>(inputMapData.completedSegColor),
+                    minHeight: 3,
+                  )
+                ],
+              ),
+              actions: <Widget>[
+                //if (trail.percentDone < 0.995)
+                TextButton(
+                  onPressed: () {
+                    // confirm that this is what the user wants to do
+                    // and then mark the trail as completed
+                    return showCompleteTrailManuallyDialog(context, trail.name);
+                  },
+                  child: Column(
+                    children: [
+                      Text('Mark this', style: TextStyle(color: Colors.yellow)),
+                      Text('trail complete', style: TextStyle(color: Colors.yellow)),
+                    ],
+                    mainAxisAlignment: MainAxisAlignment.center,
+                  ),
+                )
+              ],
+            ),
+            body: _LoadDisplayMapData(trail, inputMapData, settingsOptions),
+          );
+        },
+      ));
 
   return _NoDataScreen();
 }
@@ -55,32 +76,35 @@ Widget displayMap(BuildContext context, TrailSummary trail, SettingsOptions sett
 Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData, SettingsOptions settingsOptions) {
   double percentDone = inputMapSummaryData.percentComplete;
 
-  Navigator.push(context, MaterialPageRoute<void>(
-    builder: (BuildContext context) {
-      return Scaffold(
-        appBar: AppBar(
-          title: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Text("Overall completion"),
-              Text((percentDone * 100).toStringAsFixed(2) + '%',
-                  style: TextStyle(
-                    fontSize: 12.0,
-                  )),
-              LinearProgressIndicator(
-                value: percentDone,
-                backgroundColor: inputMapSummaryData.remainingSegColor,
-                valueColor: AlwaysStoppedAnimation<Color>(inputMapSummaryData.completedSegColor),
-                minHeight: 3,
-              )
-            ],
-          ),
-        ),
-        body: _LoadDisplayMapSummaryData(inputMapSummaryData, settingsOptions),
-      );
-    },
-  ));
+  Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        settings: RouteSettings(name: '/summaryMap'),
+        builder: (BuildContext context) {
+          return Scaffold(
+            appBar: AppBar(
+              title: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: <Widget>[
+                  Text("Overall completion"),
+                  Text((percentDone * 100).toStringAsFixed(2) + '%',
+                      style: TextStyle(
+                        fontSize: 12.0,
+                      )),
+                  LinearProgressIndicator(
+                    value: percentDone,
+                    backgroundColor: inputMapSummaryData.remainingSegColor,
+                    valueColor: AlwaysStoppedAnimation<Color>(inputMapSummaryData.completedSegColor),
+                    minHeight: 3,
+                  )
+                ],
+              ),
+            ),
+            body: _LoadDisplayMapSummaryData(inputMapSummaryData, settingsOptions),
+          );
+        },
+      ));
 
   return _NoDataScreen();
 }
@@ -136,6 +160,14 @@ class _LoadDisplayMapData extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // ----
+    // record the time the user displayed this map
+    // - eventually want to delete inactive user accounts
+    final firebaseUser = context.watch<User>();
+
+    // keep track of when user accessed this data
+    setAccessTime(firebaseUser.email);
+
     if (inputMapData.useJsonForSegments) {
       // --
       // Pull the trail segment data out of assets/MapData/encoded-segments.json
@@ -228,19 +260,25 @@ Widget _populateMapData(BuildContext context, TrailSummary trail, MapData inputM
       inputMapData.completedSegs.add(segment);
     else if (List.castFrom(trail.remainingSegs).contains(segmentNameId))
       inputMapData.remainingSegs.add(segment);
-    else
-      assert("No segment data" != null);
+    else {
+      inputMapData.remainingSegs.add(segment);
+      print('No segment data <<>> ${segment.name} ${segment.segmentNameId} <> considered not completed');
+
+      //print(' percent done ${trail.percentDone} ${inputMapData.percentComplete}');
+    }
   });
 
   return _CreateFlutterMap(inputMapData, settingsOptions);
 }
 
 // ----
-Future<void> _mapInfoAlert(BuildContext context, String segmentNameID, Map<String, String> theTrailNamesMap) async {
+Future<void> _mapInfoAlert(BuildContext context, String segmentNameID, Map<String, String> theTrailNamesMap,
+    Map<String, double> theTrailLengthMap) async {
   return showDialog(
     context: context,
     barrierDismissible: true,
     builder: (BuildContext context) {
+      String trailName = theTrailNamesMap[segmentNameID];
       return Padding(
         padding: EdgeInsets.only(bottom: 450.0),
         child: Dialog(
@@ -249,7 +287,14 @@ Future<void> _mapInfoAlert(BuildContext context, String segmentNameID, Map<Strin
               height: 15,
             ),
             Text(
-              theTrailNamesMap[segmentNameID],
+              trailName,
+              style: TextStyle(fontSize: 15),
+            ),
+            SizedBox(
+              height: 2,
+            ),
+            Text(
+              "Trail Length: " + theTrailLengthMap[trailName].toStringAsFixed(2) + " miles",
               style: TextStyle(fontSize: 15),
             ),
             SizedBox(
@@ -257,7 +302,7 @@ Future<void> _mapInfoAlert(BuildContext context, String segmentNameID, Map<Strin
             ),
             Text(
               "SegmentID: " + segmentNameID,
-              style: TextStyle(fontSize: 14),
+              style: TextStyle(fontSize: 12),
             ),
             SizedBox(
               height: 15,
@@ -297,6 +342,9 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
     // map from segmentNameID to trail name
     Map theTrailNamesMap = Map<String, String>();
 
+    // map from segmentNameID to segment length
+    Map theTrailLengthMap = Map<String, double>();
+
     // completed segments in one color
     List<TaggedPolyline> theSegmentPolylines = [];
     widget.theMapData.completedSegs.forEach((SegmentSummary segment) {
@@ -305,7 +353,14 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
       theSegmentPolylines.add(polyline);
 
       // segmentNameID to trail name
-      theTrailNamesMap[segment.segmentNameId] = segment.name;
+      String trailName = segment.name;
+      theTrailNamesMap[segment.segmentNameId] = trailName;
+
+      // trail name to trail total length (convert from meters to miles)
+      if (theTrailLengthMap.isEmpty || (theTrailLengthMap.containsKey(trailName) == false))
+        theTrailLengthMap[trailName] = (segment.length) / 1609.34;
+      else
+        theTrailLengthMap[trailName] = theTrailLengthMap[trailName] + (segment.length) / 1609.34;
 
       // keep track of max/min lat long for all segments
       if (segment.boundsMap['maxLatitude'] > maxLat) maxLat = segment.boundsMap['maxLatitude'];
@@ -344,7 +399,14 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
       theSegmentPolylines.add(polyline);
 
       // segmentNameID to trail name
-      theTrailNamesMap[segment.segmentNameId] = segment.name;
+      String trailName = segment.name;
+      theTrailNamesMap[segment.segmentNameId] = trailName;
+
+      // trail name to trail total length (convert from meters to miles)
+      if (theTrailLengthMap.isEmpty || (theTrailLengthMap.containsKey(trailName) == false))
+        theTrailLengthMap[trailName] = (segment.length) / 1609.34;
+      else
+        theTrailLengthMap[trailName] = theTrailLengthMap[trailName] + (segment.length) / 1609.34;
 
       // keep track of max/min lat long for all segments
       if (segment.boundsMap['maxLatitude'] > maxLat) maxLat = segment.boundsMap['maxLatitude'];
@@ -402,16 +464,14 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
 
     // zoom out and in
     void _zoomOut() {
-      mapController.onReady.whenComplete(() =>
-          mapController.move(mapController.center, mapController.zoom - 1));
+      mapController.onReady.whenComplete(() => mapController.move(mapController.center, mapController.zoom - 1));
     }
 
     void _zoomIn() {
       // limit the zoom level
       double newZoom = mapController.zoom + 1;
       if (newZoom > 18) newZoom = 18;
-      mapController.onReady.whenComplete(
-              () => mapController.move(mapController.center, newZoom));
+      mapController.onReady.whenComplete(() => mapController.move(mapController.center, newZoom));
     }
 
     return Scaffold(
@@ -432,7 +492,7 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
               polylines: theSegmentPolylines,
               polylineCulling: true,
               pointerDistanceTolerance: 15,
-              onTap: (TaggedPolyline polyline) => _mapInfoAlert(context, polyline.tag, theTrailNamesMap),
+              onTap: (TaggedPolyline polyline) => _mapInfoAlert(context, polyline.tag, theTrailNamesMap, theTrailLengthMap),
               onMiss: () => debugPrint("No polyline tapped"),
             ),
             MarkerLayerOptions(markers: theTrailNameMarkers),

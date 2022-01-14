@@ -34,7 +34,7 @@ class _BottomNavWidgetState extends State<BottomNavWidget> {
     final List<Widget> theBottomWidget = _widgetOptions();
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Boulder Trails Challenge'),
+        title: const Text('Boulder Trails Challenge - 2022'),
       ),
       body: Center(
         child: theBottomWidget[_selectedIndex],

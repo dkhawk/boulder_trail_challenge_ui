@@ -1,5 +1,4 @@
 import 'package:file_picker/file_picker.dart';
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:gpx/gpx.dart';
 import 'package:firebase_auth/firebase_auth.dart';
@@ -9,6 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 //import 'dart:math' as math show pow;
+import 'peakCounter.dart';
 
 import 'dart:convert';
 //
@@ -51,8 +51,7 @@ class _ImportGPXActivitiesState extends State<ImportGPXActivities> {
             Image(image: AssetImage('assets/images/UploadFile.png')),
             Spacer(),
             ElevatedButton(
-              child: Text(
-                  'Press here to select the GPX files that you want to import'),
+              child: Text('Press here to select the GPX files that you want to import'),
               onPressed: () {
                 Navigator.push(
                   context,
@@ -107,7 +106,7 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
     }
 
     if ((result != null) && (result.count != 0)) {
-      print(result.names.toString());
+      //print(result.names.toString());
       result.files.forEach(
         (file) async {
           String fileNameString = '';
@@ -118,26 +117,21 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
             // create gpx from the string
             Gpx xmlGpx = GpxReader().fromString(gpxDataString);
             String gpxDateTime = '';
-            if ((xmlGpx.metadata != null) && (xmlGpx.metadata.time != null))
-              gpxDateTime = xmlGpx.metadata.time.toString();
-
+            if ((xmlGpx.metadata != null) && (xmlGpx.metadata.time != null)) gpxDateTime = xmlGpx.metadata.time.toString();
             String uploadDateTime = DateTime.now().toUtc().toString();
 
             // convert tracks in the Gpx to google encoded tracks
             List<String> encodedTrackStrings = [];
-            encodedTrackStrings = _gpxToGoogleEncodedTrack(xmlGpx);
+            encodedTrackStrings = _gpxToGoogleEncodedTrack(xmlGpx, gpxDateTime, userName);
 
             // base name for the document in firestore
             String baseTrackName = path.basenameWithoutExtension(file.name);
 
             // upload the google encoded tracks
-            for (int iTrack = 0;
-                iTrack < encodedTrackStrings.length;
-                iTrack++) {
+            for (int iTrack = 0; iTrack < encodedTrackStrings.length; iTrack++) {
               // change the gpx file extension
               // - the new file extension '.gencoded' approximates 'Google encoded'
-              String encodedTrackUploadLocation =
-                  baseTrackName + '_trackSeg' + iTrack.toString() + '.gencoded';
+              String encodedTrackUploadLocation = baseTrackName + '_trackSeg' + iTrack.toString() + '.gencoded';
 
               // a map for the uploaded data
               Map<String, dynamic> importedTrackMap = {
@@ -158,15 +152,13 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
                     .doc(encodedTrackUploadLocation)
                     .set(importedTrackMap);
               } else {
-                print(
-                    'Uploading GPX activity failed: = <> $uploadDateTime <> encodedTrackUploadLocation is EMPTY');
+                print('Uploading GPX activity failed: = <> $uploadDateTime <> encodedTrackUploadLocation is EMPTY');
               }
             }
 
             fileNameString = path.basenameWithoutExtension(file.name);
 
-            print(
-                'pickFiles: $fileNameString from $gpxDateTime was uploaded as a google encoded string');
+            print('pickFiles: $fileNameString from $gpxDateTime was uploaded as a google encoded string');
             numFilesUploaded++;
           } catch (e) {
             print(e);
@@ -179,17 +171,12 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
 
     // get and update the number of files uploaded
     // - this is used to trigger the cloud script that processes the uploaded files
-    DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
-        .collection('athletes')
-        .doc(userName)
-        .collection('importedData')
-        .doc('UploadStats')
-        .get();
+    DocumentSnapshot documentSnapshot =
+        await FirebaseFirestore.instance.collection('athletes').doc(userName).collection('importedData').doc('UploadStats').get();
     int numFilesPreviouslyUploaded = documentSnapshot.get('numFilesUploaded');
     int totalFilesUploaded = numFilesPreviouslyUploaded + numFilesUploaded;
     print('Number of files previously uploaded = $numFilesPreviouslyUploaded');
-    print(
-        'Total number of files gpx or Strava files uploaded = $totalFilesUploaded');
+    print('Total number of files gpx or Strava files uploaded = $totalFilesUploaded');
     Map<String, dynamic> numFilesUploadedMap = {
       'numFilesUploaded': totalFilesUploaded,
     };
@@ -205,23 +192,32 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
 
   // ----
   Widget _numFilesAlertWidget(BuildContext context) {
-    return AlertDialog(
-      title: Text('GPX File Import', style: TextStyle(color: Colors.white)),
-      content: Text(
-        numFilesUploaded.toString() + ' file(s) uploaded',
-        style: TextStyle(fontSize: 15, color: Colors.white),
-      ),
-      backgroundColor: Colors.deepPurple,
-      shape:
-          RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
-      actions: [
-        TextButton(
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-          child: Text('OK', style: TextStyle(color: Colors.white)),
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/images/TopoMapPattern.png"),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
         ),
-      ],
+      ),
+      width: double.infinity,
+      child: AlertDialog(
+        title: Text('GPX File Import', style: TextStyle(color: Colors.white)),
+        content: Text(
+          numFilesUploaded.toString() + ' file(s) uploaded',
+          style: TextStyle(fontSize: 15, color: Colors.white),
+        ),
+        backgroundColor: Colors.deepPurple,
+        shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
+        actions: [
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('OK', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
     );
   }
 
@@ -232,7 +228,7 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
       future: _pickFiles(userName),
       builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
         if (snapshot.hasData && (snapshot.data == 'done')) {
-          print('snapshot.hasData and done');
+          //print('importGPX: snapshot.hasData and done');
           return _numFilesAlertWidget(context);
         } else {
           return Center(
@@ -249,8 +245,7 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
                   height: 40,
                 ),
                 Spacer(),
-                Text('Uploading GPX data...',
-                    style: TextStyle(color: Colors.black, fontSize: 12.0)),
+                Text('Uploading GPX data...', style: TextStyle(color: Colors.black, fontSize: 12.0)),
                 Spacer(
                   flex: 5,
                 ),
@@ -264,18 +259,17 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
 }
 
 // ----
-List<String> _gpxToGoogleEncodedTrack(Gpx xmlGpx) {
+List<String> _gpxToGoogleEncodedTrack(Gpx xmlGpx, String dateTimeString, String userName) {
   // pull out the tracks
   List<String> encodedTracks = [];
-  String numtrks = 'number of trks = ' + xmlGpx.trks.length.toString();
-  print(numtrks);
+  // String numtrks = 'number of trks = ' + xmlGpx.trks.length.toString();
+  // print(numtrks);
 
   // loop over all separate track and track segments
   for (int iTrack = 0; iTrack < xmlGpx.trks.length; iTrack++) {
     Trk theTrack = xmlGpx.trks[iTrack];
-    String numtrksegs =
-        'number of trksegs = ' + theTrack.trksegs.length.toString();
-    print(numtrksegs);
+    //String numtrksegs = 'number of trksegs = ' + theTrack.trksegs.length.toString();
+    //print(numtrksegs);
 
     for (int iSeg = 0; iSeg < theTrack.trksegs.length; iSeg++) {
       Trkseg trackSeg = theTrack.trksegs[iSeg];
@@ -290,6 +284,9 @@ List<String> _gpxToGoogleEncodedTrack(Gpx xmlGpx) {
       // trackPoints.add([40.7, -120.95]);
       // trackPoints.add([43.252, -126.453]);
       // encoded track for these three points is `_p~iF~ps|U_ulLnnqC_mqNvxq`@'
+
+      // count how many times the track crosses a peak
+      peakCounter(trackPoints, dateTimeString, userName);
 
       String encodedTrack = encodePolyline(trackPoints);
       encodedTracks.add(encodedTrack);

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
 import 'package:provider/provider.dart';
@@ -10,10 +11,19 @@ class SignInPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // are we in a web browser on a desktop device or a mobile device
+    // - controls padding and dot size changes for narrower screen
+    bool isWebDesktop = true;
+    if ((defaultTargetPlatform == TargetPlatform.android) || (defaultTargetPlatform == TargetPlatform.iOS)) {
+      isWebDesktop = false;
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Boulder Trails Challenge'),
+        title: Text('Boulder Trails Challenge - 2022'),
       ),
+      // don't resize when keyboard comes up on mobile
+      resizeToAvoidBottomInset: false,
       body: Padding(
         padding: EdgeInsets.all(16.0),
         child: Column(
@@ -50,8 +60,7 @@ class SignInPage extends StatelessWidget {
                                 password: passwordController.text.trim(),
                               )
                               .then(
-                                (returnString) =>
-                                    signInUpAlert(context, returnString),
+                                (returnString) => signInUpAlert(context, returnString),
                               );
                         },
                         child: Text("Sign in"),
@@ -111,6 +120,44 @@ class SignInPage extends StatelessWidget {
                     child: Text("New account"),
                   ),
                 ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.fromLTRB(8, 30, 8, 0),
+              child: Text(
+                'Welcome to the Boulder Trails Challenge!\n',
+                style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              ),
+            ),
+            isWebDesktop
+                ? Text(
+                    'Boulder OSMP challenges visitors to run or hike all of the OSMP trails.',
+                    textAlign: TextAlign.center,
+                  )
+                : Text(
+                    'Boulder OSMP challenges visitors \nto run or hike all of the OSMP trails.',
+                    textAlign: TextAlign.center,
+                  ),
+            isWebDesktop
+                ? Text(
+                    'This application uses imported Strava or GPX data to help you map & track your progress.',
+                    textAlign: TextAlign.center,
+                  )
+                : Text(
+                    'This application uses imported Strava or GPX data\n to help you map & track your progress.',
+                    textAlign: TextAlign.center,
+                  ),
+            Text(
+              'Happy Running!',
+              textAlign: TextAlign.center,
+              style: TextStyle(fontWeight: FontWeight.bold),
+            ),
+            Flexible(
+              child: Padding(
+                padding: const EdgeInsets.all(40.0),
+                child: Image(
+                  image: AssetImage('assets/images/FlatIrons.jpg'),
+                ),
               ),
             ),
           ],
