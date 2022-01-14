@@ -19,6 +19,7 @@ import 'package:oauth2_client/oauth2_client.dart';
 // authorization on web side::
 import 'package:oauth2/oauth2.dart' as oauth2;
 import 'package:universal_html/html.dart' as html;
+import 'package:web_browser_detect/web_browser_detect.dart';
 
 // Google polyline encode/decode
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
@@ -56,6 +57,37 @@ class _StravaOAuth2ClientMobile extends OAuth2Client {
           customUriScheme: 'myapp',
           redirectUri: 'myapp://localhost',
         );
+}
+
+// ----
+// currently only going to check whether popups are blocked on Safari
+// - Safari does not seem to warn the user that a popup has been blocked
+//   so it appears that the app has hung
+// - other browsers seem to be better behaved ... weird stuff
+// - other browsers act differently using the following code
+bool detectPopUpBlocker() {
+  final browser = Browser.detectOrNull();
+  if (browser != null) {
+    print('detectPopUpBlocker: running on browser <> ${browser.browser}');
+
+    if (browser.browser.contains('Safari') == false) {
+      return false;
+    }
+
+    html.WindowBase _popupWindowTest = html.window.open('', 'popupTest', 'width=100,height=100');
+    if (_popupWindowTest == null) {
+      return true;
+    }
+    try {
+      _popupWindowTest.close();
+      print('popups not blocked');
+      return false;
+    } catch (e) {
+      print('popups blocked');
+      return true;
+    }
+  }
+  return false;
 }
 
 // ----
@@ -315,6 +347,14 @@ Future<Pair<oauth2.Client, String>> _getAuthClient(
 
     print('strava '
         'authorizationUrl <> ${authorizationUrl.toString()}');
+
+    // warn user that popups are blocked
+    // - currently only for Safari
+    if (detectPopUpBlocker()) {
+      String longString = 'Error: Please temporarily disable the pop-up blocker in your web browser.\n\n';
+      longString = longString + 'For iPhone/Safari: go to Settings/Safari/Block Pop-ups';
+      return Pair(null, longString);
+    }
 
     // Launch a separate window for Strava and listen for the redirect that
     // contains the code; extract the code
