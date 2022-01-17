@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 
 showCompleteTrailManuallyDialog(BuildContext context, String trailName) {
   final firebaseUser = Provider.of<User>(context, listen: false);
-  String userName = firebaseUser.email;
+  String userName = firebaseUser.email.toLowerCase();
 
   // ----
   // Show the confirmation dialog above asking the user to confirm that user really wants to mark this trail as complete

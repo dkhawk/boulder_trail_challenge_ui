@@ -56,7 +56,7 @@ class SignInPage extends StatelessWidget {
                           context
                               .read<AuthenticationService>()
                               .signIn(
-                                email: emailController.text.trim(),
+                                email: emailController.text.trim().toLowerCase(),
                                 password: passwordController.text.trim(),
                               )
                               .then(
@@ -95,7 +95,7 @@ class SignInPage extends StatelessWidget {
                       //   name is malformed
                       registerNewAcct(
                         context,
-                        emailController.text.trim(),
+                        emailController.text.trim().toLowerCase(),
                         passwordController.text.trim(),
                       ).then(
                         (returnString) {
@@ -110,7 +110,7 @@ class SignInPage extends StatelessWidget {
                             // - this can take a while so a circular progress is shown
                             createNewAcct(
                               context,
-                              emailController.text.trim(),
+                              emailController.text.trim().toLowerCase(),
                               passwordController.text.trim(),
                             );
                           }
