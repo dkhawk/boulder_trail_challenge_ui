@@ -19,7 +19,7 @@ class TrailProgressListWidget extends StatelessWidget {
 
     CollectionReference trailCollection = FirebaseFirestore.instance
         .collection('athletes')
-        .doc(firebaseUser.email)
+        .doc(firebaseUser.email.toLowerCase())
         .collection("trailStats");
 
     return StreamBuilder<QuerySnapshot>(

@@ -189,7 +189,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             context,
                             MaterialPageRoute(builder: (context) {
                               return Scaffold(
-                                body: LoadSegmentsData(firebaseUser.email, '', true /*reset trail data*/),
+                                body: LoadSegmentsData(firebaseUser.email.toLowerCase(), '', true /*reset trail data*/),
                               );
                             }),
                           ).whenComplete(() => Navigator.of(context).pop());
@@ -216,7 +216,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
             onPressed: () {
               // sign out of strava
-              revokeStravaAccess(firebaseUser.email);
+              revokeStravaAccess(firebaseUser.email.toLowerCase());
               context.read<AuthenticationService>().signOut();
             },
           ),

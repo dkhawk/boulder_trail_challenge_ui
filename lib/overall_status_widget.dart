@@ -31,10 +31,10 @@ class OverallStatusWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
-    setAccessTime(firebaseUser.email);
+    setAccessTime(firebaseUser.email.toLowerCase());
 
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email).snapshots().where(
+      stream: FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email.toLowerCase()).snapshots().where(
             (event) => event.data().containsKey('overallStats'),
           ),
       builder: (context, snapshot) {

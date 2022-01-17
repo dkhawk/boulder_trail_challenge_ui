@@ -544,7 +544,7 @@ class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
-    String userName = firebaseUser.email;
+    String userName = firebaseUser.email.toLowerCase();
 
     // check when the user last updated
     _updateStartDate(userName);

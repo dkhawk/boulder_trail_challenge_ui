@@ -120,7 +120,7 @@ class _LoadDisplayMapSummaryData extends StatelessWidget {
     final firebaseUser = context.watch<User>();
 
     Stream theStream =
-        FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email).collection("trailStats").snapshots();
+        FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email.toLowerCase()).collection("trailStats").snapshots();
     return StreamBuilder<QuerySnapshot>(
       stream: theStream,
       builder: (context, snapshot) {
@@ -166,7 +166,7 @@ class _LoadDisplayMapData extends StatelessWidget {
     final firebaseUser = context.watch<User>();
 
     // keep track of when user accessed this data
-    setAccessTime(firebaseUser.email);
+    setAccessTime(firebaseUser.email.toLowerCase());
 
     if (inputMapData.useJsonForSegments) {
       // --

@@ -32,7 +32,7 @@ class _ImportGPXActivitiesState extends State<ImportGPXActivities> {
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
-    String userName = firebaseUser.email;
+    String userName = firebaseUser.email.toLowerCase();
 
     return Scaffold(
       appBar: AppBar(
