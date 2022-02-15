@@ -818,7 +818,7 @@ class _ImportStravaState extends State<_ImportStrava> {
                   'gpxDateTime': activitySummary['start_date_local'], // local time
                   'uploadDateTime': uploadDateTime,
                   'userName': userName,
-                  //'encodedLocation': theActivityMap['summary_polyline'],
+                  'summary_polyline': theActivityMap['summary_polyline'],
                   'encodedLocation': interpolatedLocations,
                   'processed': false,
                 };
