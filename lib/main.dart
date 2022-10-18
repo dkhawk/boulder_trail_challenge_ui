@@ -9,7 +9,15 @@ import 'package:provider/provider.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp();
+  try {
+    await Firebase.initializeApp(
+        options: FirebaseOptions(
+      apiKey: "AIzaSyAfZAwFxtjlMh600Qm6yHTkb-q_XJC0SWI",
+      appId: "1:30173110863:web:adfe8f6a8c294d42c3803a",
+      messagingSenderId: "30173110863",
+      projectId: "boulder-trail-challenge",
+    ));
+  } catch (e) {}
   runApp(TopApp());
 }
 
@@ -21,9 +29,7 @@ class TopApp extends StatelessWidget {
         Provider<AuthenticationService>(
           create: (_) => AuthenticationService(FirebaseAuth.instance),
         ),
-        StreamProvider(
-            create: (context) =>
-                context.read<AuthenticationService>().authStateChanges),
+        StreamProvider(create: (context) => context.read<AuthenticationService>().authStateChanges),
       ],
       child: MaterialApp(
         title: 'Boulder Trails Challenge - 2022',
