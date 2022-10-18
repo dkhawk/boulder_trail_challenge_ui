@@ -8,15 +8,17 @@ import 'package:osmp_project/sign_in_page.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(
-      name: 'dev project',
-      options: FirebaseOptions(
-        apiKey: "AIzaSyAfZAwFxtjlMh600Qm6yHTkb-q_XJC0SWI",
-        appId: "1:30173110863:web:adfe8f6a8c294d42c3803a",
-        messagingSenderId: "30173110863",
-        projectId: "boulder-trail-challenge",
-      ));
+  try {
+    WidgetsFlutterBinding.ensureInitialized();
+    await Firebase.initializeApp(
+        options: FirebaseOptions(
+      apiKey: "AIzaSyAfZAwFxtjlMh600Qm6yHTkb-q_XJC0SWI",
+      appId: "1:30173110863:web:adfe8f6a8c294d42c3803a",
+      messagingSenderId: "30173110863",
+      projectId: "boulder-trail-challenge",
+    ));
+  } catch (e) {}
+
   runApp(TopApp());
 }
 
