@@ -410,12 +410,12 @@ Future<Pair<oauth2.Client, String>> _getAuthClient(
 
     // knock out any existing tokens in local storage
     OAuth2Helper oAuth2HelperCleaner = OAuth2Helper(stravaClient,
-        grantType: OAuth2Helper.AUTHORIZATION_CODE, clientId: clientId, clientSecret: secret, scopes: ['activity:read_all']);
+        grantType: OAuth2Helper.authorizationCode, clientId: clientId, clientSecret: secret, scopes: ['activity:read_all']);
     await oAuth2HelperCleaner.removeAllTokens();
 
     // start grabbing the tokens from Strava
     OAuth2Helper oAuth2Helper = OAuth2Helper(stravaClient,
-        grantType: OAuth2Helper.AUTHORIZATION_CODE, clientId: clientId, clientSecret: secret, scopes: ['activity:read_all']);
+        grantType: OAuth2Helper.authorizationCode, clientId: clientId, clientSecret: secret, scopes: ['activity:read_all']);
 
     // take a look at the token
     // - returns a previously acquired token or gets a new one if necessary
@@ -1004,7 +1004,7 @@ Future<void> revokeStravaAccess(String userName) async {
       secret: secret,
     );
     OAuth2Helper oAuth2HelperCleaner = OAuth2Helper(stravaClient,
-        grantType: OAuth2Helper.AUTHORIZATION_CODE, clientId: clientId, clientSecret: secret, scopes: ['activity:read_all']);
+        grantType: OAuth2Helper.authorizationCode, clientId: clientId, clientSecret: secret, scopes: ['activity:read_all']);
     await oAuth2HelperCleaner.removeAllTokens();
   }
 

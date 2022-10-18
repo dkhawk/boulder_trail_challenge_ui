@@ -23,27 +23,27 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_auth_web: ^3.0.0
+  firebase_auth_web: ^4.6.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.1
   firebase_core: ^1.0.2
   firebase_auth: ^3.0.1
-  cloud_firestore: ^2.4.0
-  provider: ^5.0.0
-  google_fonts: ^2.0.0
+  cloud_firestore: ^3.5.1
+  provider: ^6.0.4
+  google_fonts: ^3.0.1
   url_launcher: ^6.0.9
   firebase_storage: ^10.0.1
-  file_picker: ^3.0.3
+  file_picker: ^5.2.1
   gpx: ^2.1.0
   google_polyline_algorithm: ^3.1.0
-  package_info_plus: ^1.0.3
-  introduction_screen: ^2.1.0
+  package_info_plus: ^2.0.0
+  introduction_screen: ^3.0.2
   marquee: ^2.2.0
 
   # strava lib
-  oauth2_client: ^2.3.1
+  oauth2_client: ^3.0.0
   uni_links: ^0.5.1
   shared_preferences: ^2.0.5
   universal_platform: ^1.0.0+1
@@ -54,9 +54,9 @@ dependencies:
   splashscreen: ^1.3.5
 
   # map creation
-  flutter_map: ^0.13.1
+  flutter_map: ^1.1.1
   latlong2: ^0.8.0
-  flutter_map_tappable_polyline: ^2.0.0
+  flutter_map_tappable_polyline: ^3.2.0
 
 dev_dependencies:
   flutter_test:
