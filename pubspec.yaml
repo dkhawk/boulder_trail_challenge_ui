@@ -38,7 +38,7 @@ dependencies:
   file_picker: ^5.2.1
   gpx: ^2.1.0
   google_polyline_algorithm: ^3.1.0
-  package_info_plus: ^2.0.0
+  package_info_plus: ^3.0.0
   introduction_screen: ^3.0.2
   marquee: ^2.2.0
 
@@ -57,6 +57,9 @@ dependencies:
   flutter_map: ^1.1.1
   latlong2: ^0.8.0
   flutter_map_tappable_polyline: ^3.2.0
+
+dependency_overrides:
+  firebase_core_platform_interface: 4.5.1
 
 dev_dependencies:
   flutter_test:
