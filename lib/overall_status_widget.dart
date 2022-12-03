@@ -25,8 +25,8 @@ Future<void> setAccessTime(String email) async {
 
 class OverallStatusWidget extends StatelessWidget {
   final SettingsOptions settingsOptions;
-
-  OverallStatusWidget(this.settingsOptions);
+  final bool allowUserToDisplayMapUsingButton;
+  OverallStatusWidget(this.settingsOptions, this.allowUserToDisplayMapUsingButton);
 
   @override
   Widget build(BuildContext context) {
@@ -91,11 +91,19 @@ class OverallStatusWidget extends StatelessWidget {
                   ),
                   padding: EdgeInsets.all(0),
                   alignment: Alignment.centerRight,
-                  onPressed: () => displayMapSummary(context, inputMapSummaryData, settingsOptions),
+                  onPressed: allowUserToDisplayMapUsingButton
+                      ? () => displayMapSummary(context, inputMapSummaryData, settingsOptions)
+                      : null,
                 ),
-                onTap: () => displayMapSummary(context, inputMapSummaryData, settingsOptions),
+                onTap: allowUserToDisplayMapUsingButton
+                    ? () => displayMapSummary(context, inputMapSummaryData, settingsOptions)
+                    : null,
               ),
               progress,
+              if (allowUserToDisplayMapUsingButton == false)
+                Expanded(
+                  child: LoadDisplayMapSummaryData(inputMapSummaryData, settingsOptions),
+                ),
             ],
           )),
     );

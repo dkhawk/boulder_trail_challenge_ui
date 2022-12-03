@@ -39,7 +39,7 @@ class _TrailsProgressState extends State<TrailsProgressWidget> {
       width: double.infinity,
       child: Column(
         children: <Widget>[
-          OverallStatusWidget(settingsOptions),
+          OverallStatusWidget(settingsOptions, true), // enable map button; do not display full map
           FilterWidget(
             progressFilterValue: _progressFilterValue,
             onChanged: _handleProgressFilterChanged,

@@ -101,7 +101,7 @@ Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData, Sett
                 ],
               ),
             ),
-            body: _LoadDisplayMapSummaryData(inputMapSummaryData, settingsOptions),
+            body: LoadDisplayMapSummaryData(inputMapSummaryData, settingsOptions),
           );
         },
       ));
@@ -110,8 +110,8 @@ Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData, Sett
 }
 
 //----
-class _LoadDisplayMapSummaryData extends StatelessWidget {
-  _LoadDisplayMapSummaryData(this.inputMapSummaryData, this.settingsOptions);
+class LoadDisplayMapSummaryData extends StatelessWidget {
+  LoadDisplayMapSummaryData(this.inputMapSummaryData, this.settingsOptions);
   final MapData inputMapSummaryData;
   final SettingsOptions settingsOptions;
 
