@@ -5,24 +5,6 @@ import 'package:osmp_project/MappingSupport.dart';
 import 'package:osmp_project/settings_page.dart';
 import 'package:provider/provider.dart';
 
-Future<void> setAccessTime(String email) async {
-  // ----
-  // record the time the user accessed this data
-  // - eventually want to delete inactive user accounts
-  Map<String, Object> lastAccessTime = {
-    'lastAccessTime': DateTime.now().toString(), // local time
-    'dateTime': DateTime.now().millisecondsSinceEpoch,
-  };
-  Map<String, Object> accessTime = {
-    'accessTime': lastAccessTime,
-  };
-  await FirebaseFirestore.instance
-      .collection('athletes')
-      .doc(email)
-      .set(accessTime, SetOptions(merge: true))
-      .whenComplete(() => {print('updating access time <>')});
-}
-
 class OverallStatusWidget extends StatelessWidget {
   final SettingsOptions settingsOptions;
   final bool allowUserToDisplayMapUsingButton;
@@ -31,8 +13,6 @@ class OverallStatusWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
-    setAccessTime(firebaseUser.email.toLowerCase());
-
     return StreamBuilder<DocumentSnapshot>(
       stream: FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email.toLowerCase()).snapshots().where(
             (event) => event.data().containsKey('overallStats'),
