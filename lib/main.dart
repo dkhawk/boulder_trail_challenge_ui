@@ -32,12 +32,12 @@ class TopApp extends StatelessWidget {
         StreamProvider(create: (context) => context.read<AuthenticationService>().authStateChanges),
       ],
       child: MaterialApp(
-        title: 'Boulder Trails Challenge - 2022',
+        title: 'Boulder Trails Challenge - 2023',
         theme: ThemeData(
           buttonTheme: Theme.of(context).buttonTheme.copyWith(
-                highlightColor: Colors.deepPurple,
+                highlightColor: Colors.indigo,
               ),
-          primarySwatch: Colors.deepPurple,
+          primarySwatch: Colors.,
           textTheme: GoogleFonts.robotoTextTheme(
             Theme.of(context).textTheme,
           ),

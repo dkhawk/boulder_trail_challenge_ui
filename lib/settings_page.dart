@@ -73,7 +73,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           Text(
-            "Using OSMP trail data from 30-Nov-2021; 08:30",
+            "Using OSMP trail data from 17-Dec-2021",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               backgroundColor: Colors.white,
