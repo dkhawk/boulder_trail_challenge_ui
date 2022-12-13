@@ -37,7 +37,7 @@ class TopApp extends StatelessWidget {
           buttonTheme: Theme.of(context).buttonTheme.copyWith(
                 highlightColor: Colors.indigo,
               ),
-          primarySwatch: Colors.,
+          primarySwatch: Colors.indigo,
           textTheme: GoogleFonts.robotoTextTheme(
             Theme.of(context).textTheme,
           ),
