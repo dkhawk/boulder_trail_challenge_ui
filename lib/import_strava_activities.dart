@@ -498,7 +498,7 @@ class ImportStravaActivities extends StatefulWidget {
 
 // ----
 class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
-  DateTime selectedStartDate = DateTime(2023, 1, 1);
+  DateTime selectedStartDate = DateTime(2022, 12, 1);
   bool userChangedStartDate = false;
 
   // ----
@@ -512,9 +512,11 @@ class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
       firstDate: DateTime(2020, 1, 1),
       lastDate: DateTime.now(),
     );
+    print(' picked <> $picked');
     if (picked != null && picked != selectedStartDate) userChangedStartDate = true;
     setState(() {
-      selectedStartDate = picked;
+      if(userChangedStartDate)
+        selectedStartDate = picked;
     });
   }
 
@@ -928,7 +930,7 @@ class _ImportStravaState extends State<_ImportStrava> {
           stravaText1,
           style: TextStyle(fontSize: 15, color: Colors.white),
         ),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.indigo,
         shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
         actions: [
           TextButton(

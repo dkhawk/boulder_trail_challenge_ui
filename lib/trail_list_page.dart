@@ -116,7 +116,7 @@ class ProgressStatusFilterWidget extends StatelessWidget {
             style: TextStyle(color: Colors.deepPurple),
             underline: Container(
               height: 2,
-              color: Colors.deepPurpleAccent,
+              color: Colors.indigo,
             ),
             onChanged: (String newValue) {
               onChanged(newValue);

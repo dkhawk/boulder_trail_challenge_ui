@@ -207,7 +207,7 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
           numFilesUploaded.toString() + ' file(s) uploaded',
           style: TextStyle(fontSize: 15, color: Colors.white),
         ),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.indigo,
         shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
         actions: [
           TextButton(

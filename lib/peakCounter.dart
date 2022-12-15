@@ -86,7 +86,7 @@ Widget _peakCountsDisplay(BuildContext context, Map<String, int> peakCountFromFi
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: entries.toList(),
         )),
-    backgroundColor: Colors.deepPurple,
+    backgroundColor: Colors.indigo,
     shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
     actions: <Widget>[
       TextButton(

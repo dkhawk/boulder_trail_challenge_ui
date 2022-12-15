@@ -31,7 +31,7 @@ showCompleteTrailManuallyDialog(BuildContext context, String trailName) {
           style: TextStyle(fontSize: 14, color: Colors.white),
           textAlign: TextAlign.center,
         ),
-        backgroundColor: Colors.deepPurple,
+        backgroundColor: Colors.indigo,
         shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
         actions: [
           TextButton(
@@ -196,7 +196,7 @@ class _UpdateUploadStats extends StatelessWidget {
                 '"$trailName" Marked As Complete',
                 style: TextStyle(fontSize: 16, color: Colors.white),
               ),
-              backgroundColor: Colors.deepPurple,
+              backgroundColor: Colors.indigo,
               shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
               actions: <Widget>[
                 TextButton(
