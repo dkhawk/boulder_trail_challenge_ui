@@ -512,11 +512,10 @@ class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
       firstDate: DateTime(2020, 1, 1),
       lastDate: DateTime.now(),
     );
-    print(' picked <> $picked');
+
     if (picked != null && picked != selectedStartDate) userChangedStartDate = true;
     setState(() {
-      if(userChangedStartDate)
-        selectedStartDate = picked;
+      if (userChangedStartDate) selectedStartDate = picked;
     });
   }
 
