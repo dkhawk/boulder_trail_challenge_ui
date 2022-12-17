@@ -299,6 +299,23 @@ Future<String> _uploadTrailStats(
   // update the summit counts
   await resetPeakCounts(accountName).whenComplete(() => print('_uploadTrailStats ==== resetPeakCounts whenComplete'));
 
+  // clear out the 'trailStats' collection
+  await firestoreSecondary.collection('athletes').doc(accountName).collection('trailStats').get().then((snapshot) {
+    for (DocumentSnapshot doc in snapshot.docs) {
+      print(' deleting trail: ${doc.get('name').toString()}');
+      doc.reference.delete();
+    }
+  });
+  print('_uploadTrailStats ==== deleted \'trailStats\' segments');
+
+  // clear out the 'completed' collection
+  await firestoreSecondary.collection('athletes').doc(accountName).collection('completed').get().then((snapshot) {
+    for (DocumentSnapshot doc in snapshot.docs) {
+      doc.reference.delete();
+    }
+  });
+  print('_uploadTrailStats ==== deleted \'completed\' segments');
+
   // upload the trail stats
   trails.forEach(
     (trailId, trail) async {
@@ -308,17 +325,10 @@ Future<String> _uploadTrailStats(
           .collection('trailStats')
           .doc(trailId)
           .set(trail)
-          .whenComplete(() => print('    uploaded trail $trailId'));
+          .whenComplete(() => print('    uploaded trail $trailId ${trail['name']}'));
     },
   );
   // print('_uploadTrailStats ==== trailStats finished');
-
-  await firestoreSecondary.collection('athletes').doc(accountName).collection('completed').get().then((snapshot) {
-    for (DocumentSnapshot doc in snapshot.docs) {
-      doc.reference.delete();
-    }
-  });
-  // print('_uploadTrailStats ==== deleted completed segments');
 
   // keep track of how many gpx files the user has uploaded
   // - when this is updated this triggers a cloud function to process the data
@@ -381,7 +391,7 @@ class _WelcomePage extends StatelessWidget {
           Spacer(flex: 4),
           Text(
             welcomeString,
-            style: TextStyle(fontSize: 30, color: Colors.purple),
+            style: TextStyle(fontSize: 30, color: Colors.indigo),
             textAlign: TextAlign.center,
           ),
           Spacer(
