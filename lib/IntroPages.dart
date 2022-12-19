@@ -153,8 +153,8 @@ class _IntroPagesState extends State<IntroPages> {
           ),
         ),
         PageViewModel(
-          title: "There are three main pages in the Boulder Trails Challenge app:",
-          body: "(1) Trails, (2) Info/Help and (3) Import Data/Settings",
+          title: "There are four main pages in the Boulder Trails Challenge app:",
+          body: "(1) Map, (2) Trails, (3) Info/Help and (4) Import Data/Settings",
           image: _buildImage('HelpTrailsPage1.png'),
           decoration: isWebDesktop ? pageDecoration : pageDecorationMobile,
         ),
@@ -173,7 +173,7 @@ class _IntroPagesState extends State<IntroPages> {
         PageViewModel(
           title: "The Import Data/Settings Page",
           body:
-              "Synchronize your activities with Strava or import GPX files from your computer or device\nOnly runs, walks and hikes are synchronized from Strava",
+              "Synchronize your activities with Strava or import GPX files from your computer or device\nOnly runs, walks, rides and hikes are synchronized from Strava",
           image: _buildImage('HelpSettings1.png'),
           decoration: isWebDesktop ? pageDecoration : pageDecorationMobile,
         ),
