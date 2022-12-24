@@ -27,6 +27,9 @@ import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 // count how many times someone has hit a peak
 import 'peak_counter.dart';
 
+// utilities
+import 'package:osmp_project/pair.dart';
+
 // ----
 // globals
 
@@ -36,15 +39,6 @@ import 'oursecrets.dart';
 
 final String tokenUrl = 'https://www.strava.com/api/v3/oauth/token?client_id=$clientId&client_secret=$secret';
 final String revokeUrl = 'https://www.strava.com/oauth/deauthorize';
-
-// ----
-// What? No pair object in Dart? Rolling one...
-class Pair<T1, T2> {
-  final T1 a;
-  final T2 b;
-
-  Pair(this.a, this.b);
-}
 
 // ----
 // Mobile-only side client
@@ -113,8 +107,7 @@ class _ListenWebAsync {
         // - but may not have given activity read access
         String eventDataString = event.data.toString();
         if (eventDataString.contains('code=')) {
-          // print(
-          //     '_listenStravaRedirectWeb login event data2 <> $eventDataString');
+          // print('_listenStravaRedirectWeb login event data2 <> $eventDataString');
 
           // did user give activity read access
           String code = '';
@@ -259,15 +252,16 @@ Future<Pair<oauth2.Client, String>> _getAuthClient(
   // - will refresh credentials if necessary
   print('_getCredentialsFromFirestore:');
   Pair<oauth2.Credentials, String> existingCredentials = await _getCredentialsFromFirestore(userName);
-  print('_getCredentialsFromFirestore: return error string: ${existingCredentials.b}');
 
-  if (existingCredentials.a != null) {
+  print('_getCredentialsFromFirestore: return error string: ${existingCredentials.second}');
+
+  if (existingCredentials.first != null) {
     print('strava existingCredentials.a != null');
     // create the Client
     oauth2.Client theClient;
     try {
       theClient = oauth2.Client(
-        existingCredentials.a,
+        existingCredentials.first,
         identifier: clientId,
         secret: secret,
       );
@@ -474,8 +468,7 @@ Future<Pair<oauth2.Client, String>> _getAuthClient(
   // String idToken = oauth2Client.credentials.idToken;
   // String refreshToken = oauth2Client.credentials.refreshToken;
   // DateTime dateTime = oauth2Client.credentials.expiration;
-  // int expirationInMilliSeconds =
-  //     oauth2Client.credentials.expiration.millisecondsSinceEpoch;
+  // int expirationInMilliSeconds = oauth2Client.credentials.expiration.millisecondsSinceEpoch;
   // print('   accessToken  <> $accessToken');
   // print('   idToken      <> $idToken');
   // print('   refreshToken <> $refreshToken');
@@ -599,7 +592,7 @@ class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
                   MaterialPageRoute<void>(
                     builder: (BuildContext context) {
                       return Scaffold(
-                        body: _ImportStrava(
+                        body: ImportStrava(
                           userName,
                           selectedStartDate,
                         ),
@@ -636,8 +629,8 @@ class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
 }
 
 // ----
-class _ImportStrava extends StatefulWidget {
-  _ImportStrava(this.userName, this.selectedStartDate);
+class ImportStrava extends StatefulWidget {
+  ImportStrava(this.userName, this.selectedStartDate);
   final userName;
   final selectedStartDate;
 
@@ -646,7 +639,7 @@ class _ImportStrava extends StatefulWidget {
 }
 
 // ----
-class _ImportStravaState extends State<_ImportStrava> {
+class _ImportStravaState extends State<ImportStrava> with SingleTickerProviderStateMixin {
   _ImportStravaState(this.userName, this.selectedStartDate);
   final userName;
   final selectedStartDate;
@@ -750,13 +743,13 @@ class _ImportStravaState extends State<_ImportStrava> {
     }
 
     // exit early if could not create a valid oauth2.Client
-    if (client.a == null) {
+    if (client.first == null) {
       print('_getActivities: _getAuthClient client is null <>');
       tokenIsValid = false;
-      stravaErrorMsg = client.b;
+      stravaErrorMsg = client.second;
     }
-    if (client.b.isNotEmpty) {
-      print('_getActivities: _getAuthClient Error message: ${client.b} <>');
+    if (client.second.isNotEmpty) {
+      print('_getActivities: _getAuthClient Error message: ${client.second} <>');
     }
 
     // pull activities out of Strava using HTTP requests
@@ -776,13 +769,28 @@ class _ImportStravaState extends State<_ImportStrava> {
             '?before=$_nowTime&after=$_afterTime&page=$_pageNumber&per_page=$_perPage';
         var activities;
         try {
-          activities = await client.a.read(Uri.parse(reqActivities));
+          activities = await client.first.read(Uri.parse(reqActivities));
         } on ClientException catch (error) {
           tokenIsValid = false;
           print('_getActivities: client.read threw ClientException <> ${error.message}');
+
+          // catch a few common and uncommon errors:
+          if (error.message.contains('429')) {
+            stravaErrorMsg = 'Strava rate limit exceeded. Please wait 15 minutes or so before re-syncing.';
+          }
+          if (error.message.contains('500')) {
+            stravaErrorMsg = 'Strava is having issues. Please check status at https://status.strava.com';
+          }
+          if (error.message.contains('401')) {
+            stravaErrorMsg = 'Unauthorized access. Please disconnect from Strava and reconnect.';
+          }
+          if (error.message.contains('403')) {
+            stravaErrorMsg = 'Forbidden access. Please disconnect from Strava and reconnect.';
+          }
         } catch (error) {
           tokenIsValid = false;
           print('_getActivities: client.read threw exception <> ${error.data.toString()}');
+          stravaErrorMsg = 'Unknown error: ${error.data.toString()}';
         }
 
         // keep track of how many activities so we can move to the next Strava page
@@ -871,8 +879,8 @@ class _ImportStravaState extends State<_ImportStrava> {
     }
 
     // get and update the number of files uploaded
-    // - this is used to trigger the cloud script that processes the uploaded files
-    if (numFilesUploaded > 0) {
+    // - if this number changes the cloud script that processes the uploaded files gets triggered
+    {
       DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
           .collection('athletes')
           .doc(userName)
@@ -944,6 +952,22 @@ class _ImportStravaState extends State<_ImportStrava> {
   }
 
   // ----
+  // color animation for circularProgressIndicator when Importing Strava activities...
+  AnimationController _animationController;
+  Animation _colorTween;
+  initState() {
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _animationController.repeat(reverse: true);
+    _colorTween = _animationController.drive(ColorTween(begin: Colors.red, end: Colors.yellow));
+    super.initState();
+  }
+
+  dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  // ----
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String>(
@@ -953,25 +977,29 @@ class _ImportStravaState extends State<_ImportStrava> {
           //print('Strava activities: snapshot.hasData and done');
           return _numFilesAlertWidget(context);
         } else {
-          return Center(
-            child: Column(
-              children: [
-                Spacer(
-                  flex: 5,
-                ),
-                SizedBox(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+          return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/TopoMapPattern.png"),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
+              ),
+            ),
+            width: double.infinity,
+            child: AlertDialog(
+              title: Text('Importing Strava activities...', style: TextStyle(fontSize: 20, color: Colors.white)),
+              backgroundColor: Colors.indigo,
+              shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(
+                    // valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+                    valueColor: _colorTween,
+                    // backgroundColor: Colors.black,
                   ),
-                  width: 40,
-                  height: 40,
-                ),
-                Spacer(),
-                Text('Importing Strava activities...', style: TextStyle(color: Colors.black, fontSize: 12.0)),
-                Spacer(
-                  flex: 5,
-                ),
-              ],
+                ],
+              ),
             ),
           );
         }
@@ -995,12 +1023,12 @@ Future<void> revokeStravaAccess(String userName) async {
     print('revokeStravaAccess:: _getAuthClient threw exception <> ${e.data.toString()}');
   }
 
-  if (client.a != null) {
-    String accessToken = client.a.credentials.accessToken;
+  if (client.first != null) {
+    String accessToken = client.first.credentials.accessToken;
     Uri revokeUri = Uri.parse(revokeUrl + '?access_token=$accessToken');
 
     // print('revokeStravaAccess:: revokeUri <> $revokeUri');
-    await client.a.post(revokeUri);
+    await client.first.post(revokeUri);
   }
 
   // knock out any existing tokens in local storage - mobile only

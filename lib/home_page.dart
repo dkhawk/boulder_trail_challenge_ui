@@ -1,12 +1,14 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import 'package:osmp_project/overall_status_widget.dart';
 import 'package:osmp_project/settings_page.dart';
 import 'package:osmp_project/trail_list_page.dart';
 import 'package:osmp_project/intro_pages.dart';
-import 'package:provider/provider.dart';
 
-import 'overall_status_widget.dart';
+import 'package:osmp_project/strava_utils.dart';
 
 /// This is the stateful widget that the main application instantiates.
 class BottomNavWidget extends StatefulWidget {
@@ -21,9 +23,10 @@ class _BottomNavWidgetState extends State<BottomNavWidget> {
   int _selectedIndex = 0;
 
   SettingsOptions settingsOptions = new SettingsOptions();
+  StravaUse stravaUse = new StravaUse();
 
   List<Widget> _widgetOptions() => <Widget>[
-        OverallStatusWidget(settingsOptions, false), // disable map button and display full map
+        OverallStatusWidget(settingsOptions, stravaUse, false), // disable map button and display full map
         TrailsProgressWidget(settingsOptions),
         IntroPages(),
         SettingsPage(settingsOptions),
@@ -46,6 +49,18 @@ class _BottomNavWidgetState extends State<BottomNavWidget> {
           // tap item 2 for the user, i.e. the IntroPages
           _onItemTapped(2);
         }
+      },
+    );
+
+    // is the user using Strava? do we offer to update Strava?
+    needToUpdateStrava(email).then(
+      (retValue) {
+        stravaUse.lastStravaUpdate = retValue.second;
+        if (retValue.first != stravaUse.offerToUpdateStrava) {
+          stravaUse.offerToUpdateStrava = retValue.first;
+          setState(() {});
+        }
+        // print('return update time <> ${settingsOptions.offerToUpdateStrava} ${settingsOptions.lastStravaUpdate}');
       },
     );
 
@@ -94,8 +109,8 @@ Future<bool> isAccessTimeSet(String email) async {
   bool accessTimeSet = false;
   //DocumentSnapshot credentialsSnapshot =
   await FirebaseFirestore.instance.collection('athletes').doc(email).get().then(
-    (retValue) {
-      if (retValue.data().toString().contains('accessTime') == true) {
+    (docSnapshot) {
+      if (docSnapshot.data().toString().contains('accessTime') == true) {
         accessTimeSet = true;
       }
 
