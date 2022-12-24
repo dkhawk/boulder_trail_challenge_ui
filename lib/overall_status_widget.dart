@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:osmp_project/MappingSupport.dart';
+import 'package:osmp_project/mapping_support.dart';
 import 'package:osmp_project/settings_page.dart';
 import 'package:provider/provider.dart';
 

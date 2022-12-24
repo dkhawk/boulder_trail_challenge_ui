@@ -10,7 +10,7 @@ import 'package:flutter_map_tappable_polyline/flutter_map_tappable_polyline.dart
 
 import 'package:osmp_project/trail_progress_list_widget.dart';
 import 'package:osmp_project/settings_page.dart';
-import 'package:osmp_project/markTrailComplete.dart';
+import 'package:osmp_project/mark_trail_complete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 

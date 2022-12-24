@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
 import 'package:osmp_project/import_gpx_activities.dart';
 import 'package:osmp_project/import_strava_activities.dart';
-import 'package:osmp_project/createAccountData.dart';
-import 'package:osmp_project/peakCounter.dart';
+import 'package:osmp_project/create_account_data.dart';
+import 'package:osmp_project/peak_counter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'buildDate.dart';

@@ -3,8 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:osmp_project/MappingSupport.dart';
-import 'package:osmp_project/peakCounter.dart';
+import 'package:osmp_project/mapping_support.dart';
+import 'package:osmp_project/peak_counter.dart';
 
 import 'package:osmp_project/authentication_service.dart';
 import 'package:firebase_auth/firebase_auth.dart';

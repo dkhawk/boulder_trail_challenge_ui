@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
 import 'package:provider/provider.dart';
 
-import 'package:osmp_project/createAccountData.dart';
+import 'package:osmp_project/create_account_data.dart';
 
 class SignInPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();

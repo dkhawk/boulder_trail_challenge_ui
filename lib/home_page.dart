@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:osmp_project/settings_page.dart';
 import 'package:osmp_project/trail_list_page.dart';
-import 'package:osmp_project/IntroPages.dart';
+import 'package:osmp_project/intro_pages.dart';
 import 'package:provider/provider.dart';
 
 import 'overall_status_widget.dart';

@@ -25,7 +25,7 @@ import 'package:web_browser_detect/web_browser_detect.dart';
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 
 // count how many times someone has hit a peak
-import 'peakCounter.dart';
+import 'peak_counter.dart';
 
 // ----
 // globals

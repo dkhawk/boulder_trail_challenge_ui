@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:path/path.dart' as path;
 import 'package:google_polyline_algorithm/google_polyline_algorithm.dart';
 //import 'dart:math' as math show pow;
-import 'peakCounter.dart';
+import 'peak_counter.dart';
 
 import 'dart:convert';
 //
