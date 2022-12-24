@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:osmp_project/import_strava_activities.dart';
+import 'package:osmp_project/pair.dart';
 
 import 'package:flutter/material.dart';
 
@@ -114,7 +114,6 @@ Future<void> resetPeakCounts(String userName) async {
   );
 }
 
-
 // ----
 Map<String, Pair<double, double>> getStandardPeakLocations() {
   // the locations of the peaks we want to track
@@ -169,8 +168,8 @@ Future<void> peakCounter(List<List<num>> coordinates, String dateTimeString, Str
     double trackLong = coordinates[i][1];
 
     for (var peakName in peakLocations.keys) {
-      double peakLat = peakLocations[peakName].a;
-      double peakLong = peakLocations[peakName].b;
+      double peakLat = peakLocations[peakName].first;
+      double peakLong = peakLocations[peakName].second;
 
       double a = halfPi - trackLat * deg2Rad;
       double b = halfPi - peakLat * deg2Rad;
