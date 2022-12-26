@@ -20,8 +20,8 @@ Future<Pair<bool, DateTime>> needToUpdateStrava(String email) async {
             .get()
             .then(
           (docSnapshot) {
-            int lastUpdateTimeMilliSeconds = docSnapshot.get('lastUpdateTime') * 1000.0;
-            lastUpdateDateTime = DateTime.fromMillisecondsSinceEpoch(lastUpdateTimeMilliSeconds);
+            double lastUpdateTimeMilliSeconds = docSnapshot.get('lastUpdateTime') * 1000.0;
+            lastUpdateDateTime = DateTime.fromMillisecondsSinceEpoch(lastUpdateTimeMilliSeconds.round());
 
             if (lastUpdateTimeMilliSeconds > 0.0) {
               int nowTimeMilliSeconds = DateTime.now().millisecondsSinceEpoch;

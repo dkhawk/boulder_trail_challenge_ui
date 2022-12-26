@@ -540,6 +540,30 @@ class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
   }
 
   // ----
+  // push down into ImportStrava and do a setState if successful
+  Future<void> _navigateToImportStrava(BuildContext context, String userName) async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (BuildContext context) {
+          return Scaffold(
+            body: ImportStrava(
+              userName,
+              selectedStartDate,
+            ),
+          );
+        },
+      ),
+    );
+
+    if (!mounted) return;
+
+    setState(() {
+      if (result != selectedStartDate) selectedStartDate = result;
+    });
+  }
+
+  // ----
   @override
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
@@ -587,19 +611,7 @@ class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
                 ),
               ),
               onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) {
-                      return Scaffold(
-                        body: ImportStrava(
-                          userName,
-                          selectedStartDate,
-                        ),
-                      );
-                    },
-                  ),
-                );
+                _navigateToImportStrava(context, userName);
               },
             ),
             Spacer(),
@@ -880,7 +892,7 @@ class _ImportStravaState extends State<ImportStrava> with SingleTickerProviderSt
 
     // get and update the number of files uploaded
     // - if this number changes the cloud script that processes the uploaded files gets triggered
-    {
+    if (tokenIsValid) {
       DocumentSnapshot documentSnapshot = await FirebaseFirestore.instance
           .collection('athletes')
           .doc(userName)
@@ -907,6 +919,12 @@ class _ImportStravaState extends State<ImportStrava> with SingleTickerProviderSt
           .collection('importedData')
           .doc('UploadStats')
           .set(numFilesUploadedMap, SetOptions(merge: true));
+
+      // tell the caller that Strava has been updated to DateTime 'now'; i.e success
+      Navigator.pop(context, DateTime.now());
+    } else {
+      // leave the start date unchanged on failure
+      Navigator.pop(context, selectedStartDate);
     }
 
     return 'done';
@@ -994,9 +1012,7 @@ class _ImportStravaState extends State<ImportStrava> with SingleTickerProviderSt
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   CircularProgressIndicator(
-                    // valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
                     valueColor: _colorTween,
-                    // backgroundColor: Colors.black,
                   ),
                 ],
               ),
