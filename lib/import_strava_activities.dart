@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:async';
 import 'dart:math';
+import 'package:flutter/cupertino.dart';
 import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' show ClientException;
@@ -582,58 +583,64 @@ class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Spacer(
-              flex: 4,
-            ),
-            Image(
-              image: AssetImage('assets/images/Strava.png'),
-              width: 140,
-              height: 140,
-            ),
-            Text('Powered by Strava'),
-            Spacer(
-              flex: 4,
-            ),
-            ElevatedButton(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    Text('Press here to import activities from Strava'),
-                    Text(
-                      'Activities from the start date until today will be imported',
-                      style: TextStyle(fontSize: 12, color: Colors.white),
-                    ),
-                  ],
-                ),
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/TopoMapPattern.png"),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
+          ),
+        ),
+        alignment: Alignment.center,
+        child: Container(
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.white),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 40),
+              Image(
+                image: AssetImage('assets/images/Strava.png'),
+                width: 140,
+                height: 140,
               ),
-              onPressed: () {
-                _navigateToImportStrava(context, userName);
-              },
-            ),
-            Spacer(),
-            ElevatedButton(
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    Text('Start date: (press to change)'),
-                    Text(
-                      '${DateFormat.yMMMEd().format(selectedStartDate)}',
-                      style: TextStyle(fontSize: 12, color: Colors.white),
-                    ),
-                  ],
+              Text('Powered by Strava'),
+              SizedBox(height: 120),
+              ElevatedButton(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    children: [
+                      Text('Press here to import activities from Strava'),
+                      Text(
+                        'Activities from the start date until today will be imported',
+                        style: TextStyle(fontSize: 12, color: Colors.white),
+                      ),
+                    ],
+                  ),
                 ),
+                onPressed: () {
+                  _navigateToImportStrava(context, userName);
+                },
               ),
-              onPressed: () => _selectDate(context),
-            ),
-            Spacer(
-              flex: 3,
-            ),
-          ],
+              SizedBox(height: 20),
+              ElevatedButton(
+                child: Padding(
+                  padding: const EdgeInsets.all(10.0),
+                  child: Column(
+                    children: [
+                      Text('Start date: (press to change)'),
+                      Text(
+                        '${DateFormat.yMMMEd().format(selectedStartDate)}',
+                        style: TextStyle(fontSize: 12, color: Colors.white),
+                      ),
+                    ],
+                  ),
+                ),
+                onPressed: () => _selectDate(context),
+              ),
+            ],
+          ),
         ),
       ),
     );

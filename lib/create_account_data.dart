@@ -167,7 +167,7 @@ class LoadSegmentsData extends StatelessWidget {
 
 //----
 // upload the trails and show a simple how-to dialog when finished
-class _UploadMapDataToAcct extends StatelessWidget {
+class _UploadMapDataToAcct extends StatefulWidget {
   _UploadMapDataToAcct(this.trails, this.accountName, this.password, this.resettingData);
   final String accountName;
   final String password;
@@ -175,46 +175,69 @@ class _UploadMapDataToAcct extends StatelessWidget {
   final Map<String, dynamic> trails;
 
   @override
+  State<_UploadMapDataToAcct> createState() => _UploadMapDataToAcctState();
+}
+
+class _UploadMapDataToAcctState extends State<_UploadMapDataToAcct> with SingleTickerProviderStateMixin {
+  // ----
+  // color animation for circularProgressIndicator when Importing Strava activities...
+  AnimationController _animationController;
+  Animation _colorTween;
+  initState() {
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _animationController.repeat(reverse: true);
+    _colorTween = _animationController.drive(ColorTween(begin: Colors.red, end: Colors.yellow));
+    super.initState();
+  }
+
+  dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     String userAction = 'Creating your account';
-    if (resettingData) userAction = 'Resetting your activities';
+    if (widget.resettingData) userAction = 'Resetting your activities';
 
     return FutureBuilder<String>(
-      future: _uploadTrailStats(trails, accountName, password, resettingData),
+      future: _uploadTrailStats(widget.trails, widget.accountName, widget.password, widget.resettingData),
       builder: (BuildContext context, AsyncSnapshot<String> completedString) {
         if (completedString.hasData && completedString.data.toString() == finishedUploadTrailStats) {
           // After all data has been uploaded to Cloud Firestore sign
           // into the user's account
 
           // print('signing in on real acct ==== ');
-          if (resettingData == false) {
+          if (widget.resettingData == false) {
             context.read<AuthenticationService>().signIn(
-                  email: accountName,
-                  password: password,
+                  email: widget.accountName,
+                  password: widget.password,
                 );
           }
           // show a welcome/reset page with basic instructions
-          return _WelcomePage(resettingData);
+          return _WelcomePage(widget.resettingData);
         }
-        return Center(
-          child: Column(
-            children: [
-              Spacer(
-                flex: 5,
-              ),
-              SizedBox(
-                child: CircularProgressIndicator(
-                  valueColor: AlwaysStoppedAnimation<Color>(Colors.green),
+        return Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/TopoMapPattern.png"),
+              fit: BoxFit.cover,
+              colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
+            ),
+          ),
+          width: double.maxFinite,
+          child: AlertDialog(
+            title: Text(userAction, style: TextStyle(fontSize: 20, color: Colors.white)),
+            backgroundColor: Colors.indigo,
+            shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
+            content: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CircularProgressIndicator(
+                  valueColor: _colorTween,
                 ),
-                width: 40,
-                height: 40,
-              ),
-              Spacer(),
-              Text(userAction),
-              Spacer(
-                flex: 5,
-              ),
-            ],
+              ],
+            ),
           ),
         );
       },
@@ -382,98 +405,99 @@ class _WelcomePage extends StatelessWidget {
     String howtoString3 = 'Be safe out there. \nThis app is not associated with Boulder OSMP or any other entity';
 
     //print('_WelcomePage ====');
-    return SizedBox(
-      width: double.maxFinite,
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Spacer(flex: 4),
-          Text(
-            welcomeString,
-            style: TextStyle(fontSize: 30, color: Colors.indigo),
-            textAlign: TextAlign.center,
-          ),
-          Spacer(
-            flex: 6,
-          ),
-          RichText(
-            textAlign: TextAlign.center,
-            text: TextSpan(
-              children: [
-                TextSpan(
-                  text: introString1,
-                  style: TextStyle(fontSize: 15, color: Colors.black),
-                ),
-                TextSpan(
-                  text: osmp,
-                  // style: TextStyle(fontSize: 15, color: Colors.blueAccent),
-                  //    decoration: TextDecoration.underline),
-                  // recognizer: TapGestureRecognizer()
-                  //   ..onTap = () async {
-                  //     var url =
-                  //         "https://bouldercolorado.gov/osmp/osmp-trail-challenge";
-                  //     if (await canLaunch(url)) {
-                  //       await launch(url);
-                  //     } else {
-                  //       print('Could not launch $url');
-                  //     }
-                  //   },
-                ),
-                TextSpan(
-                  text: introString2,
-                  style: TextStyle(fontSize: 15, color: Colors.black),
-                ),
-              ],
+    return Container(
+      decoration: BoxDecoration(
+        image: DecorationImage(
+          image: AssetImage("assets/images/TopoMapPattern.png"),
+          fit: BoxFit.cover,
+          colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
+        ),
+      ),
+      alignment: Alignment.center,
+      child: Container(
+        padding: EdgeInsets.all(10),
+        decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.white),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            SizedBox(height: 20),
+            Text(
+              welcomeString,
+              style: TextStyle(fontSize: 30, color: Colors.indigo),
+              textAlign: TextAlign.center,
             ),
-          ),
-          Spacer(
-            flex: 3,
-          ),
-          Text(
-            howtoString1,
-            style: TextStyle(fontSize: 15, color: Colors.black),
-            softWrap: true,
-            textAlign: TextAlign.center,
-          ),
-          Text(
-            howtoString2,
-            style: TextStyle(fontSize: 15, color: Colors.black),
-            softWrap: true,
-            textAlign: TextAlign.center,
-          ),
-          Spacer(
-            flex: 1,
-          ),
-          Text(
-            howtoString3,
-            style: TextStyle(fontSize: 15, color: Colors.black, fontStyle: FontStyle.italic),
-            softWrap: true,
-            textAlign: TextAlign.center,
-          ),
-          Spacer(
-            flex: 1,
-          ),
-          SizedBox(
-            width: 150,
-            child: ElevatedButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: Center(
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text("Continue..."),
-                  ],
+            SizedBox(height: 30),
+            RichText(
+              textAlign: TextAlign.center,
+              text: TextSpan(
+                children: [
+                  TextSpan(
+                    text: introString1,
+                    style: TextStyle(fontSize: 15, color: Colors.black),
+                  ),
+                  TextSpan(
+                    text: osmp,
+                    // style: TextStyle(fontSize: 15, color: Colors.blueAccent),
+                    //    decoration: TextDecoration.underline),
+                    // recognizer: TapGestureRecognizer()
+                    //   ..onTap = () async {
+                    //     var url =
+                    //         "https://bouldercolorado.gov/osmp/osmp-trail-challenge";
+                    //     if (await canLaunch(url)) {
+                    //       await launch(url);
+                    //     } else {
+                    //       print('Could not launch $url');
+                    //     }
+                    //   },
+                    style: TextStyle(fontSize: 17, color: Colors.indigo),
+                  ),
+                  TextSpan(
+                    text: introString2,
+                    style: TextStyle(fontSize: 15, color: Colors.black),
+                  ),
+                ],
+              ),
+            ),
+            SizedBox(height: 10),
+            Text(
+              howtoString1,
+              style: TextStyle(fontSize: 15, color: Colors.black),
+              softWrap: true,
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              howtoString2,
+              style: TextStyle(fontSize: 15, color: Colors.black),
+              softWrap: true,
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 40),
+            Text(
+              howtoString3,
+              style: TextStyle(fontSize: 15, color: Colors.black, fontStyle: FontStyle.italic),
+              softWrap: true,
+              textAlign: TextAlign.center,
+            ),
+            SizedBox(height: 25),
+            SizedBox(
+              width: 150,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pop(context);
+                },
+                child: Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text("Continue..."),
+                    ],
+                  ),
                 ),
               ),
             ),
-          ),
-          Spacer(
-            flex: 5,
-          ),
-        ],
+            SizedBox(height: 10),
+          ],
+        ),
       ),
     );
   }

@@ -44,29 +44,42 @@ class _ImportGPXActivitiesState extends State<ImportGPXActivities> {
           ],
         ),
       ),
-      body: Center(
-        child: Column(
-          children: [
-            Spacer(),
-            Image(image: AssetImage('assets/images/UploadFile.png')),
-            Spacer(),
-            ElevatedButton(
-              child: Text('Press here to select the GPX files that you want to import'),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (BuildContext context) {
-                      return Scaffold(
-                        body: PickFilesScreen(userName),
-                      );
-                    },
-                  ),
-                );
-              },
-            ),
-            Spacer(),
-          ],
+      body: Container(
+        decoration: BoxDecoration(
+          image: DecorationImage(
+            image: AssetImage("assets/images/TopoMapPattern.png"),
+            fit: BoxFit.cover,
+            colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
+          ),
+        ),
+        alignment: Alignment.center,
+        child: Container(
+          padding: EdgeInsets.all(10),
+          decoration: BoxDecoration(borderRadius: BorderRadius.all(Radius.circular(20)), color: Colors.white),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(height: 20),
+              Image(image: AssetImage('assets/images/UploadFile.png')),
+              SizedBox(height: 20),
+              ElevatedButton(
+                child: Text('Press here to select the GPX files that you want to import'),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (BuildContext context) {
+                        return Scaffold(
+                          body: PickFilesScreen(userName),
+                        );
+                      },
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 20),
+            ],
+          ),
         ),
       ),
     );
@@ -83,7 +96,7 @@ class PickFilesScreen extends StatefulWidget {
 }
 
 // ----
-class _PickFilesScreenState extends State<PickFilesScreen> {
+class _PickFilesScreenState extends State<PickFilesScreen> with SingleTickerProviderStateMixin {
   _PickFilesScreenState(this.userName);
   final userName;
 
@@ -222,6 +235,22 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
   }
 
   // ----
+  // color animation for circularProgressIndicator when Importing GPX activities...
+  AnimationController _animationController;
+  Animation _colorTween;
+  initState() {
+    _animationController = AnimationController(vsync: this, duration: Duration(milliseconds: 500));
+    _animationController.repeat(reverse: true);
+    _colorTween = _animationController.drive(ColorTween(begin: Colors.red, end: Colors.yellow));
+    super.initState();
+  }
+
+  dispose() {
+    _animationController.dispose();
+    super.dispose();
+  }
+
+  // ----
   @override
   Widget build(BuildContext context) {
     return FutureBuilder<String>(
@@ -231,25 +260,27 @@ class _PickFilesScreenState extends State<PickFilesScreen> {
           //print('importGPX: snapshot.hasData and done');
           return _numFilesAlertWidget(context);
         } else {
-          return Center(
-            child: Column(
-              children: [
-                Spacer(
-                  flex: 5,
-                ),
-                SizedBox(
-                  child: CircularProgressIndicator(
-                    valueColor: AlwaysStoppedAnimation<Color>(Colors.blue),
+          return Container(
+            decoration: BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage("assets/images/TopoMapPattern.png"),
+                fit: BoxFit.cover,
+                colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
+              ),
+            ),
+            width: double.infinity,
+            child: AlertDialog(
+              title: Text('Uploading GPX data...', style: TextStyle(fontSize: 20, color: Colors.white)),
+              backgroundColor: Colors.indigo,
+              shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  CircularProgressIndicator(
+                    valueColor: _colorTween,
                   ),
-                  width: 40,
-                  height: 40,
-                ),
-                Spacer(),
-                Text('Uploading GPX data...', style: TextStyle(color: Colors.black, fontSize: 12.0)),
-                Spacer(
-                  flex: 5,
-                ),
-              ],
+                ],
+              ),
             ),
           );
         }

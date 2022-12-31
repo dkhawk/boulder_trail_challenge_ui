@@ -74,31 +74,41 @@ Widget _peakCountsDisplay(BuildContext context, Map<String, int> peakCountFromFi
       style: TextStyle(fontSize: 14, color: Colors.white),
     ));
 
-  return AlertDialog(
-    title: Text(
-      'Number of time the following peaks have been summited:',
-      style: TextStyle(fontSize: 16, color: Colors.white),
-    ),
-    content: Container(
-        width: double.minPositive,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: entries.toList(),
-        )),
-    backgroundColor: Colors.indigo,
-    shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
-    actions: <Widget>[
-      TextButton(
-        child: Text(
-          'Dismiss',
-          style: TextStyle(fontSize: 14, color: Colors.white),
-        ),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
+  return Container(
+    decoration: BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage("assets/images/TopoMapPattern.png"),
+        fit: BoxFit.cover,
+        colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
       ),
-    ],
+    ),
+    width: double.infinity,
+    child: AlertDialog(
+      title: Text(
+        'Number of time the following peaks have been summited:',
+        style: TextStyle(fontSize: 16, color: Colors.white),
+      ),
+      content: Container(
+          width: double.minPositive,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: entries.toList(),
+          )),
+      backgroundColor: Colors.indigo,
+      shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
+      actions: <Widget>[
+        TextButton(
+          child: Text(
+            'Dismiss',
+            style: TextStyle(fontSize: 14, color: Colors.white),
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    ),
   );
 }
 
