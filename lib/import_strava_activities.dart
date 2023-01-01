@@ -492,7 +492,7 @@ class ImportStravaActivities extends StatefulWidget {
 
 // ----
 class _ImportStravaActivitiesState extends State<ImportStravaActivities> {
-  DateTime selectedStartDate = DateTime(2022, 12, 1);
+  DateTime selectedStartDate = DateTime(2023, 1, 1);
   bool userChangedStartDate = false;
 
   // ----
