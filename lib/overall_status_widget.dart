@@ -1,51 +1,41 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:osmp_project/MappingSupport.dart';
+import 'package:osmp_project/mapping_support.dart';
 import 'package:osmp_project/settings_page.dart';
+import 'package:osmp_project/strava_utils.dart';
 import 'package:provider/provider.dart';
 
-Future<void> setAccessTime(String email) async {
-  // ----
-  // record the time the user accessed this data
-  // - eventually want to delete inactive user accounts
-  Map<String, Object> lastAccessTime = {
-    'lastAccessTime': DateTime.now().toString(), // local time
-    'dateTime': DateTime.now().millisecondsSinceEpoch,
-  };
-  Map<String, Object> accessTime = {
-    'accessTime': lastAccessTime,
-  };
-  await FirebaseFirestore.instance
-      .collection('athletes')
-      .doc(email)
-      .set(accessTime, SetOptions(merge: true))
-      .whenComplete(() => {print('updating access time <>')});
-}
+import 'package:osmp_project/import_strava_activities.dart';
 
-class OverallStatusWidget extends StatelessWidget {
+class OverallStatusWidget extends StatefulWidget {
   final SettingsOptions settingsOptions;
-
-  OverallStatusWidget(this.settingsOptions);
+  final StravaUse stravaUse;
+  final bool allowUserToDisplayMapUsingButton;
+  OverallStatusWidget(this.settingsOptions, this.stravaUse, this.allowUserToDisplayMapUsingButton);
 
   @override
-  Widget build(BuildContext context) {
-    final firebaseUser = context.watch<User>();
-    setAccessTime(firebaseUser.email.toLowerCase());
+  State<OverallStatusWidget> createState() => _OverallStatusWidgetState();
+}
 
+class _OverallStatusWidgetState extends State<OverallStatusWidget> {
+  @override
+  Widget build(BuildContext context) {
+    final email = context.watch<User>().email.toLowerCase();
     return StreamBuilder<DocumentSnapshot>(
-      stream: FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email.toLowerCase()).snapshots().where(
+      stream: FirebaseFirestore.instance.collection('athletes').doc(email).snapshots().where(
             (event) => event.data().containsKey('overallStats'),
           ),
       builder: (context, snapshot) {
         if (!snapshot.hasData) return LinearProgressIndicator();
         if (snapshot.hasError) return LinearProgressIndicator();
-        return _buildStatus(context, snapshot.data, settingsOptions);
+        return _buildStatus(context, email, snapshot.data, widget.settingsOptions, widget.stravaUse);
       },
     );
   }
 
-  Widget _buildStatus(BuildContext context, DocumentSnapshot data, SettingsOptions settingsOptions) {
+  Widget _buildStatus(
+      BuildContext context, String email, DocumentSnapshot data, SettingsOptions settingsOptions, StravaUse stravaUse) {
     var stats = data["overallStats"];
     var percent = stats["percentDone"].toDouble();
     var completed = (stats["completedDistance"] * 0.000621371).toStringAsFixed(2);
@@ -60,7 +50,7 @@ class OverallStatusWidget extends StatelessWidget {
     inputMapSummaryData.isMapSummary = true;
     inputMapSummaryData.percentComplete = percent;
 
-    final firebaseUser = context.watch<User>();
+    // print('last Strava update time <> ${settingsOptions.lastStravaUpdate}');
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
@@ -69,8 +59,6 @@ class OverallStatusWidget extends StatelessWidget {
             color: Colors.white,
             border: Border.all(color: Colors.grey),
             borderRadius: BorderRadius.circular(5.0),
-            // color: Colors.lightGreen,
-            // gradient: background,
           ),
           child: Column(
             children: [
@@ -83,19 +71,59 @@ class OverallStatusWidget extends StatelessWidget {
                     backgroundColor: Colors.white,
                   ),
                 ),
-                subtitle: Text((percent * 100).toStringAsFixed(2) + "%    < " + firebaseUser.email + " >"),
-                trailing: IconButton(
-                  icon: Icon(
-                    Icons.map,
-                    color: Colors.blue,
-                  ),
-                  padding: EdgeInsets.all(0),
-                  alignment: Alignment.centerRight,
-                  onPressed: () => displayMapSummary(context, inputMapSummaryData, settingsOptions),
-                ),
-                onTap: () => displayMapSummary(context, inputMapSummaryData, settingsOptions),
+                subtitle: Text((percent * 100).toStringAsFixed(2) + "%    < " + email + " >"),
+                trailing: widget.allowUserToDisplayMapUsingButton
+                    ? IconButton(
+                        icon: Icon(
+                          Icons.map,
+                          color: Colors.blue,
+                        ),
+                        padding: EdgeInsets.all(0),
+                        alignment: Alignment.centerRight,
+                        onPressed: widget.allowUserToDisplayMapUsingButton
+                            ? () => displayMapSummary(context, inputMapSummaryData, settingsOptions)
+                            : null,
+                      )
+                    : Visibility(
+                        child: ElevatedButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder: (BuildContext context) {
+                                  return Scaffold(
+                                    body: ImportStrava(
+                                      email,
+                                      stravaUse.lastStravaUpdate,
+                                    ),
+                                  );
+                                },
+                              ),
+                            );
+                            stravaUse.offerToUpdateStrava = false;
+                            setState(() {});
+                          },
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text('Update Strava'),
+                              Icon(
+                                Icons.update,
+                              )
+                            ],
+                          ),
+                        ),
+                        visible: stravaUse.offerToUpdateStrava,
+                      ),
+                onTap: widget.allowUserToDisplayMapUsingButton
+                    ? () => displayMapSummary(context, inputMapSummaryData, settingsOptions)
+                    : null,
               ),
               progress,
+              if (widget.allowUserToDisplayMapUsingButton == false)
+                Expanded(
+                  child: LoadDisplayMapSummaryData(inputMapSummaryData, settingsOptions),
+                ),
             ],
           )),
     );

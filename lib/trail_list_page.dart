@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:osmp_project/settings_page.dart';
 import 'package:osmp_project/overall_status_widget.dart';
 import 'package:osmp_project/trail_progress_list_widget.dart';
+import 'package:osmp_project/strava_utils.dart';
 
 enum TrailStatus { inProgress, completed }
 
@@ -26,6 +27,8 @@ class _TrailsProgressState extends State<TrailsProgressWidget> {
     });
   }
 
+  StravaUse stravaUse = new StravaUse();
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -39,7 +42,7 @@ class _TrailsProgressState extends State<TrailsProgressWidget> {
       width: double.infinity,
       child: Column(
         children: <Widget>[
-          OverallStatusWidget(settingsOptions),
+          OverallStatusWidget(settingsOptions, stravaUse, true), // enable map button; do not display full map
           FilterWidget(
             progressFilterValue: _progressFilterValue,
             onChanged: _handleProgressFilterChanged,
@@ -56,9 +59,7 @@ class _TrailsProgressState extends State<TrailsProgressWidget> {
 }
 
 class FilterWidget extends StatelessWidget {
-  FilterWidget(
-      {Key key, this.progressFilterValue: 'All', @required this.onChanged})
-      : super(key: key);
+  FilterWidget({Key key, this.progressFilterValue: 'All', @required this.onChanged}) : super(key: key);
 
   final String progressFilterValue;
   final ValueChanged<String> onChanged;
@@ -69,8 +70,7 @@ class FilterWidget extends StatelessWidget {
       padding: EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0, bottom: 0.0),
       child: Card(
         child: Padding(
-          padding:
-              EdgeInsets.only(top: 6.0, left: 6.0, right: 6.0, bottom: 6.0),
+          padding: EdgeInsets.only(top: 6.0, left: 6.0, right: 6.0, bottom: 6.0),
           child: ExpansionTile(
             title: Text(
               'Filter',
@@ -81,9 +81,7 @@ class FilterWidget extends StatelessWidget {
               ),
             ),
             children: <Widget>[
-              ProgressStatusFilterWidget(
-                  progressFilterValue: progressFilterValue,
-                  onChanged: onChanged),
+              ProgressStatusFilterWidget(progressFilterValue: progressFilterValue, onChanged: onChanged),
               // Text('Birth of the Sun'),
               // Text('Earth is Born'),
             ],
@@ -95,9 +93,7 @@ class FilterWidget extends StatelessWidget {
 }
 
 class ProgressStatusFilterWidget extends StatelessWidget {
-  ProgressStatusFilterWidget(
-      {Key key, this.progressFilterValue: 'All', @required this.onChanged})
-      : super(key: key);
+  ProgressStatusFilterWidget({Key key, this.progressFilterValue: 'All', @required this.onChanged}) : super(key: key);
 
   final String progressFilterValue;
   final ValueChanged<String> onChanged;
@@ -105,8 +101,7 @@ class ProgressStatusFilterWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-        padding:
-            EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0, bottom: 0.0),
+        padding: EdgeInsets.only(top: 8.0, left: 16.0, right: 16.0, bottom: 0.0),
         child: Row(children: [
           DropdownButton<String>(
             value: progressFilterValue,
@@ -116,13 +111,12 @@ class ProgressStatusFilterWidget extends StatelessWidget {
             style: TextStyle(color: Colors.deepPurple),
             underline: Container(
               height: 2,
-              color: Colors.deepPurpleAccent,
+              color: Colors.indigo,
             ),
             onChanged: (String newValue) {
               onChanged(newValue);
             },
-            items: <String>['All', 'In progress', 'Completed']
-                .map<DropdownMenuItem<String>>((String value) {
+            items: <String>['All', 'In progress', 'Completed'].map<DropdownMenuItem<String>>((String value) {
               return DropdownMenuItem<String>(
                 value: value,
                 child: Text(value),

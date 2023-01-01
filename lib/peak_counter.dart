@@ -2,7 +2,7 @@ import 'dart:math';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
-import 'package:osmp_project/import_strava_activities.dart';
+import 'package:osmp_project/pair.dart';
 
 import 'package:flutter/material.dart';
 
@@ -74,31 +74,41 @@ Widget _peakCountsDisplay(BuildContext context, Map<String, int> peakCountFromFi
       style: TextStyle(fontSize: 14, color: Colors.white),
     ));
 
-  return AlertDialog(
-    title: Text(
-      'Number of time the following peaks have been summited:',
-      style: TextStyle(fontSize: 16, color: Colors.white),
-    ),
-    content: Container(
-        width: double.minPositive,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: entries.toList(),
-        )),
-    backgroundColor: Colors.deepPurple,
-    shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
-    actions: <Widget>[
-      TextButton(
-        child: Text(
-          'Dismiss',
-          style: TextStyle(fontSize: 14, color: Colors.white),
-        ),
-        onPressed: () {
-          Navigator.of(context).pop();
-        },
+  return Container(
+    decoration: BoxDecoration(
+      image: DecorationImage(
+        image: AssetImage("assets/images/TopoMapPattern.png"),
+        fit: BoxFit.cover,
+        colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
       ),
-    ],
+    ),
+    width: double.infinity,
+    child: AlertDialog(
+      title: Text(
+        'Number of time the following peaks have been summited:',
+        style: TextStyle(fontSize: 16, color: Colors.white),
+      ),
+      content: Container(
+          width: double.minPositive,
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: entries.toList(),
+          )),
+      backgroundColor: Colors.indigo,
+      shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
+      actions: <Widget>[
+        TextButton(
+          child: Text(
+            'Dismiss',
+            style: TextStyle(fontSize: 14, color: Colors.white),
+          ),
+          onPressed: () {
+            Navigator.of(context).pop();
+          },
+        ),
+      ],
+    ),
   );
 }
 
@@ -113,7 +123,6 @@ Future<void> resetPeakCounts(String userName) async {
     },
   );
 }
-
 
 // ----
 Map<String, Pair<double, double>> getStandardPeakLocations() {
@@ -169,8 +178,8 @@ Future<void> peakCounter(List<List<num>> coordinates, String dateTimeString, Str
     double trackLong = coordinates[i][1];
 
     for (var peakName in peakLocations.keys) {
-      double peakLat = peakLocations[peakName].a;
-      double peakLong = peakLocations[peakName].b;
+      double peakLat = peakLocations[peakName].first;
+      double peakLong = peakLocations[peakName].second;
 
       double a = halfPi - trackLat * deg2Rad;
       double b = halfPi - peakLat * deg2Rad;

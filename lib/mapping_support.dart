@@ -10,7 +10,7 @@ import 'package:flutter_map_tappable_polyline/flutter_map_tappable_polyline.dart
 
 import 'package:osmp_project/trail_progress_list_widget.dart';
 import 'package:osmp_project/settings_page.dart';
-import 'package:osmp_project/markTrailComplete.dart';
+import 'package:osmp_project/mark_trail_complete.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:provider/provider.dart';
 import 'overall_status_widget.dart';
@@ -101,7 +101,7 @@ Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData, Sett
                 ],
               ),
             ),
-            body: _LoadDisplayMapSummaryData(inputMapSummaryData, settingsOptions),
+            body: LoadDisplayMapSummaryData(inputMapSummaryData, settingsOptions),
           );
         },
       ));
@@ -110,8 +110,8 @@ Widget displayMapSummary(BuildContext context, MapData inputMapSummaryData, Sett
 }
 
 //----
-class _LoadDisplayMapSummaryData extends StatelessWidget {
-  _LoadDisplayMapSummaryData(this.inputMapSummaryData, this.settingsOptions);
+class LoadDisplayMapSummaryData extends StatelessWidget {
+  LoadDisplayMapSummaryData(this.inputMapSummaryData, this.settingsOptions);
   final MapData inputMapSummaryData;
   final SettingsOptions settingsOptions;
 
@@ -119,8 +119,11 @@ class _LoadDisplayMapSummaryData extends StatelessWidget {
   Widget build(BuildContext context) {
     final firebaseUser = context.watch<User>();
 
-    Stream theStream =
-        FirebaseFirestore.instance.collection('athletes').doc(firebaseUser.email.toLowerCase()).collection("trailStats").snapshots();
+    Stream theStream = FirebaseFirestore.instance
+        .collection('athletes')
+        .doc(firebaseUser.email.toLowerCase())
+        .collection("trailStats")
+        .snapshots();
     return StreamBuilder<QuerySnapshot>(
       stream: theStream,
       builder: (context, snapshot) {
@@ -164,9 +167,6 @@ class _LoadDisplayMapData extends StatelessWidget {
     // record the time the user displayed this map
     // - eventually want to delete inactive user accounts
     final firebaseUser = context.watch<User>();
-
-    // keep track of when user accessed this data
-    setAccessTime(firebaseUser.email.toLowerCase());
 
     if (inputMapData.useJsonForSegments) {
       // --
@@ -492,7 +492,8 @@ class __CreateFlutterMapState extends State<_CreateFlutterMap> {
               polylines: theSegmentPolylines,
               polylineCulling: true,
               pointerDistanceTolerance: 15,
-              onTap: (List<TaggedPolyline> polylines, tapPosition) => _mapInfoAlert(context, polylines.first.tag, theTrailNamesMap, theTrailLengthMap),
+              onTap: (List<TaggedPolyline> polylines, tapPosition) =>
+                  _mapInfoAlert(context, polylines.first.tag, theTrailNamesMap, theTrailLengthMap),
               onMiss: (tapPosition) => debugPrint('No polyline tapped'),
             ),
             MarkerLayerOptions(markers: theTrailNameMarkers),

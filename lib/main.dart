@@ -8,8 +8,8 @@ import 'package:osmp_project/sign_in_page.dart';
 import 'package:provider/provider.dart';
 
 Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
   try {
-    WidgetsFlutterBinding.ensureInitialized();
     await Firebase.initializeApp(
         options: FirebaseOptions(
       apiKey: "AIzaSyAfZAwFxtjlMh600Qm6yHTkb-q_XJC0SWI",
@@ -18,7 +18,6 @@ Future<void> main() async {
       projectId: "boulder-trail-challenge",
     ));
   } catch (e) {}
-
   runApp(TopApp());
 }
 
@@ -33,12 +32,12 @@ class TopApp extends StatelessWidget {
         StreamProvider(create: (context) => context.read<AuthenticationService>().authStateChanges),
       ],
       child: MaterialApp(
-        title: 'Boulder Trails Challenge - 2022',
+        title: 'Boulder Trails Challenge - 2023',
         theme: ThemeData(
           buttonTheme: Theme.of(context).buttonTheme.copyWith(
-                highlightColor: Colors.deepPurple,
+                highlightColor: Colors.indigo,
               ),
-          primarySwatch: Colors.deepPurple,
+          primarySwatch: Colors.indigo,
           textTheme: GoogleFonts.robotoTextTheme(
             Theme.of(context).textTheme,
           ),

@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
 import 'package:osmp_project/import_gpx_activities.dart';
 import 'package:osmp_project/import_strava_activities.dart';
-import 'package:osmp_project/createAccountData.dart';
-import 'package:osmp_project/peakCounter.dart';
+import 'package:osmp_project/create_account_data.dart';
+import 'package:osmp_project/peak_counter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 import 'buildDate.dart';
@@ -73,7 +73,7 @@ class _SettingsPageState extends State<SettingsPage> {
             ),
           ),
           Text(
-            "Using OSMP trail data from 30-Nov-2021; 08:30",
+            "Using OSMP trail data from 17-Dec-2021",
             style: TextStyle(
               fontWeight: FontWeight.bold,
               backgroundColor: Colors.white,
@@ -176,33 +176,43 @@ class _SettingsPageState extends State<SettingsPage> {
               Navigator.push(
                 context,
                 MaterialPageRoute(builder: (context) {
-                  return AlertDialog(
-                    title: Text('Delete all activities?', style: TextStyle(color: Colors.white)),
-                    content:
-                        Text('This will remove all your activities from the database', style: TextStyle(color: Colors.white)),
-                    backgroundColor: Colors.deepPurple,
-                    shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
-                    actions: [
-                      TextButton(
-                        onPressed: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(builder: (context) {
-                              return Scaffold(
-                                body: LoadSegmentsData(firebaseUser.email.toLowerCase(), '', true /*reset trail data*/),
-                              );
-                            }),
-                          ).whenComplete(() => Navigator.of(context).pop());
-                        },
-                        child: Text('OK', style: TextStyle(color: Colors.white)),
+                  return Container(
+                    decoration: BoxDecoration(
+                      image: DecorationImage(
+                        image: AssetImage("assets/images/TopoMapPattern.png"),
+                        fit: BoxFit.cover,
+                        colorFilter: ColorFilter.mode(Colors.grey, BlendMode.lighten),
                       ),
-                      TextButton(
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                        child: Text('Cancel', style: TextStyle(color: Colors.white)),
-                      )
-                    ],
+                    ),
+                    width: double.infinity,
+                    child: AlertDialog(
+                      title: Text('Delete all activities?', style: TextStyle(color: Colors.white)),
+                      content:
+                          Text('This will remove all your activities from the database', style: TextStyle(color: Colors.white)),
+                      backgroundColor: Colors.indigo,
+                      shape: RoundedRectangleBorder(borderRadius: new BorderRadius.circular(15)),
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) {
+                                return Scaffold(
+                                  body: LoadSegmentsData(firebaseUser.email.toLowerCase(), '', true /*reset trail data*/),
+                                );
+                              }),
+                            ).whenComplete(() => Navigator.of(context).pop());
+                          },
+                          child: Text('OK', style: TextStyle(color: Colors.white)),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: Text('Cancel', style: TextStyle(color: Colors.white)),
+                        )
+                      ],
+                    ),
                   );
                 }),
               );

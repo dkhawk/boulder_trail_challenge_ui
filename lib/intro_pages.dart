@@ -73,12 +73,12 @@ class _IntroPagesState extends State<IntroPages> {
             finePrintItem(
                 'Also, OSMP moves and renames trails periodically causing the trail matching algorithm to make mistakes. Given all this you may sometimes have to manually mark a trail complete, or backdate and reload your Strava/GPX data.'),
             finePrintItem(
-                'Summiting a peak is counted if you come within about 20 meters of the peak. Moving about 1000 meters away will reset the counter.'),
+                'Summiting a peak is counted if you come within about 20 meters of the peak. Moving about 1000 meters away will reset the counter so if your doing repeats each summit will get counted.'),
             finePrintItem(
                 'Note that if you don\'t use this app over a period of six months we may delete your account without notice.'),
             finePrintItem('Disclaimer: This app is not associated with OSMP, Strava, Boulder Trail Runners or any other entity'),
             finePrintItem(''),
-            finePrintItem('Good luck, have fun and be safe! Click "Trails" or "Import Data/Settings" below to continue...'),
+            finePrintItem('Good luck, have fun and be safe! Click "Maps", "Trails" or "Import Data/Settings" below to continue...'),
             finePrintItem(''),
             SizedBox(
               height: 30,
@@ -153,8 +153,8 @@ class _IntroPagesState extends State<IntroPages> {
           ),
         ),
         PageViewModel(
-          title: "There are three main pages in the Boulder Trails Challenge app:",
-          body: "(1) Trails, (2) Info/Help and (3) Import Data/Settings",
+          title: "There are four main pages in the Boulder Trails Challenge app:",
+          body: "(1) Map, (2) Trails, (3) Info/Help and (4) Import Data/Settings",
           image: _buildImage('HelpTrailsPage1.png'),
           decoration: isWebDesktop ? pageDecoration : pageDecorationMobile,
         ),
@@ -173,7 +173,7 @@ class _IntroPagesState extends State<IntroPages> {
         PageViewModel(
           title: "The Import Data/Settings Page",
           body:
-              "Synchronize your activities with Strava or import GPX files from your computer or device\nOnly runs, walks and hikes are synchronized from Strava",
+              "Synchronize your activities with Strava or import GPX files from your computer or device\nOnly runs, walks, rides and hikes are synchronized from Strava",
           image: _buildImage('HelpSettings1.png'),
           decoration: isWebDesktop ? pageDecoration : pageDecorationMobile,
         ),

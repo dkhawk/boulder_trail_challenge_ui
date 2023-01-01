@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:osmp_project/authentication_service.dart';
 import 'package:provider/provider.dart';
 
-import 'package:osmp_project/createAccountData.dart';
+import 'package:osmp_project/create_account_data.dart';
 
 class SignInPage extends StatelessWidget {
   final TextEditingController emailController = TextEditingController();
@@ -20,7 +20,7 @@ class SignInPage extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Boulder Trails Challenge - 2022'),
+        title: Text('Boulder Trails Challenge - 2023'),
       ),
       // don't resize when keyboard comes up on mobile
       resizeToAvoidBottomInset: false,
